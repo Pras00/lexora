@@ -2,10 +2,12 @@ import { RegisterForm } from '@/components/auth/RegisterForm';
 import Link from 'next/link';
 import { Library } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { AuthBackground } from '@/components/layout/AuthBackground';
 
 export default function RegisterPage() {
   return (
-    <div className="relative min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-slate-50/80 dark:bg-slate-950 transition-colors">
+    <div className="relative min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-slate-50/70 dark:bg-slate-950 transition-colors overflow-x-clip">
+      <AuthBackground />
       {/* Top Bar with ThemeToggle */}
       <div className="absolute top-6 right-6">
         <ThemeToggle />

@@ -14,6 +14,7 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { LandingBackground } from '@/components/layout/LandingBackground';
 import { createClient } from '@/lib/supabase/server';
 import { HighlightBookCard } from '@/components/books/HighlightBookCard';
 import { BookWithCategory } from '@/types';
@@ -50,12 +51,9 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
-      {/* Ambient background decoration */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-indigo-400/15 via-violet-400/10 to-transparent blur-3xl rounded-full dark:from-indigo-600/20 dark:via-purple-600/10" />
-        <div className="absolute top-[800px] -left-40 w-[500px] h-[400px] bg-gradient-to-br from-amber-400/10 via-rose-400/5 to-transparent blur-3xl rounded-full dark:from-amber-600/10" />
-      </div>
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col justify-between selection:bg-indigo-500 selection:text-white relative overflow-x-clip">
+      {/* Subtle patterned & ambient background decoration */}
+      <LandingBackground />
 
       {/* Navbar Top */}
       <header className="sticky top-0 z-50 h-16 px-6 md:px-12 flex items-center justify-between border-b border-slate-200/80 dark:border-slate-800 bg-[var(--surface)]/85 backdrop-blur-md transition-colors">
@@ -142,6 +140,9 @@ export default async function HomePage() {
 
         {/* 3D Visual Book Showcase / Fan-out Carousel */}
         <div className="mt-14 w-full max-w-4xl relative">
+          {/* Subtle Backlight Glow behind book fan */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-72 sm:w-[460px] sm:h-80 bg-gradient-to-tr from-indigo-500/15 via-violet-500/15 to-transparent rounded-full blur-2xl pointer-events-none -z-10 dark:from-indigo-600/25 dark:via-purple-600/20" />
+
           <div className="flex items-center justify-center gap-4 sm:gap-6 py-4">
             {/* Left Tilt Card */}
             <div className="relative w-36 h-52 sm:w-48 sm:h-72 rounded-xl overflow-hidden shadow-xl transform -rotate-6 hover:rotate-0 transition-transform duration-300 border border-slate-200/60 dark:border-slate-800 hidden sm:block">
@@ -200,7 +201,7 @@ export default async function HomePage() {
       </section>
 
       {/* Section: Highlight Koleksi Pilihan Perpustakaan */}
-      <section id="koleksi-pilihan" className="relative z-10 py-16 px-4 md:px-8 border-t border-slate-200/70 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30">
+      <section id="koleksi-pilihan" className="relative z-10 py-16 px-4 md:px-8 border-t border-slate-200/70 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/40 backdrop-blur-xs">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
