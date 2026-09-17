@@ -14,7 +14,7 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirectTo') || '/dashboard';
+  const redirectTo = searchParams.get('redirectTo');
   const supabase = createClient();
 
   const {
@@ -44,12 +44,9 @@ export function LoginForm() {
       }
 
       if (data.user) {
-        // Ambil role langsung dari user_metadata (tanpa query terpisah)
-        const userRole = data.user.user_metadata?.role;
-        const targetUrl =
-          userRole === 'admin' && redirectTo === '/dashboard'
-            ? '/admin/dashboard'
-            : redirectTo;
+        // Jika ada redirectTo (misalnya alur pinjam buku), gunakan itu.
+        // Jika login normal, kembalikan ke halaman awal ('/').
+        const targetUrl = redirectTo || '/';
 
         // Gunakan full navigation untuk memastikan state session Next.js terbarui tanpa race condition
         window.location.href = targetUrl;

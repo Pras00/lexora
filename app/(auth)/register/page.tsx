@@ -43,8 +43,8 @@ export default function RegisterPage() {
         </div>
 
         <div className="mt-8 text-center text-xs text-[var(--muted)]">
-          <Link href="/catalog" className="hover:underline">
-            ← Kembali ke Katalog Publik
+          <Link href="/" className="hover:underline">
+            ← Kembali ke Halaman Awal
           </Link>
         </div>
       </div>

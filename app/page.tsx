@@ -14,10 +14,11 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { UserMenu } from '@/components/layout/UserMenu';
 import { LandingBackground } from '@/components/layout/LandingBackground';
 import { createClient } from '@/lib/supabase/server';
 import { HighlightBookCard } from '@/components/books/HighlightBookCard';
-import { BookWithCategory } from '@/types';
+import { BookWithCategory, Profile } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +26,7 @@ export default async function HomePage() {
   let featuredBooks: BookWithCategory[] = [];
   let user: any = null;
   let userRole: string = 'member';
+  let userProfile: Profile | null = null;
 
   try {
     const supabase = await createClient();
@@ -34,6 +36,17 @@ export default async function HomePage() {
 
     user = authUser;
     userRole = user?.user_metadata?.role || 'member';
+
+    if (user) {
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (prof) {
+        userProfile = prof as Profile;
+      }
+    }
 
     // Ambil 6 buku unggulan terpopuler/terbaru
     const { data: books } = await supabase
@@ -73,24 +86,25 @@ export default async function HomePage() {
           <ThemeToggle />
 
           {user ? (
-            <Link
-              href={userRole === 'admin' ? '/admin/dashboard' : '/dashboard'}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-md transition-all"
-            >
-              <User className="w-3.5 h-3.5" />
-              <span>Buka Dashboard</span>
-            </Link>
+            <UserMenu
+              user={{
+                id: user.id,
+                email: user.email,
+                user_metadata: user.user_metadata,
+                profile: userProfile,
+              }}
+            />
           ) : (
             <>
               <Link
                 href="/login"
-                className="px-4 py-2 text-xs font-semibold rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 Masuk
               </Link>
               <Link
                 href="/register"
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-md transition-all"
+                className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-md transition-all"
               >
                 Daftar Anggota
               </Link>
