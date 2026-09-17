@@ -247,22 +247,34 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 
 -- Trigger: Otomatis buat Profile saat User mendaftar di auth.users
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+SECURITY DEFINER
+SET search_path = public
+LANGUAGE plpgsql
+AS $$
 DECLARE
     new_member_num TEXT;
+    user_role_val public.user_role;
 BEGIN
-    new_member_num := 'LX-' || LPAD(nextval('member_number_seq')::TEXT, 4, '0');
+    new_member_num := 'LX-' || LPAD(nextval('public.member_number_seq')::TEXT, 4, '0');
     
+    BEGIN
+        user_role_val := COALESCE((NEW.raw_user_meta_data->>'role')::public.user_role, 'member'::public.user_role);
+    EXCEPTION WHEN OTHERS THEN
+        user_role_val := 'member'::public.user_role;
+    END;
+
     INSERT INTO public.profiles (id, full_name, role, member_number)
     VALUES (
         NEW.id,
         COALESCE(NEW.raw_user_meta_data->>'full_name', 'Member Lexora'),
-        COALESCE((NEW.raw_user_meta_data->>'role')::user_role, 'member'::user_role),
+        user_role_val,
         new_member_num
-    );
+    )
+    ON CONFLICT (id) DO NOTHING;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
