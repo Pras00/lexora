@@ -12,34 +12,19 @@ export function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  // Selalu tampilkan tombol fisik bahkan sebelum mount agar tidak pernah kosong/hilang
-  if (!mounted) {
-    return (
-      <button
-        type="button"
-        className="flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-[var(--surface)] text-slate-500 shadow-xs cursor-pointer"
-        aria-label="Ganti mode tema"
-      >
-        <Sun className="w-4 h-4 text-amber-500" />
-      </button>
-    );
-  }
-
-  const isDark = resolvedTheme === 'dark';
-
   return (
     <button
       type="button"
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-[var(--surface)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--foreground)] transition-all shadow-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+      className="relative flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-[var(--surface)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--foreground)] transition-all duration-200 shadow-xs hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer overflow-hidden"
       aria-label="Ganti mode tema"
-      title={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
+      title={mounted && resolvedTheme === 'dark' ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
     >
-      {isDark ? (
-        <Moon className="w-4 h-4 text-indigo-400 transition-all duration-300" />
-      ) : (
-        <Sun className="w-4 h-4 text-amber-500 transition-all duration-300" />
-      )}
+      {/* Ikon Matahari: berputar dan mengecil saat berganti ke dark mode */}
+      <Sun className="w-4 h-4 text-amber-500 transition-all duration-500 ease-out transform rotate-0 scale-100 opacity-100 dark:-rotate-90 dark:scale-0 dark:opacity-0" />
+
+      {/* Ikon Bulan: berputar masuk dan membesar saat berganti ke dark mode */}
+      <Moon className="absolute w-4 h-4 text-indigo-400 transition-all duration-500 ease-out transform rotate-90 scale-0 opacity-0 dark:rotate-0 dark:scale-100 dark:opacity-100" />
     </button>
   );
 }
