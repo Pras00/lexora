@@ -1,0 +1,45 @@
+import { RegisterForm } from '@/components/auth/RegisterForm';
+import Link from 'next/link';
+import { Library } from 'lucide-react';
+
+export default function RegisterPage() {
+  return (
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-slate-50 dark:bg-slate-950">
+      <div className="w-full max-w-md">
+        {/* Brand Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-600 text-white shadow-md mb-3">
+            <Library className="w-6 h-6" />
+          </div>
+          <h2 className="text-2xl font-bold tracking-tight text-[var(--foreground)]">
+            Daftar Anggota Baru
+          </h2>
+          <p className="text-sm text-[var(--muted)] mt-1">
+            Mulai jelajahi dan pinjam buku koleksi perpustakaan
+          </p>
+        </div>
+
+        {/* Card Form */}
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-sm">
+          <RegisterForm />
+
+          <div className="mt-6 pt-5 border-t border-[var(--border)] text-center text-xs text-[var(--muted)]">
+            Sudah terdaftar sebagai anggota?{' '}
+            <Link
+              href="/login"
+              className="font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              Masuk di sini
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-8 text-center text-xs text-[var(--muted)]">
+          <Link href="/catalog" className="hover:underline">
+            ← Kembali ke Katalog Publik
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
