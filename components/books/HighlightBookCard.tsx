@@ -61,14 +61,14 @@ export function HighlightBookCard({ book, isLoggedIn }: HighlightBookCardProps) 
 
         {/* Kategori Badge */}
         {book.category && (
-          <span className="absolute top-3 left-3 px-3 py-1 text-[11px] font-semibold rounded-lg bg-black/65 text-white backdrop-blur-md shadow-xs">
+          <span className="absolute top-3 left-3 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-black/70 text-white backdrop-blur-md shadow-xs">
             {book.category.name}
           </span>
         )}
 
         {/* Stock Status Badge */}
         <span
-          className={`absolute bottom-3 right-3 px-2.5 py-1 text-[11px] font-medium rounded-lg backdrop-blur-md shadow-xs ${
+          className={`absolute bottom-3 right-3 px-3 py-1.5 text-xs font-semibold rounded-lg backdrop-blur-md shadow-xs ${
             book.available_stock > 0
               ? 'bg-emerald-600/90 text-white'
               : 'bg-rose-600/90 text-white'
@@ -85,29 +85,29 @@ export function HighlightBookCard({ book, isLoggedIn }: HighlightBookCardProps) 
         <div>
           <Link href={`/catalog/${book.id}`}>
             <h3
-              className="font-bold text-base text-[var(--foreground)] line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
+              className="font-bold text-lg text-[var(--foreground)] line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug"
               title={book.title}
             >
               {book.title}
             </h3>
           </Link>
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 truncate">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1.5 truncate">
             {book.author} • {book.published_year}
           </p>
           {book.description && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2.5 line-clamp-2 leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-slate-300 mt-2.5 line-clamp-2 leading-relaxed">
               {book.description}
             </p>
           )}
         </div>
 
         {/* Action Button */}
-        <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2">
+        <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2.5">
           <button
             type="button"
             onClick={handleBorrowClick}
             disabled={book.available_stock <= 0}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-semibold shadow-xs transition-all cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-semibold shadow-xs transition-all cursor-pointer ${
               book.available_stock <= 0
                 ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-600 cursor-not-allowed'
                 : isAdded
@@ -117,12 +117,12 @@ export function HighlightBookCard({ book, isLoggedIn }: HighlightBookCardProps) 
           >
             {isAdded ? (
               <>
-                <BookmarkCheck className="w-3.5 h-3.5" />
+                <BookmarkCheck className="w-4 h-4" />
                 <span>Di Keranjang Pinjam</span>
               </>
             ) : (
               <>
-                <BookMarked className="w-3.5 h-3.5" />
+                <BookMarked className="w-4 h-4" />
                 <span>Pinjam Sekarang</span>
               </>
             )}
@@ -130,10 +130,10 @@ export function HighlightBookCard({ book, isLoggedIn }: HighlightBookCardProps) 
 
           <Link
             href={`/catalog/${book.id}`}
-            className="flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
+            className="flex items-center justify-center w-11 h-11 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-600 transition-colors"
             title="Lihat Detail Buku"
           >
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4.5 h-4.5" />
           </Link>
         </div>
       </div>
