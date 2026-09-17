@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Book, Plus, Check, BookOpen } from 'lucide-react';
@@ -15,6 +16,7 @@ export function BookCard({ book }: BookCardProps) {
   const { addItem, hasItem } = useCartStore();
   const isAdded = hasItem(book.id);
   const isOutOfStock = book.available_stock <= 0;
+  const [imgError, setImgError] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -26,18 +28,19 @@ export function BookCard({ book }: BookCardProps) {
     <div className="group flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden transition-all duration-200 hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-900">
       {/* Cover Buku */}
       <Link href={`/catalog/${book.id}`} className="relative h-52 w-full bg-slate-100 dark:bg-slate-800 overflow-hidden block">
-        {book.cover_url ? (
+        {book.cover_url && !imgError ? (
           <Image
             src={book.cover_url}
             alt={book.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={() => setImgError(true)}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-[var(--muted)]">
-            <BookOpen className="w-10 h-10 stroke-1 mb-2 text-slate-400" />
-            <span className="text-xs">Tidak ada sampul</span>
+          <div className="flex flex-col items-center justify-center h-full text-[var(--muted)] p-4 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+            <BookOpen className="w-10 h-10 stroke-1 mb-2 text-indigo-500 opacity-60" />
+            <span className="text-xs font-medium text-[var(--muted)] line-clamp-2">{book.title}</span>
           </div>
         )}
 

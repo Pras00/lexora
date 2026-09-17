@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BookWithCategory } from '@/types';
@@ -23,6 +24,7 @@ interface BookDetailClientProps {
 
 export function BookDetailClient({ book }: BookDetailClientProps) {
   const { addItem, hasItem } = useCartStore();
+  const [imgError, setImgError] = useState(false);
   const isAdded = hasItem(book.id);
   const isOutOfStock = book.available_stock <= 0;
 
@@ -39,7 +41,7 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-6 md:p-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
         {/* Cover Image */}
         <div className="relative h-80 md:h-[420px] w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
-          {book.cover_url ? (
+          {book.cover_url && !imgError ? (
             <Image
               src={book.cover_url}
               alt={book.title}
@@ -47,11 +49,13 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
               priority
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover"
+              onError={() => setImgError(true)}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-[var(--muted)]">
-              <BookOpen className="w-12 h-12 stroke-1 text-slate-400 mb-2" />
-              <span className="text-xs">Tidak ada sampul</span>
+            <div className="flex flex-col items-center justify-center h-full text-[var(--muted)] p-6 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+              <BookOpen className="w-16 h-16 stroke-1 text-indigo-500 opacity-60 mb-3" />
+              <span className="text-sm font-medium text-[var(--foreground)]">{book.title}</span>
+              <span className="text-xs text-[var(--muted)] mt-1">{book.author}</span>
             </div>
           )}
         </div>
