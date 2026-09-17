@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -35,9 +36,13 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-slate-50 dark:bg-slate-950">
+    <div className="relative min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-slate-50/80 dark:bg-slate-950 transition-colors">
+      <div className="absolute top-6 right-6">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-md">
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-sm">
+        <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-[var(--surface)] p-6 sm:p-8 shadow-sm">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-[var(--foreground)]">Lupa Kata Sandi?</h2>
             <p className="text-xs text-[var(--muted)] mt-1">

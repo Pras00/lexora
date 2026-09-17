@@ -56,16 +56,16 @@ export function UserSidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors',
+                'flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all',
                 isActive
-                  ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-semibold'
-                  : 'text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800'
+                  ? 'bg-indigo-50 text-indigo-700 font-semibold border border-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-900/50 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60'
               )}
             >
               <Icon
                 className={cn(
-                  'w-4 h-4',
-                  isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-[var(--muted)]'
+                  'w-4 h-4 transition-colors',
+                  isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'
                 )}
               />
               <span>{item.name}</span>
@@ -76,9 +76,9 @@ export function UserSidebar() {
 
       {/* Footer Info */}
       <div className="p-4 border-t border-[var(--border)]">
-        <div className="rounded-lg bg-slate-50 dark:bg-slate-900/60 p-3 border border-[var(--border)]">
-          <p className="text-xs font-medium text-[var(--foreground)]">Jam Layanan Fisik</p>
-          <p className="text-[11px] text-[var(--muted)] mt-0.5">
+        <div className="rounded-xl bg-slate-50 dark:bg-slate-900/60 p-3.5 border border-slate-200/80 dark:border-slate-800">
+          <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">Jam Layanan Fisik</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
             Senin – Jumat: 08.00 – 16.30 WIB
           </p>
         </div>

@@ -2,10 +2,16 @@ import { LoginForm } from '@/components/auth/LoginForm';
 import Link from 'next/link';
 import { Library } from 'lucide-react';
 import { Suspense } from 'react';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-slate-50 dark:bg-slate-950">
+    <div className="relative min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-slate-50/80 dark:bg-slate-950 transition-colors">
+      {/* Top Bar with ThemeToggle */}
+      <div className="absolute top-6 right-6">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-md">
         {/* Brand Header */}
         <div className="text-center mb-8">
@@ -15,13 +21,13 @@ export default function LoginPage() {
           <h2 className="text-2xl font-bold tracking-tight text-[var(--foreground)]">
             Masuk ke Lexora
           </h2>
-          <p className="text-sm text-[var(--muted)] mt-1">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Sistem Informasi & Peminjaman Perpustakaan
           </p>
         </div>
 
         {/* Card Form */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8 shadow-sm">
+        <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-[var(--surface)] p-6 sm:p-8 shadow-sm">
           <Suspense fallback={<div className="h-40 flex items-center justify-center text-xs text-[var(--muted)]">Memuat formulir...</div>}>
             <LoginForm />
           </Suspense>

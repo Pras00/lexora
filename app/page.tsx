@@ -33,8 +33,8 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4 py-16 md:py-24 max-w-4xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-900 bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 text-xs font-medium mb-6">
-          <Library className="w-3.5 h-3.5" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-indigo-200/80 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 text-xs font-semibold mb-6 shadow-xs">
+          <Library className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
           <span>Sistem Informasi Perpustakaan Generasi Baru</span>
         </div>
 
@@ -42,7 +42,7 @@ export default function HomePage() {
           Akses Ribuan Koleksi Buku dalam <span className="text-indigo-600 dark:text-indigo-400">Satu Sentuhan</span>
         </h1>
 
-        <p className="text-base md:text-lg text-[var(--muted)] max-w-2xl mt-5 leading-relaxed">
+        <p className="text-base md:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mt-5 leading-relaxed">
           Eksplorasi katalog literatur, ajukan peminjaman buku dari mana saja, dan ambil fisik di loket sirkulasi dengan sistem QR Pickup Pass instan.
         </p>
 
@@ -50,7 +50,7 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row items-center gap-3 mt-8">
           <Link
             href="/catalog"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-sm transition-all"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-sm hover:shadow-md transition-all"
           >
             <BookOpen className="w-4 h-4" />
             <span>Jelajahi Katalog Buku</span>
@@ -58,7 +58,7 @@ export default function HomePage() {
           </Link>
           <Link
             href="/login"
-            className="w-full sm:w-auto flex items-center justify-center px-6 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-semibold transition-colors"
+            className="w-full sm:w-auto flex items-center justify-center px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-[var(--surface)] hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-semibold transition-colors shadow-xs"
           >
             Masuk ke Portal Anggota
           </Link>
@@ -66,32 +66,32 @@ export default function HomePage() {
 
         {/* 3 Core Value Props */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 w-full text-left">
-          <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3">
+          <div className="p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-[var(--surface)] shadow-xs hover:shadow-md transition-all">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 dark:bg-indigo-950/50 dark:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-3.5">
               <BookOpen className="w-5 h-5" />
             </div>
-            <h3 className="font-semibold text-sm text-[var(--foreground)]">Katalog Realtime</h3>
-            <p className="text-xs text-[var(--muted)] mt-1.5 leading-relaxed">
+            <h3 className="font-semibold text-base text-[var(--foreground)]">Katalog Realtime</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
               Monitoring ketersediaan stok fisik buku secara akurat dan transparan sebelum berkunjung.
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3">
+          <div className="p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-[var(--surface)] shadow-xs hover:shadow-md transition-all">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 dark:bg-amber-950/50 dark:border-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3.5">
               <Clock className="w-5 h-5" />
             </div>
-            <h3 className="font-semibold text-sm text-[var(--foreground)]">Pickup Pass QR</h3>
-            <p className="text-xs text-[var(--muted)] mt-1.5 leading-relaxed">
+            <h3 className="font-semibold text-base text-[var(--foreground)]">Pickup Pass QR</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
               Pengambilan buku cepat di loket fisik tanpa antre pengisian formulir manual.
             </p>
           </div>
 
-          <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
+          <div className="p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-[var(--surface)] shadow-xs hover:shadow-md transition-all">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 dark:bg-emerald-950/50 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3.5">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <h3 className="font-semibold text-sm text-[var(--foreground)]">Sirkulasi Tertib</h3>
-            <p className="text-xs text-[var(--muted)] mt-1.5 leading-relaxed">
+            <h3 className="font-semibold text-base text-[var(--foreground)]">Sirkulasi Tertib</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
               Manajemen durasi 14 hari, fasilitas perpanjangan online, dan perhitungan denda transparan.
             </p>
           </div>

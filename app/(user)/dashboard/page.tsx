@@ -195,8 +195,21 @@ export default async function DashboardPage() {
             )}
           </div>
         ) : (
-          <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-center text-xs text-[var(--muted)]">
-            Tidak ada buku yang sedang dipinjam saat ini.
+          <div className="p-8 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 bg-[var(--surface)] text-center flex flex-col items-center justify-center shadow-xs">
+            <BookmarkCheck className="w-10 h-10 text-slate-300 dark:text-slate-600 mb-2 stroke-1" />
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+              Belum ada buku yang sedang dipinjam
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
+              Jelajahi koleksi literatur perpustakaan dan ajukan peminjaman buku favorit Anda sekarang.
+            </p>
+            <Link
+              href="/catalog"
+              className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-semibold border border-indigo-100 dark:border-indigo-900/50 hover:bg-indigo-100 transition-colors"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Buka Katalog Buku</span>
+            </Link>
           </div>
         )}
       </div>
