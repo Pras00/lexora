@@ -32,12 +32,13 @@ export default async function DashboardPage() {
       const [loansRes, requestsRes, finesRes, completedRes, passesRes] = await Promise.all([
         supabase
           .from('loans')
-          .select('*, items:loan_items(*, book:books(*))')
+          .select('id, status, items:loan_items(id, status, due_date, book:books(title, author))')
           .eq('user_id', user.id)
-          .eq('status', 'active'),
+          .eq('status', 'active')
+          .limit(10),
         supabase
           .from('loan_requests')
-          .select('id')
+          .select('id', { count: 'exact', head: true })
           .eq('user_id', user.id)
           .eq('status', 'pending'),
         supabase
@@ -46,15 +47,16 @@ export default async function DashboardPage() {
           .eq('user_id', user.id)
           .eq('status', 'unpaid'),
         supabase
-          .from('loan_items')
-          .select('id, loan:loans!inner(user_id)')
-          .eq('loan.user_id', user.id)
-          .eq('status', 'returned'),
+          .from('loans')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('status', 'completed'),
         supabase
           .from('loan_requests')
-          .select('*, pass:pickup_passes(*)')
+          .select('id, request_number, pass:pickup_passes(id, pickup_code, expires_at)')
           .eq('user_id', user.id)
-          .eq('status', 'approved'),
+          .eq('status', 'approved')
+          .limit(5),
       ]);
 
       if (loansRes.data) {
@@ -65,16 +67,16 @@ export default async function DashboardPage() {
         );
       }
 
-      if (requestsRes.data) {
-        pendingRequestsCount = requestsRes.data.length;
+      if (requestsRes.count !== null && requestsRes.count !== undefined) {
+        pendingRequestsCount = requestsRes.count;
       }
 
       if (finesRes.data) {
         unpaidFinesTotal = finesRes.data.reduce((acc, f) => acc + Number(f.amount), 0);
       }
 
-      if (completedRes.data) {
-        completedLoansCount = completedRes.data.length;
+      if (completedRes.count !== null && completedRes.count !== undefined) {
+        completedLoansCount = completedRes.count;
       }
 
       if (passesRes.data) {

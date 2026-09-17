@@ -44,19 +44,15 @@ export function LoginForm() {
       }
 
       if (data.user) {
-        // Cek role untuk menentukan dashboard redirect
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
+        // Ambil role langsung dari user_metadata (tanpa query terpisah)
+        const userRole = data.user.user_metadata?.role;
+        const targetUrl =
+          userRole === 'admin' && redirectTo === '/dashboard'
+            ? '/admin/dashboard'
+            : redirectTo;
 
-        if (profile?.role === 'admin' && redirectTo === '/dashboard') {
-          router.push('/admin/dashboard');
-        } else {
-          router.push(redirectTo);
-        }
-        router.refresh();
+        // Gunakan full navigation untuk memastikan state session Next.js terbarui tanpa race condition
+        window.location.href = targetUrl;
       }
     } catch {
       setErrorMsg('Terjadi kesalahan koneksi. Silakan coba beberapa saat lagi.');
