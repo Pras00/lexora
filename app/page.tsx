@@ -201,7 +201,7 @@ export default async function HomePage() {
       </section>
 
       {/* Section: Highlight Koleksi Pilihan Perpustakaan */}
-      <section id="koleksi-pilihan" className="relative z-10 py-16 px-4 md:px-8 border-t border-slate-200/70 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/40 backdrop-blur-xs">
+      <section id="koleksi-pilihan" className="relative z-10 py-16 px-4 md:px-8 border-t border-slate-200/60 dark:border-slate-800/80">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
