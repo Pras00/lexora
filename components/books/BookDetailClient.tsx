@@ -32,7 +32,7 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
     <div className="space-y-6">
       <Link
         href="/catalog"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Katalog
@@ -52,10 +52,10 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-[var(--muted)] p-6 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+            <div className="flex flex-col items-center justify-center h-full text-[var(--foreground)] p-6 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
               <BookOpen className="w-16 h-16 stroke-1 text-indigo-500 opacity-60 mb-3" />
               <span className="text-sm font-medium text-[var(--foreground)]">{book.title}</span>
-              <span className="text-xs text-[var(--muted)] mt-1">{book.author}</span>
+              <span className="text-xs text-[var(--foreground)] mt-1">{book.author}</span>
             </div>
           )}
         </div>
@@ -73,7 +73,7 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
               {book.title}
             </h1>
 
-            <p className="text-sm font-medium text-[var(--muted)] mt-1.5">
+            <p className="text-sm font-medium text-[var(--foreground)] mt-1.5">
               Karya <strong className="text-[var(--foreground)]">{book.author}</strong>
             </p>
 
@@ -82,7 +82,7 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
               <div className="flex items-center gap-2">
                 <Barcode className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <div>
-                  <p className="text-[var(--muted)]">ISBN</p>
+                  <p className="text-[var(--foreground)]">ISBN</p>
                   <p className="font-mono font-medium text-[var(--foreground)]">{book.isbn}</p>
                 </div>
               </div>
@@ -90,7 +90,7 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
               <div className="flex items-center gap-2">
                 <Building className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <div>
-                  <p className="text-[var(--muted)]">Penerbit</p>
+                  <p className="text-[var(--foreground)]">Penerbit</p>
                   <p className="font-medium text-[var(--foreground)] truncate">{book.publisher || '-'}</p>
                 </div>
               </div>
@@ -98,7 +98,7 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <div>
-                  <p className="text-[var(--muted)]">Tahun Terbit</p>
+                  <p className="text-[var(--foreground)]">Tahun Terbit</p>
                   <p className="font-medium text-[var(--foreground)]">{book.published_year || '-'}</p>
                 </div>
               </div>
@@ -107,7 +107,7 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
             {/* Sinopsis */}
             <div>
               <h4 className="text-sm font-semibold text-[var(--foreground)] mb-2">Deskripsi Buku</h4>
-              <p className="text-xs md:text-sm text-[var(--muted)] leading-relaxed">
+              <p className="text-xs md:text-sm text-[var(--foreground)] leading-relaxed">
                 {book.description || 'Tidak ada deskripsi detail untuk buku ini.'}
               </p>
             </div>
@@ -127,7 +127,7 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
                   {isOutOfStock ? 'Stok Fisik Habis' : `Tersedia: ${book.available_stock} dari ${book.total_stock} buku`}
                 </span>
               </div>
-              <p className="text-[11px] text-[var(--muted)] mt-1 flex items-center gap-1">
+              <p className="text-[11px] text-[var(--foreground)] mt-1 flex items-center gap-1">
                 <ShieldAlert className="w-3 h-3 text-amber-500" />
                 Estimasi nilai buku: {formatCurrency(book.price)} (acuan ganti rugi jika rusak/hilang)
               </p>

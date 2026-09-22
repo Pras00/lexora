@@ -43,7 +43,7 @@ export function AdminSidebar() {
               Admin
             </span>
           </div>
-          <span className="block text-[10px] text-[var(--muted)] font-medium -mt-1">
+          <span className="block text-[10px] text-[var(--foreground)] font-medium -mt-1">
             Panel Pustakawan
           </span>
         </div>

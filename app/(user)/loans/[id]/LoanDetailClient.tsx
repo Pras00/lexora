@@ -107,7 +107,7 @@ export function LoanDetailClient({ loan }: LoanDetailClientProps) {
     <div className="space-y-6">
       <Link
         href="/loans"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Daftar Pinjaman Aktif
@@ -153,8 +153,8 @@ export function LoanDetailClient({ loan }: LoanDetailClientProps) {
                   </h4>
                   <StatusBadge status={isOverdue ? 'overdue' : item.status} />
                 </div>
-                <p className="text-xs text-[var(--muted)]">Pengarang: {item.book?.author}</p>
-                <div className="flex flex-wrap items-center gap-4 text-xs mt-3 text-[var(--muted)]">
+                <p className="text-xs text-[var(--foreground)]">Pengarang: {item.book?.author}</p>
+                <div className="flex flex-wrap items-center gap-4 text-xs mt-3 text-[var(--foreground)]">
                   <span className="flex items-center gap-1.5">
                     <Clock className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                     Batas Kembali: <strong className="text-[var(--foreground)]">{formatDate(item.due_date)}</strong>

@@ -56,7 +56,7 @@ export function MobileNav({ isOpen, onClose, navigation, isAdmin }: MobileNavPro
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="p-1.5 rounded-lg text-[var(--foreground)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800"
                 aria-label="Tutup menu navigasi"
               >
                 <X className="w-5 h-5" />
@@ -81,7 +81,7 @@ export function MobileNav({ isOpen, onClose, navigation, isAdmin }: MobileNavPro
                       'flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors',
                       isActive
                         ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-semibold'
-                        : 'text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800'
+                        : 'text-[var(--foreground)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800'
                     )}
                   >
                     <Icon className="w-4 h-4" />

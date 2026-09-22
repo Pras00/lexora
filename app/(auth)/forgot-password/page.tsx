@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
         <div className="rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-[var(--surface)] p-6 sm:p-8 shadow-sm">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-[var(--foreground)]">Lupa Kata Sandi?</h2>
-            <p className="text-xs text-[var(--muted)] mt-1">
+            <p className="text-xs text-[var(--foreground)] mt-1">
               Masukkan alamat email Anda untuk menerima tautan pemulihan kata sandi.
             </p>
           </div>
@@ -58,7 +58,7 @@ export default function ForgotPasswordPage() {
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <p className="text-sm font-medium text-[var(--foreground)]">Email Terkirim</p>
-              <p className="text-xs text-[var(--muted)] mt-1">
+              <p className="text-xs text-[var(--foreground)] mt-1">
                 Silakan periksa kotak masuk email Anda dan ikuti instruksi untuk mereset kata sandi.
               </p>
               <Link
@@ -83,14 +83,14 @@ export default function ForgotPasswordPage() {
                   Email Akun Anda
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 w-4 h-4 text-[var(--muted)] pointer-events-none" />
+                  <Mail className="absolute left-3 top-2.5 w-4 h-4 text-[var(--foreground)] pointer-events-none" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="nama@email.com"
-                    className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
+                    className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
                   />
                 </div>
               </div>
@@ -106,7 +106,7 @@ export default function ForgotPasswordPage() {
               <div className="text-center pt-3">
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-1 text-xs text-[var(--muted)] hover:text-[var(--foreground)]"
+                  className="inline-flex items-center gap-1 text-xs text-[var(--foreground)] hover:text-[var(--foreground)]"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   Batal dan kembali ke Login

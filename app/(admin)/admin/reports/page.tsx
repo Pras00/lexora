@@ -84,7 +84,7 @@ export default async function AdminReportsPage() {
         <h3 className="font-semibold text-sm text-[var(--foreground)]">
           Pedoman & Standar Kepatuhan Sirkulasi Lexora
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-[var(--muted)] leading-relaxed">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-[var(--foreground)] leading-relaxed">
           <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border)]">
             <h4 className="font-bold text-[var(--foreground)] mb-1">Durasi Peminjaman</h4>
             <p>14 hari kalender dengan batas perpanjangan otomatis maksimal 1 kali (+7 hari) jika tidak ada daftar antrean.</p>

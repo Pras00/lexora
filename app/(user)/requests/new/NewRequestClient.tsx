@@ -23,7 +23,7 @@ export function NewRequestClient() {
   }, []);
 
   if (!mounted) {
-    return <div className="h-64 flex items-center justify-center text-xs text-[var(--muted)]">Memuat keranjang...</div>;
+    return <div className="h-64 flex items-center justify-center text-xs text-[var(--foreground)]">Memuat keranjang...</div>;
   }
 
   if (items.length === 0) {
@@ -160,7 +160,7 @@ export function NewRequestClient() {
             </h3>
             <button
               onClick={clearCart}
-              className="text-xs text-[var(--muted)] hover:text-red-600 transition-colors"
+              className="text-xs text-[var(--foreground)] hover:text-red-600 transition-colors"
             >
               Kosongkan Keranjang
             </button>
@@ -192,15 +192,15 @@ export function NewRequestClient() {
                   <h4 className="font-semibold text-sm text-[var(--foreground)] truncate">
                     {book.title}
                   </h4>
-                  <p className="text-xs text-[var(--muted)] mt-0.5">{book.author}</p>
-                  <p className="text-[11px] font-mono text-[var(--muted)] mt-1">
+                  <p className="text-xs text-[var(--foreground)] mt-0.5">{book.author}</p>
+                  <p className="text-[11px] font-mono text-[var(--foreground)] mt-1">
                     ISBN: {book.isbn}
                   </p>
                 </div>
 
                 <button
                   onClick={() => removeItem(book.id)}
-                  className="p-2 text-[var(--muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
+                  className="p-2 text-[var(--foreground)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
                   title="Hapus buku ini"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -215,7 +215,7 @@ export function NewRequestClient() {
           <div className="p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] space-y-4">
             <h4 className="text-sm font-semibold text-[var(--foreground)]">Ketentuan Peminjaman</h4>
             
-            <ul className="text-xs text-[var(--muted)] space-y-2.5 leading-relaxed">
+            <ul className="text-xs text-[var(--foreground)] space-y-2.5 leading-relaxed">
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <span>Durasi peminjaman default adalah <strong>14 hari kalender</strong> sejak buku fisik diambil.</span>

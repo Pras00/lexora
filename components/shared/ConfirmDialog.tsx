@@ -60,14 +60,14 @@ export function ConfirmDialog({
                 <h3 className="text-base font-semibold text-[var(--foreground)]">
                   {title}
                 </h3>
-                <p className="text-sm text-[var(--muted)] mt-1.5 leading-relaxed">
+                <p className="text-sm text-[var(--foreground)] mt-1.5 leading-relaxed">
                   {description}
                 </p>
               </div>
               <button
                 onClick={onClose}
                 disabled={isLoading}
-                className="text-[var(--muted)] hover:text-[var(--foreground)] p-1 rounded-lg"
+                className="text-[var(--foreground)] hover:text-[var(--foreground)] p-1 rounded-lg"
               >
                 <X className="w-4 h-4" />
               </button>

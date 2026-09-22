@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { User, Phone, Mail, Shield, CheckCircle2, AlertCircle, KeyRound } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -13,6 +14,7 @@ interface ProfileClientProps {
 }
 
 export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps) {
+  const router = useRouter();
   const [fullName, setFullName] = useState(initialProfile?.full_name || '');
   const [phone, setPhone] = useState(initialProfile?.phone || '');
   const [newPassword, setNewPassword] = useState('');
@@ -43,9 +45,14 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
 
       if (error) throw error;
 
+      router.refresh(); // Invalidate server cache so layout updates instantly
       setMessage({ type: 'success', text: 'Data profil berhasil diperbarui.' });
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Gagal memperbarui profil.' });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage({ type: 'error', text: err.message || 'Gagal memperbarui profil.' });
+      } else {
+        setMessage({ type: 'error', text: 'Gagal memperbarui profil.' });
+      }
     } finally {
       setIsLoadingProfile(false);
     }
@@ -76,8 +83,12 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
       setMessage({ type: 'success', text: 'Kata sandi akun Anda berhasil diganti.' });
       setNewPassword('');
       setConfirmPassword('');
-    } catch (err: any) {
-      setMessage({ type: 'error', text: err.message || 'Gagal mengubah kata sandi.' });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage({ type: 'error', text: err.message || 'Gagal mengubah kata sandi.' });
+      } else {
+        setMessage({ type: 'error', text: 'Gagal mengubah kata sandi.' });
+      }
     } finally {
       setIsLoadingPassword(false);
     }
@@ -108,7 +119,7 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
       )}
 
       {/* Kartu Anggota Info Box */}
-      <div className="p-6 rounded-2xl border border-indigo-200 dark:border-indigo-900/50 bg-gradient-to-br from-indigo-50/50 via-[var(--surface)] to-slate-50 dark:from-indigo-950/30 dark:via-[var(--surface)] dark:to-slate-900/50">
+      <div className="p-6 rounded-2xl border border-indigo-200 dark:border-indigo-900/50 bg-gradient-to-br from-indigo-50/50 via-() to-slate-50 dark:from-indigo-950/30 dark:via-() dark:to-slate-900/50">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
@@ -116,7 +127,7 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
             </div>
             <div>
               <h3 className="font-bold text-base text-[var(--foreground)]">{fullName || 'Anggota'}</h3>
-              <p className="text-xs text-[var(--muted)]">{userEmail}</p>
+              <p className="text-xs text-[var(--foreground)]">{userEmail}</p>
               <p className="text-xs font-mono text-indigo-600 dark:text-indigo-400 font-semibold mt-1">
                 No. Anggota: {initialProfile?.member_number || 'LX-0001'}
               </p>
@@ -125,11 +136,11 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
 
           <div className="flex items-center gap-3">
             <div>
-              <p className="text-[10px] text-[var(--muted)] uppercase font-semibold">Status Akun</p>
+              <p className="text-[10px] text-[var(--foreground)] uppercase font-semibold">Status Akun</p>
               <StatusBadge status={initialProfile?.status || 'active'} />
             </div>
             <div className="pl-3 border-l border-[var(--border)]">
-              <p className="text-[10px] text-[var(--muted)] uppercase font-semibold">No-Show</p>
+              <p className="text-[10px] text-[var(--foreground)] uppercase font-semibold">No-Show</p>
               <p className="text-xs font-bold text-[var(--foreground)] mt-0.5">
                 {initialProfile?.no_show_count || 0} / 3 kali
               </p>
@@ -175,14 +186,14 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--muted)] mb-1">
+            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
               Alamat Email (Akun)
             </label>
             <input
               type="email"
               disabled
               value={userEmail}
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-slate-100 dark:bg-slate-800/50 text-[var(--muted)] cursor-not-allowed"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-slate-100 dark:bg-slate-800/50 text-[var(--foreground)] cursor-not-allowed"
             />
           </div>
 

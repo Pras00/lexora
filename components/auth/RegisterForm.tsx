@@ -63,7 +63,7 @@ export function RegisterForm() {
           <CheckCircle2 className="w-6 h-6" />
         </div>
         <h3 className="text-base font-semibold text-[var(--foreground)]">Pendaftaran Berhasil!</h3>
-        <p className="text-xs text-[var(--muted)] mt-1.5 leading-relaxed">
+        <p className="text-xs text-[var(--foreground)] mt-1.5 leading-relaxed">
           Tautan verifikasi email telah dikirim ke alamat email Anda. Silakan periksa kotak masuk (atau folder spam) untuk mengaktifkan akun.
         </p>
         <Link
@@ -90,12 +90,12 @@ export function RegisterForm() {
           Nama Lengkap
         </label>
         <div className="relative">
-          <User className="absolute left-3 top-2.5 w-4 h-4 text-[var(--muted)] pointer-events-none" />
+          <User className="absolute left-3 top-2.5 w-4 h-4 text-[var(--foreground)] pointer-events-none" />
           <input
             type="text"
             {...register('fullName')}
             placeholder="Pras Santoso"
-            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
+            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
           />
         </div>
         {errors.fullName && (
@@ -108,12 +108,12 @@ export function RegisterForm() {
           Alamat Email
         </label>
         <div className="relative">
-          <Mail className="absolute left-3 top-2.5 w-4 h-4 text-[var(--muted)] pointer-events-none" />
+          <Mail className="absolute left-3 top-2.5 w-4 h-4 text-[var(--foreground)] pointer-events-none" />
           <input
             type="email"
             {...register('email')}
             placeholder="pras@email.com"
-            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
+            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
           />
         </div>
         {errors.email && (
@@ -126,12 +126,12 @@ export function RegisterForm() {
           Nomor Telepon (Opsional)
         </label>
         <div className="relative">
-          <Phone className="absolute left-3 top-2.5 w-4 h-4 text-[var(--muted)] pointer-events-none" />
+          <Phone className="absolute left-3 top-2.5 w-4 h-4 text-[var(--foreground)] pointer-events-none" />
           <input
             type="tel"
             {...register('phone')}
             placeholder="081234567890"
-            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
+            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
           />
         </div>
         {errors.phone && (
@@ -144,12 +144,12 @@ export function RegisterForm() {
           Kata Sandi
         </label>
         <div className="relative">
-          <Lock className="absolute left-3 top-2.5 w-4 h-4 text-[var(--muted)] pointer-events-none" />
+          <Lock className="absolute left-3 top-2.5 w-4 h-4 text-[var(--foreground)] pointer-events-none" />
           <input
             type="password"
             {...register('password')}
             placeholder="Minimal 6 karakter"
-            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
+            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
           />
         </div>
         {errors.password && (
@@ -162,12 +162,12 @@ export function RegisterForm() {
           Ulangi Kata Sandi
         </label>
         <div className="relative">
-          <Lock className="absolute left-3 top-2.5 w-4 h-4 text-[var(--muted)] pointer-events-none" />
+          <Lock className="absolute left-3 top-2.5 w-4 h-4 text-[var(--foreground)] pointer-events-none" />
           <input
             type="password"
             {...register('confirmPassword')}
             placeholder="••••••••"
-            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
+            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
           />
         </div>
         {errors.confirmPassword && (

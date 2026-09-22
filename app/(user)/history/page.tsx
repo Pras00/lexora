@@ -42,7 +42,7 @@ export default async function HistoryPage() {
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--muted)] uppercase font-semibold">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
                 <tr>
                   <th className="px-5 py-3.5">Judul Buku</th>
                   <th className="px-5 py-3.5">Tanggal Ambil</th>
@@ -51,20 +51,20 @@ export default async function HistoryPage() {
                   <th className="px-5 py-3.5">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--border)] text-[var(--foreground)]">
+              <tbody className="divide-y divide-() text-[var(--foreground)]">
                 {returnedItems.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                     <td className="px-5 py-4 font-medium">
                       <div className="font-semibold text-sm">{item.book?.title}</div>
-                      <div className="text-[11px] text-[var(--muted)]">{item.book?.author}</div>
+                      <div className="text-[11px] text-[var(--foreground)]">{item.book?.author}</div>
                     </td>
-                    <td className="px-5 py-4 text-[var(--muted)]">
+                    <td className="px-5 py-4 text-[var(--foreground)]">
                       {formatDate(item.loan?.pickup_confirmed_at)}
                     </td>
                     <td className="px-5 py-4 font-medium">
                       {formatDate(item.returned_at)}
                     </td>
-                    <td className="px-5 py-4 capitalize text-[var(--muted)]">
+                    <td className="px-5 py-4 capitalize text-[var(--foreground)]">
                       {item.damage_level === 'none' ? 'Baik' : item.damage_level}
                     </td>
                     <td className="px-5 py-4">

@@ -72,7 +72,7 @@ export function AdminFinesClient({ fines }: AdminFinesClientProps) {
           className={`px-3 py-1.5 rounded-lg transition-colors ${
             filter === 'unpaid'
               ? 'bg-white dark:bg-slate-800 text-red-600 font-bold shadow-xs'
-              : 'text-[var(--muted)] hover:text-[var(--foreground)]'
+              : 'text-[var(--foreground)] hover:text-[var(--foreground)]'
           }`}
         >
           Belum Lunas ({fines.filter((f) => f.status === 'unpaid').length})
@@ -82,7 +82,7 @@ export function AdminFinesClient({ fines }: AdminFinesClientProps) {
           className={`px-3 py-1.5 rounded-lg transition-colors ${
             filter === 'paid'
               ? 'bg-white dark:bg-slate-800 text-emerald-600 font-bold shadow-xs'
-              : 'text-[var(--muted)] hover:text-[var(--foreground)]'
+              : 'text-[var(--foreground)] hover:text-[var(--foreground)]'
           }`}
         >
           Sudah Lunas ({fines.filter((f) => f.status === 'paid').length})
@@ -92,7 +92,7 @@ export function AdminFinesClient({ fines }: AdminFinesClientProps) {
           className={`px-3 py-1.5 rounded-lg transition-colors ${
             filter === 'all'
               ? 'bg-white dark:bg-slate-800 text-[var(--foreground)] font-bold shadow-xs'
-              : 'text-[var(--muted)] hover:text-[var(--foreground)]'
+              : 'text-[var(--foreground)] hover:text-[var(--foreground)]'
           }`}
         >
           Semua ({fines.length})
@@ -104,7 +104,7 @@ export function AdminFinesClient({ fines }: AdminFinesClientProps) {
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--muted)] uppercase font-semibold">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
                 <tr>
                   <th className="px-5 py-3.5">Nama Anggota</th>
                   <th className="px-5 py-3.5">Buku Terkait</th>
@@ -114,7 +114,7 @@ export function AdminFinesClient({ fines }: AdminFinesClientProps) {
                   <th className="px-5 py-3.5 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--border)] text-[var(--foreground)]">
+              <tbody className="divide-y divide-() text-[var(--foreground)]">
                 {filteredFines.map((fine) => (
                   <tr key={fine.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                     <td className="px-5 py-4 font-semibold">
@@ -123,10 +123,10 @@ export function AdminFinesClient({ fines }: AdminFinesClientProps) {
                         {fine.user?.member_number}
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-[var(--muted)] max-w-xs truncate">
+                    <td className="px-5 py-4 text-[var(--foreground)] max-w-xs truncate">
                       {fine.loan_item?.book?.title || 'Buku Perpustakaan'}
                     </td>
-                    <td className="px-5 py-4 text-[var(--muted)]">
+                    <td className="px-5 py-4 text-[var(--foreground)]">
                       <div>{fineTypeLabels[fine.type] || fine.type}</div>
                       {fine.days_overdue > 0 && (
                         <div className="text-[11px] text-amber-600">
@@ -150,7 +150,7 @@ export function AdminFinesClient({ fines }: AdminFinesClientProps) {
                           {confirmingId === fine.id ? 'Menyimpan...' : 'Konfirmasi Lunas'}
                         </button>
                       ) : (
-                        <span className="text-[11px] text-[var(--muted)]">
+                        <span className="text-[11px] text-[var(--foreground)]">
                           Lunas {formatDate(fine.paid_at)}
                         </span>
                       )}

@@ -3,28 +3,21 @@ import Image from 'next/image';
 import {
   Library,
   BookOpen,
-  Clock,
-  ShieldCheck,
   ArrowRight,
-  QrCode,
-  CheckCircle2,
-  BookmarkCheck,
-  BookMarked,
-  User,
   ArrowUpRight,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { UserMenu } from '@/components/layout/UserMenu';
-import { LandingBackground } from '@/components/layout/LandingBackground';
 import { createClient } from '@/lib/supabase/server';
 import { HighlightBookCard } from '@/components/books/HighlightBookCard';
+import { User } from '@supabase/supabase-js';
 import { BookWithCategory, Profile } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   let featuredBooks: BookWithCategory[] = [];
-  let user: any = null;
+  let user: User | null = null;
   let userRole: string = 'member';
   let userProfile: Profile | null = null;
 
@@ -43,12 +36,9 @@ export default async function HomePage() {
         .select('*')
         .eq('id', user.id)
         .maybeSingle();
-      if (prof) {
-        userProfile = prof as Profile;
-      }
+      if (prof) userProfile = prof as Profile;
     }
 
-    // Ambil 6 buku unggulan terpopuler/terbaru
     const { data: books } = await supabase
       .from('books')
       .select('*, category:categories(*)')
@@ -64,27 +54,18 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col justify-between selection:bg-indigo-500 selection:text-white relative overflow-x-clip">
-      {/* Subtle patterned & ambient background decoration */}
-      <LandingBackground />
-
-      {/* Navbar Top */}
-      <header className="sticky top-0 z-50 h-16 px-6 md:px-12 flex items-center justify-between border-b border-slate-200/80 dark:border-slate-800 bg-[var(--surface)]/85 backdrop-blur-md transition-colors">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-600 text-white shadow-sm hover:scale-105 transition-transform">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col">
+      {/* ── Navbar ──────────────────────────────────────────────── */}
+      <header className="sticky top-0 z-50 h-16 px-6 md:px-10 flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-md transition-colors">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
             <Library className="w-5 h-5" />
           </div>
-          <div>
-            <span className="font-bold text-lg tracking-tight text-[var(--foreground)]">Lexora</span>
-            <span className="hidden sm:inline-block ml-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300">
-              Perpustakaan Digital
-            </span>
-          </div>
-        </div>
+          <span className="font-bold text-lg tracking-tight">Lexora</span>
+        </Link>
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-
           {user ? (
             <UserMenu
               user={{
@@ -98,264 +79,243 @@ export default async function HomePage() {
             <>
               <Link
                 href="/login"
-                className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
               >
                 Masuk
               </Link>
               <Link
                 href="/register"
-                className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-md transition-all"
+                className="px-5 py-2.5 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all active:scale-95"
               >
-                Daftar Anggota
+                Daftar
               </Link>
             </>
           )}
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative z-10 px-4 pt-8 pb-6 md:pt-14 md:pb-8 max-w-6xl mx-auto flex flex-col items-center text-center">
-        {/* Pill Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-200/80 bg-indigo-50/90 text-indigo-700 dark:border-indigo-800/80 dark:bg-indigo-950/60 dark:text-indigo-300 text-xs sm:text-sm font-semibold mb-5 shadow-xs">
-          <BookMarked className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-          <span>Sistem Informasi &amp; Peminjaman Buku Generasi Baru</span>
-        </div>
+      {/* ── Hero ────────────────────────────────────────────────── */}
+      <section className="px-6 md:px-10 py-16 md:py-24 max-w-7xl mx-auto w-full relative">
+        {/* Soft Background Blob (Subtle, not AI Slop) */}
+        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-3xl -z-10 pointer-events-none" />
 
-        {/* Big Catchy Title */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.15] max-w-4xl text-[var(--foreground)]">
-          Jelajahi Dunia Literasi dengan{' '}
-          <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 bg-clip-text text-transparent dark:from-indigo-400 dark:via-purple-300 dark:to-indigo-300">
-            Satu Sentuhan Mudah
-          </span>
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mt-4 leading-relaxed">
-          Temukan ratusan literatur favorit, pantau stok buku fisik secara realtime, dan lakukan peminjaman tanpa antre menggunakan <strong>QR Pickup Pass</strong> instan.
-        </p>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 mt-6 w-full sm:w-auto">
-          <Link
-            href="#koleksi-pilihan"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>Pinjam Buku Sekarang</span>
-            <ArrowRight className="w-4 h-4 ml-0.5" />
-          </Link>
-          <Link
-            href="/catalog"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-[var(--surface)] hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-semibold transition-all shadow-xs"
-          >
-            <span>Buka Katalog Lengkap</span>
-          </Link>
-        </div>
-
-        {/* 3D Visual Book Showcase / Fan-out Carousel */}
-        <div className="mt-8 w-full max-w-4xl relative">
-          {/* Subtle Backlight Glow behind book fan */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-72 sm:w-[460px] sm:h-80 bg-gradient-to-tr from-indigo-500/15 via-violet-500/15 to-transparent rounded-full blur-2xl pointer-events-none -z-10 dark:from-indigo-600/25 dark:via-purple-600/20" />
-
-          <div className="flex items-center justify-center gap-4 sm:gap-6 py-3">
-            {/* Left Tilt Card */}
-            <div className="relative w-36 h-52 sm:w-48 sm:h-72 rounded-xl overflow-hidden shadow-xl transform -rotate-6 hover:rotate-0 transition-transform duration-300 border border-slate-200/60 dark:border-slate-800 hidden sm:block">
-              <Image
-                src="/covers/the-wanderers-star.jpg"
-                alt="The Wanderer's Star"
-                fill
-                sizes="200px"
-                className="object-cover"
-              />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left — Teks */}
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 text-xs font-bold tracking-wide mb-6">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              </span>
+              PERPUSTAKAAN DIGITAL MODERN
             </div>
 
-            {/* Center Main Card */}
-            <div className="relative w-44 h-64 sm:w-56 sm:h-80 rounded-2xl overflow-hidden shadow-2xl z-20 border-2 border-indigo-400/40 transform hover:scale-105 transition-transform duration-300">
-              <Image
-                src="/covers/stargates-echo.jpg"
-                alt="Stargate's Echo"
-                fill
-                sizes="250px"
-                className="object-cover"
-                priority
-              />
-              <div className="absolute top-3 left-3 px-3 py-1 rounded-md bg-indigo-600/90 text-white text-xs font-bold backdrop-blur-md">
-                Buku Populer
+            <h1 className="font-extrabold leading-[1.15] tracking-tight text-[var(--foreground)] text-4xl sm:text-5xl lg:text-6xl">
+              Jelajahi Dunia{' '}
+              <span className="text-indigo-600 dark:text-indigo-400">Literasi</span>
+              <br />
+              dengan Mudah
+            </h1>
+
+            <p className="text-base sm:text-lg text-[var(--foreground)] max-w-lg leading-relaxed mt-6">
+              Temukan ratusan literatur favorit, pantau stok buku fisik secara realtime, dan lakukan peminjaman tanpa antre menggunakan{' '}
+              <strong className="text-[var(--foreground)] font-semibold">QR Pickup Pass</strong>.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 mt-10">
+              <Link
+                href="#koleksi-pilihan"
+                className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 text-sm font-bold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 hover:shadow-md transition-all active:scale-95"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>Pinjam Buku Sekarang</span>
+              </Link>
+              <Link
+                href="/catalog"
+                className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 text-sm font-bold border-2 border-[var(--border)] text-[var(--foreground)] rounded-xl hover:border-indigo-600 hover:text-indigo-600 transition-colors"
+              >
+                <span>Lihat Katalog</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-12 pt-8 border-t border-[var(--border)]">
+              <div>
+                <p className="text-2xl font-extrabold text-[var(--foreground)]">500+</p>
+                <p className="text-sm font-medium text-[var(--foreground)] mt-0.5">Koleksi Buku</p>
               </div>
-            </div>
-
-            {/* Right Tilt Card */}
-            <div className="relative w-36 h-52 sm:w-48 sm:h-72 rounded-xl overflow-hidden shadow-xl transform rotate-6 hover:rotate-0 transition-transform duration-300 border border-slate-200/60 dark:border-slate-800 hidden sm:block">
-              <Image
-                src="/covers/neon-ghost.jpg"
-                alt="Neon Ghost"
-                fill
-                sizes="200px"
-                className="object-cover"
-              />
+              <div className="w-px h-10 bg-[var(--surface)]" />
+              <div>
+                <p className="text-2xl font-extrabold text-[var(--foreground)]">14 Hari</p>
+                <p className="text-sm font-medium text-[var(--foreground)] mt-0.5">Durasi Pinjam</p>
+              </div>
+              <div className="w-px h-10 bg-[var(--surface)]" />
+              <div>
+                <p className="text-2xl font-extrabold text-[var(--foreground)]">QR Pass</p>
+                <p className="text-sm font-medium text-[var(--foreground)] mt-0.5">Pickup Instan</p>
+              </div>
             </div>
           </div>
 
-          {/* Floating Pill Highlights */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 mt-4">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 shadow-xs">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              12+ Koleksi Terverifikasi
-            </span>
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 shadow-xs">
-              <QrCode className="w-4 h-4 text-indigo-500" />
-              Ambil dengan QR Pickup Pass
-            </span>
-            <span className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 shadow-xs">
-              <Clock className="w-4 h-4 text-amber-500" />
-              Durasi Pinjam 14 Hari
-            </span>
+          {/* Right — Book Fan Showcase */}
+          <div className="relative flex items-center justify-center lg:justify-end">
+            <div className="flex items-end justify-center gap-4 py-8">
+              {/* Left card */}
+              <div className="relative w-36 h-52 sm:w-44 sm:h-64 rounded-xl overflow-hidden border border-[var(--border)] transform -rotate-6 hover:rotate-0 transition-transform duration-300 hidden sm:block shadow-lg bg-[var(--surface)]">
+                <Image src="/covers/the-wanderers-star.jpg" alt="The Wanderer's Star" fill sizes="200px" className="object-cover" />
+              </div>
+
+              {/* Center card */}
+              <div className="relative w-48 h-64 sm:w-56 sm:h-80 rounded-xl overflow-hidden ring-4 ring-[var(--surface)] shadow-xl transform hover:-translate-y-2 transition-transform duration-300 z-10 bg-[var(--surface)]">
+                <Image src="/covers/stargates-echo.jpg" alt="Stargate's Echo" fill sizes="250px" className="object-cover" priority />
+                <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-indigo-600/90 backdrop-blur-sm text-white text-[10px] font-bold tracking-wider uppercase">
+                  Populer
+                </div>
+              </div>
+
+              {/* Right card */}
+              <div className="relative w-36 h-52 sm:w-44 sm:h-64 rounded-xl overflow-hidden border border-[var(--border)] transform rotate-6 hover:rotate-0 transition-transform duration-300 hidden sm:block shadow-lg bg-[var(--surface)]">
+                <Image src="/covers/neon-ghost.jpg" alt="Neon Ghost" fill sizes="200px" className="object-cover" />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Section: Highlight Koleksi Pilihan Perpustakaan */}
-      <section id="koleksi-pilihan" className="relative z-10 pt-6 pb-12 px-4 md:px-8 border-t border-slate-200/60 dark:border-slate-800/80">
-        <div className="max-w-6xl mx-auto">
-          {/* Section Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+      {/* ── Koleksi Pilihan ─────────────────────────────────────── */}
+      <section id="koleksi-pilihan" className="px-6 md:px-10 py-20 bg-[var(--surface)] border-t border-[var(--border)]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
-              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                Koleksi Pilihan
-              </span>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--foreground)] tracking-tight mt-1">
-                Buku Populer yang Wajib Dibaca
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 text-xs font-bold tracking-wide mb-4">
+                KOLEKSI PILIHAN
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--foreground)]">
+                Buku Populer
               </h2>
-              <p className="text-sm md:text-base text-slate-600 dark:text-slate-300 mt-1.5 max-w-xl">
-                Temukan buku pilihan pustakawan. Klik &ldquo;Pinjam Sekarang&rdquo; untuk langsung memesan unit buku Anda.
+              <p className="text-[var(--foreground)] mt-2 max-w-md leading-relaxed">
+                Temukan buku pilihan pustakawan. Klik &quot;Pinjam Sekarang&quot; untuk langsung memesan.
               </p>
             </div>
 
             <Link
               href="/catalog"
-              className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition-colors group self-start md:self-auto"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 group transition-colors"
             >
-              <span>Jelajahi Semua Buku di Katalog</span>
+              <span>Jelajahi Semua Buku</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Link>
           </div>
 
-          {/* Grid Buku Unggulan */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {featuredBooks.map((book) => (
-              <HighlightBookCard
-                key={book.id}
-                book={book}
-                isLoggedIn={!!user}
-              />
+              <HighlightBookCard key={book.id} book={book} isLoggedIn={!!user} />
             ))}
           </div>
 
-          {/* Bottom CTA to catalog */}
-          <div className="mt-8 text-center">
+          <div className="mt-14 text-center">
             <Link
               href="/catalog"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-[var(--surface)] hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-semibold shadow-xs transition-all"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-bold bg-[var(--surface)] border-2 border-[var(--border)] text-[var(--foreground)] rounded-xl hover:border-indigo-600 hover:text-indigo-600 transition-colors"
             >
-              <BookOpen className="w-4 h-4 text-indigo-500" />
-              <span>Lihat 12 Koleksi Lengkap di Katalog</span>
+              <BookOpen className="w-4 h-4" />
+              <span>Lihat Katalog Lengkap</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Section: 3 Langkah Mudah Meminjam */}
-      <section className="relative z-10 py-10 md:py-12 px-4 md:px-8 max-w-6xl mx-auto">
-        <div className="text-center max-w-2xl mx-auto mb-8">
-          <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-            Alur Peminjaman
-          </span>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--foreground)] tracking-tight mt-1">
-            Cara Mudah Meminjam Buku di Lexora
-          </h2>
-          <p className="text-sm md:text-base text-slate-600 dark:text-slate-300 mt-2">
-            Sirkulasi modern tanpa antre pengisian formulir manual yang memakan waktu.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Step 1 */}
-          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-[var(--surface)] shadow-xs relative">
-            <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 dark:bg-indigo-950/50 dark:border-indigo-900/50 dark:text-indigo-400 flex items-center justify-center font-bold text-base mb-3.5">
-              01
-            </div>
-            <h3 className="font-bold text-lg text-[var(--foreground)]">Pilih Buku Impian</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
-              Jelajahi katalog buku, periksa ketersediaan stok secara realtime, dan masukkan ke keranjang pinjam Anda.
+      {/* ── 3 Langkah ───────────────────────────────────────────── */}
+      <section className="px-6 md:px-10 py-20 border-t border-[var(--border)]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--foreground)]">
+              Tiga Langkah Sederhana
+            </h2>
+            <p className="text-[var(--foreground)] mt-4 leading-relaxed">
+              Proses peminjaman buku kini jauh lebih mudah dan modern.
             </p>
           </div>
 
-          {/* Step 2 */}
-          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-[var(--surface)] shadow-xs relative">
-            <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 dark:bg-amber-950/50 dark:border-amber-900/50 dark:text-amber-400 flex items-center justify-center font-bold text-base mb-3.5">
-              02
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-linear-to-r from-transparent via-indigo-200 dark:via-indigo-900 to-transparent -z-10" />
+            
+            {/* Step 1 */}
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 text-center shadow-sm relative z-10">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl font-black mb-6">
+                1
+              </div>
+              <h3 className="text-lg font-bold text-[var(--foreground)] mb-3">Pilih Buku</h3>
+              <p className="text-sm text-[var(--foreground)] leading-relaxed">
+                Jelajahi katalog, periksa ketersediaan stok realtime, dan tambahkan ke keranjang pinjam.
+              </p>
             </div>
-            <h3 className="font-bold text-lg text-[var(--foreground)]">Terima Pickup Pass QR</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
-              Pustakawan memverifikasi pengajuan Anda dan sistem menerbitkan kartu pengambilan digital dengan kode QR unik.
-            </p>
-          </div>
 
-          {/* Step 3 */}
-          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-[var(--surface)] shadow-xs relative">
-            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-950/50 dark:border-emerald-900/50 dark:text-emerald-400 flex items-center justify-center font-bold text-base mb-3.5">
-              03
+            {/* Step 2 */}
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 text-center shadow-sm relative z-10">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl font-black mb-6">
+                2
+              </div>
+              <h3 className="text-lg font-bold text-[var(--foreground)] mb-3">Terima QR Pass</h3>
+              <p className="text-sm text-[var(--foreground)] leading-relaxed">
+                Pustakawan memverifikasi pengajuan dan sistem menerbitkan kode QR unik secara digital.
+              </p>
             </div>
-            <h3 className="font-bold text-lg text-[var(--foreground)]">Ambil Buku di Loket</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
-              Datang ke perpustakaan fisik, tunjukkan QR Pickup Pass pada layar smartphone, dan buku siap Anda bawa pulang!
-            </p>
-          </div>
-        </div>
-      </section>
 
-      {/* Call To Action Banner */}
-      <section className="relative z-10 px-4 pb-10 max-w-5xl mx-auto w-full">
-        <div className="p-6 sm:p-8 md:p-10 rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white shadow-xl text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-
-          <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-            Mulai Pengalaman Membaca Lebih Cerdas Hari Ini
-          </h2>
-          <p className="text-sm sm:text-base text-indigo-100 max-w-xl mx-auto mt-2.5 leading-relaxed">
-            Daftarkan diri Anda sebagai anggota perpustakaan digital Lexora untuk mengakses seluruh koleksi literatur dan fitur peminjaman mandiri.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
-            <Link
-              href={user ? (userRole === 'admin' ? '/admin/dashboard' : '/dashboard') : '/register'}
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-indigo-700 text-sm font-bold shadow-sm transition-all hover:scale-105"
-            >
-              {user ? 'Masuk ke Dashboard Saya' : 'Daftar Jadi Anggota Gratis'}
-            </Link>
-            <Link
-              href="/catalog"
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-indigo-500/30 hover:bg-indigo-500/40 border border-white/20 text-white text-sm font-semibold backdrop-blur-xs transition-colors"
-            >
-              Jelajahi Katalog Buku
-            </Link>
+            {/* Step 3 */}
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-8 text-center shadow-sm relative z-10">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl font-black mb-6">
+                3
+              </div>
+              <h3 className="text-lg font-bold text-[var(--foreground)] mb-3">Ambil Buku</h3>
+              <p className="text-sm text-[var(--foreground)] leading-relaxed">
+                Tunjukkan QR Pass di smartphone Anda ke petugas loket — buku siap dibawa pulang.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="relative z-10 py-6 px-6 md:px-12 border-t border-slate-200/80 dark:border-slate-800 bg-[var(--surface)] text-sm text-slate-500 dark:text-slate-400">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
-              <Library className="w-3.5 h-3.5" />
-            </div>
-            <span className="font-bold text-base text-[var(--foreground)]">Lexora</span>
-            <span>— Sistem Informasi Perpustakaan Modern</span>
-          </div>
+      {/* ── CTA Banner ──────────────────────────────────────────── */}
+      <section className="px-4 pb-10 pt-10 border-t border-[var(--border)]">
+        <div className="max-w-5xl mx-auto w-full">
+          <div className="bg-indigo-600 rounded-3xl p-8 md:p-12 text-center shadow-lg relative overflow-hidden">
+            {/* Soft decorative circles */}
+            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 bg-indigo-800/30 rounded-full blur-xl pointer-events-none" />
 
-          <p>© 2026 Lexora. Seluruh hak cipta dilindungi.</p>
+            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white relative z-10">
+              Mulai Pengalaman Membaca Lebih Cerdas Hari Ini
+            </h2>
+            <p className="text-indigo-100 mt-4 max-w-xl mx-auto leading-relaxed relative z-10">
+              Daftarkan diri sebagai anggota perpustakaan digital Lexora dan akses seluruh koleksi literatur dengan fitur peminjaman mandiri.
+            </p>
+
+            <div className="flex flex-col sm:flex-row justify-center gap-3 mt-8 relative z-10">
+              <Link
+                href={user ? (userRole === 'admin' ? '/admin/dashboard' : '/dashboard') : '/register'}
+                className="inline-flex justify-center items-center px-7 py-3.5 text-sm font-bold bg-white text-indigo-700 rounded-xl hover:bg-slate-50 hover:scale-105 transition-all shadow-sm"
+              >
+                {user ? 'Masuk ke Dashboard' : 'Daftar Jadi Anggota'}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer ──────────────────────────────────────────────── */}
+      <footer className="px-6 md:px-10 py-10 border-t border-[var(--border)] bg-[var(--surface)] mt-auto">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center">
+              <Library className="w-4 h-4" />
+            </div>
+            <span className="font-bold tracking-tight text-[var(--foreground)]">Lexora</span>
+          </div>
+          <p className="text-sm font-medium text-[var(--foreground)]">
+            © 2026 Lexora — Sistem Informasi Perpustakaan Modern
+          </p>
         </div>
       </footer>
     </div>

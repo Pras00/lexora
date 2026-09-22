@@ -83,7 +83,7 @@ export function BookCatalogClient({ initialBooks, categories }: BookCatalogClien
       </div>
 
       {/* Info Jumlah Hasil */}
-      <div className="flex items-center justify-between text-xs text-[var(--muted)]">
+      <div className="flex items-center justify-between text-xs text-[var(--foreground)]">
         <p>
           Menampilkan <strong className="text-[var(--foreground)]">{filteredBooks.length}</strong> buku
         </p>

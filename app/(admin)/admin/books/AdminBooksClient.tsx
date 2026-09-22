@@ -97,7 +97,7 @@ export function AdminBooksClient({ initialBooks, categories }: AdminBooksClientP
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--muted)] uppercase font-semibold">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
                 <tr>
                   <th className="px-5 py-3.5">Judul & Pengarang</th>
                   <th className="px-5 py-3.5">Kategori</th>
@@ -108,14 +108,14 @@ export function AdminBooksClient({ initialBooks, categories }: AdminBooksClientP
                   <th className="px-5 py-3.5 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--border)] text-[var(--foreground)]">
+              <tbody className="divide-y divide-() text-[var(--foreground)]">
                 {filteredBooks.map((book) => (
                   <tr key={book.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                     <td className="px-5 py-4">
                       <div className="font-semibold text-sm">{book.title}</div>
-                      <div className="text-[11px] text-[var(--muted)]">{book.author} {book.published_year ? `(${book.published_year})` : ''}</div>
+                      <div className="text-[11px] text-[var(--foreground)]">{book.author} {book.published_year ? `(${book.published_year})` : ''}</div>
                     </td>
-                    <td className="px-5 py-4 text-[var(--muted)]">
+                    <td className="px-5 py-4 text-[var(--foreground)]">
                       {book.category?.name || '-'}
                     </td>
                     <td className="px-5 py-4 font-mono">
@@ -137,7 +137,7 @@ export function AdminBooksClient({ initialBooks, categories }: AdminBooksClientP
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/admin/books/${book.id}/edit`}
-                          className="p-1.5 rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+                          className="p-1.5 rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
                           title="Edit Buku"
                         >
                           <Edit3 className="w-3.5 h-3.5" />

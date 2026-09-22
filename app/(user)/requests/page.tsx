@@ -66,7 +66,7 @@ export default async function RequestsPage() {
                   </span>
                   <StatusBadge status={req.status} />
                 </div>
-                <p className="text-xs text-[var(--muted)]">
+                <p className="text-xs text-[var(--foreground)]">
                   Diajukan pada: {formatDate(req.requested_at)} • {req.items?.length || 0} buku
                 </p>
                 {req.pickup_deadline && req.status === 'approved' && (

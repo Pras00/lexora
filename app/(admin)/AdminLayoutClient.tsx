@@ -39,7 +39,7 @@ export function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[var(--background)]">
+    <div className="flex min-h-screen bg-[var(--surface)]">
       {/* Sidebar Desktop Admin */}
       <AdminSidebar />
 

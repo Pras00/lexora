@@ -71,12 +71,12 @@ export function LoginForm() {
           Alamat Email
         </label>
         <div className="relative">
-          <Mail className="absolute left-3 top-2.5 w-4 h-4 text-[var(--muted)] pointer-events-none" />
+          <Mail className="absolute left-3 top-2.5 w-4 h-4 text-[var(--foreground)] pointer-events-none" />
           <input
             type="email"
             {...register('email')}
             placeholder="nama@email.com"
-            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
+            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
           />
         </div>
         {errors.email && (
@@ -97,12 +97,12 @@ export function LoginForm() {
           </Link>
         </div>
         <div className="relative">
-          <Lock className="absolute left-3 top-2.5 w-4 h-4 text-[var(--muted)] pointer-events-none" />
+          <Lock className="absolute left-3 top-2.5 w-4 h-4 text-[var(--foreground)] pointer-events-none" />
           <input
             type="password"
             {...register('password')}
             placeholder="••••••••"
-            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
+            className="w-full pl-9 pr-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] placeholder:text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-all"
           />
         </div>
         {errors.password && (

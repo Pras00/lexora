@@ -126,7 +126,7 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
     <div className="space-y-6">
       <Link
         href="/admin/requests"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Semua Pengajuan
@@ -191,12 +191,12 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
                     <h4 className="font-semibold text-sm text-[var(--foreground)] truncate">
                       {item.book?.title}
                     </h4>
-                    <p className="text-xs text-[var(--muted)] mt-0.5">{item.book?.author}</p>
+                    <p className="text-xs text-[var(--foreground)] mt-0.5">{item.book?.author}</p>
                     <div className="flex items-center gap-3 text-xs mt-1.5">
                       <span className={item.book?.available_stock > 0 ? 'text-emerald-600 font-medium' : 'text-red-500 font-medium'}>
                         Stok Tersedia: {item.book?.available_stock}
                       </span>
-                      <span className="text-[var(--muted)] font-mono">ISBN: {item.book?.isbn}</span>
+                      <span className="text-[var(--foreground)] font-mono">ISBN: {item.book?.isbn}</span>
                     </div>
                   </div>
                 </div>

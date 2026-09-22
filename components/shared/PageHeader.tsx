@@ -24,7 +24,7 @@ export function PageHeader({
     <div className="mb-6 pb-5 border-b border-[var(--border)]">
       {/* Breadcrumbs jika ada */}
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="flex items-center gap-1.5 text-xs text-[var(--muted)] mb-2">
+        <nav className="flex items-center gap-1.5 text-xs text-[var(--foreground)] mb-2">
           {breadcrumbs.map((item, index) => {
             const isLast = index === breadcrumbs.length - 1;
             return (
@@ -55,7 +55,7 @@ export function PageHeader({
             {title}
           </h1>
           {description && (
-            <p className="text-sm text-[var(--muted)] mt-1">{description}</p>
+            <p className="text-sm text-[var(--foreground)] mt-1">{description}</p>
           )}
         </div>
         {action && <div className="flex items-center gap-2">{action}</div>}

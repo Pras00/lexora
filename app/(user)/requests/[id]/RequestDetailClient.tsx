@@ -75,7 +75,7 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
     <div className="space-y-6">
       <Link
         href="/requests"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Daftar Pengajuan
@@ -105,7 +105,7 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
       <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] space-y-4">
         <div className="flex items-center justify-between pb-4 border-b border-[var(--border)]">
           <div>
-            <p className="text-xs text-[var(--muted)]">Status Pengajuan:</p>
+            <p className="text-xs text-[var(--foreground)]">Status Pengajuan:</p>
             <div className="mt-1">
               <StatusBadge status={request.status} size="md" />
             </div>
@@ -113,7 +113,7 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
 
           {request.expires_at && request.status === 'pending' && (
             <div className="text-right">
-              <p className="text-xs text-[var(--muted)] flex items-center gap-1">
+              <p className="text-xs text-[var(--foreground)] flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5 text-amber-500" />
                 Kedaluwarsa Otomatis:
               </p>
@@ -155,7 +155,7 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
                 <h5 className="font-semibold text-xs md:text-sm text-[var(--foreground)] truncate">
                   {item.book?.title}
                 </h5>
-                <p className="text-xs text-[var(--muted)] mt-0.5">{item.book?.author}</p>
+                <p className="text-xs text-[var(--foreground)] mt-0.5">{item.book?.author}</p>
                 {item.rejection_reason && (
                   <p className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />

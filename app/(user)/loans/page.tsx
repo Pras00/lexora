@@ -50,7 +50,7 @@ export default async function LoansPage() {
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[var(--border)] gap-2">
                 <div>
-                  <span className="text-xs text-[var(--muted)]">Tanggal Pengambilan Fisik:</span>
+                  <span className="text-xs text-[var(--foreground)]">Tanggal Pengambilan Fisik:</span>
                   <p className="text-sm font-semibold text-[var(--foreground)] mt-0.5">
                     {formatDate(loan.pickup_confirmed_at)}
                   </p>
@@ -78,7 +78,7 @@ export default async function LoansPage() {
                         <h4 className="text-sm font-semibold text-[var(--foreground)] truncate">
                           {item.book?.title}
                         </h4>
-                        <p className="text-xs text-[var(--muted)] mt-0.5">{item.book?.author}</p>
+                        <p className="text-xs text-[var(--foreground)] mt-0.5">{item.book?.author}</p>
                         
                         <div className="flex items-center gap-1.5 text-xs mt-2.5">
                           {isOverdue ? (
@@ -87,7 +87,7 @@ export default async function LoansPage() {
                               Terlambat! Batas: {formatDate(item.due_date)}
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1 text-[var(--muted)]">
+                            <span className="flex items-center gap-1 text-[var(--foreground)]">
                               <Clock className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                               Jatuh tempo: {formatDate(item.due_date)}
                             </span>

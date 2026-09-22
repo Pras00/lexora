@@ -38,9 +38,9 @@ export function BookCard({ book }: BookCardProps) {
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-[var(--muted)] p-4 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+          <div className="flex flex-col items-center justify-center h-full text-[var(--foreground)] p-4 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
             <BookOpen className="w-10 h-10 stroke-1 mb-2 text-indigo-500 opacity-60" />
-            <span className="text-xs font-medium text-[var(--muted)] line-clamp-2">{book.title}</span>
+            <span className="text-xs font-medium text-[var(--foreground)] line-clamp-2">{book.title}</span>
           </div>
         )}
 
@@ -60,7 +60,7 @@ export function BookCard({ book }: BookCardProps) {
               {book.title}
             </h3>
           </Link>
-          <p className="text-xs text-[var(--muted)] mt-1 truncate">
+          <p className="text-xs text-[var(--foreground)] mt-1 truncate">
             {book.author} {book.published_year ? `• ${book.published_year}` : ''}
           </p>
         </div>

@@ -38,31 +38,31 @@ export function TopBar({
   const isMember = user.profile?.role !== 'admin';
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between h-16 px-4 md:px-6 bg-[var(--surface)] border-b border-[var(--border)] transition-colors">
-      {/* Kiri: Toggle mobile & Title */}
+    <header className="sticky top-0 z-40 flex items-center justify-between h-16 px-5 md:px-6 bg-[var(--surface)]/80 backdrop-blur-md border-b border-[var(--border)] transition-colors">
+      {/* Left */}
       <div className="flex items-center gap-3">
         {onToggleMobileSidebar && (
           <button
             onClick={onToggleMobileSidebar}
-            className="md:hidden p-2 rounded-lg text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="md:hidden p-1.5 text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
             aria-label="Buka menu navigasi"
           >
             <Menu className="w-5 h-5" />
           </button>
         )}
         {title && (
-          <h1 className="text-base md:text-lg font-semibold text-[var(--foreground)] truncate">
+          <h1 className="text-sm font-semibold text-[var(--foreground)] truncate">
             {title}
           </h1>
         )}
       </div>
 
-      {/* Kanan: Cart (khusus member), Notif, Theme Toggle, User Profile */}
-      <div className="flex items-center gap-2.5">
+      {/* Right */}
+      <div className="flex items-center gap-2">
         {isMember && <CartButton />}
         <NotificationBell />
         <ThemeToggle />
-        <div className="h-5 w-[1px] bg-[var(--border)] mx-1" />
+        <div className="w-px h-5 bg-[var(--surface)] mx-0.5" />
         <UserMenu user={user} />
       </div>
     </header>

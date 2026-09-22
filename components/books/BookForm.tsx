@@ -111,7 +111,7 @@ export function BookForm({ categories, initialData, isEditing = false }: BookFor
     <div className="space-y-6 max-w-3xl">
       <Link
         href="/admin/books"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Daftar Buku

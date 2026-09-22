@@ -130,7 +130,7 @@ export default async function AdminDashboardPage() {
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--muted)] uppercase font-semibold">
+                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
                   <tr>
                     <th className="px-5 py-3.5">No. Pengajuan</th>
                     <th className="px-5 py-3.5">Nama Anggota</th>
@@ -140,7 +140,7 @@ export default async function AdminDashboardPage() {
                     <th className="px-5 py-3.5 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--border)] text-[var(--foreground)]">
+                <tbody className="divide-y divide-() text-[var(--foreground)]">
                   {recentRequests.map((req) => (
                     <tr key={req.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                       <td className="px-5 py-4 font-mono font-bold">
@@ -148,14 +148,14 @@ export default async function AdminDashboardPage() {
                       </td>
                       <td className="px-5 py-4">
                         <div className="font-semibold">{req.user?.full_name}</div>
-                        <div className="text-[11px] text-[var(--muted)] font-mono">
+                        <div className="text-[11px] text-[var(--foreground)] font-mono">
                           {req.user?.member_number}
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-[var(--muted)]">
+                      <td className="px-5 py-4 text-[var(--foreground)]">
                         {req.items?.length || 0} buku
                       </td>
-                      <td className="px-5 py-4 text-[var(--muted)]">
+                      <td className="px-5 py-4 text-[var(--foreground)]">
                         {formatDate(req.requested_at)}
                       </td>
                       <td className="px-5 py-4">
@@ -177,7 +177,7 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="p-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-center text-xs text-[var(--muted)]">
+          <div className="p-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-center text-xs text-[var(--foreground)]">
             Belum ada pengajuan masuk.
           </div>
         )}

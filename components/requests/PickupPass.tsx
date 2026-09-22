@@ -47,11 +47,11 @@ export function PickupPass({ pass, requestNumber }: PickupPassProps) {
 
         {/* Info Kode */}
         <div className="text-center sm:text-left">
-          <p className="text-xs text-[var(--muted)] font-medium">KODE PENGAMBILAN:</p>
+          <p className="text-xs text-[var(--foreground)] font-medium">KODE PENGAMBILAN:</p>
           <p className="text-3xl font-mono font-extrabold text-indigo-600 dark:text-indigo-400 tracking-wider my-1">
             {pass.pickup_code}
           </p>
-          <div className="flex items-center gap-1.5 text-xs text-[var(--muted)] mt-2">
+          <div className="flex items-center gap-1.5 text-xs text-[var(--foreground)] mt-2">
             <Clock className="w-3.5 h-3.5 text-amber-500" />
             <span>Batas Ambil: {formatDateTime(pass.expires_at)}</span>
           </div>
@@ -59,7 +59,7 @@ export function PickupPass({ pass, requestNumber }: PickupPassProps) {
       </div>
 
       {/* Petunjuk Penggunaan */}
-      <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-[var(--border)] flex items-start gap-3 text-xs text-[var(--muted)] leading-relaxed">
+      <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-[var(--border)] flex items-start gap-3 text-xs text-[var(--foreground)] leading-relaxed">
         <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
         <p>
           Tunjukkan kode QR atau 6 karakter kode di atas kepada pustakawan di meja sirkulasi fisik perpustakaan sebelum batas waktu berakhir.

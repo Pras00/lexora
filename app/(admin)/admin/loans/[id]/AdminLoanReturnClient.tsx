@@ -181,7 +181,7 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
     <div className="space-y-6">
       <Link
         href="/admin/loans"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Daftar Peminjaman
@@ -227,7 +227,7 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
                   <h4 className="font-semibold text-base text-[var(--foreground)]">
                     {item.book?.title}
                   </h4>
-                  <p className="text-xs text-[var(--muted)]">{item.book?.author} • Nilai buku: {formatCurrency(item.book?.price)}</p>
+                  <p className="text-xs text-[var(--foreground)]">{item.book?.author} • Nilai buku: {formatCurrency(item.book?.price)}</p>
                 </div>
                 <StatusBadge status={item.status} />
               </div>
@@ -255,7 +255,7 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
                     </select>
                   </div>
 
-                  <div className="text-xs text-[var(--muted)] space-y-1">
+                  <div className="text-xs text-[var(--foreground)] space-y-1">
                     <p>
                       Jatuh tempo: <strong className="text-[var(--foreground)]">{formatDate(item.due_date)}</strong>
                     </p>
@@ -284,7 +284,7 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
                   </div>
                 </div>
               ) : (
-                <div className="text-xs text-[var(--muted)]">
+                <div className="text-xs text-[var(--foreground)]">
                   Buku ini telah dikembalikan pada {formatDate(item.returned_at)} (Kondisi: {item.damage_level}).
                 </div>
               )}
