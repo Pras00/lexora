@@ -4,35 +4,52 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { formatDate } from '@/lib/utils';
+import { EmptyState } from '@/components/shared/EmptyState';
 import {
   BookOpen,
   Inbox,
   ArrowRightLeft,
-  Users,
   CircleAlert,
   ArrowRight,
   Plus,
   QrCode,
+  Sparkles,
 } from 'lucide-react';
+
+interface LoanRequestItem {
+  id: string;
+}
+
+interface UserProfile {
+  full_name: string;
+  member_number: string;
+}
+
+interface RecentLoanRequest {
+  id: string;
+  request_number: string;
+  requested_at: string;
+  status: string;
+  user: UserProfile | null;
+  items: LoanRequestItem[];
+}
 
 export default async function AdminDashboardPage() {
   let totalBooks = 0;
   let availableBooks = 0;
   let pendingRequestsCount = 0;
   let activeLoansCount = 0;
-  let totalMembers = 0;
   let unpaidFinesCount = 0;
-  let recentRequests: any[] = [];
+  let recentRequests: RecentLoanRequest[] = [];
 
   try {
     const supabase = await createClient();
 
-    const [booksRes, requestsRes, loansRes, membersRes, finesRes, recentReqRes] =
+    const [booksRes, requestsRes, loansRes, finesRes, recentReqRes] =
       await Promise.all([
         supabase.from('books').select('total_stock, available_stock'),
         supabase.from('loan_requests').select('id').eq('status', 'pending'),
         supabase.from('loans').select('id').eq('status', 'active'),
-        supabase.from('profiles').select('id').eq('role', 'member'),
         supabase.from('fines').select('id').eq('status', 'unpaid'),
         supabase
           .from('loan_requests')
@@ -43,14 +60,18 @@ export default async function AdminDashboardPage() {
 
     if (booksRes.data) {
       totalBooks = booksRes.data.reduce((acc, b) => acc + b.total_stock, 0);
-      availableBooks = booksRes.data.reduce((acc, b) => acc + b.available_stock, 0);
+      availableBooks = booksRes.data.reduce(
+        (acc, b) => acc + b.available_stock,
+        0
+      );
     }
 
     if (requestsRes.data) pendingRequestsCount = requestsRes.data.length;
     if (loansRes.data) activeLoansCount = loansRes.data.length;
-    if (membersRes.data) totalMembers = membersRes.data.length;
     if (finesRes.data) unpaidFinesCount = finesRes.data.length;
-    if (recentReqRes.data) recentRequests = recentReqRes.data;
+    if (recentReqRes.data) {
+      recentRequests = recentReqRes.data as unknown as RecentLoanRequest[];
+    }
   } catch (err) {
     console.warn('Admin dashboard fetch error:', err);
   }
@@ -61,17 +82,17 @@ export default async function AdminDashboardPage() {
         title="Dashboard Pustakawan"
         description="Ringkasan operasional sirkulasi, ketersediaan inventori, dan status layanan perpustakaan."
         action={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <Link
               href="/admin/loans"
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-[var(--foreground)] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border bg-surface hover:bg-surface-secondary text-xs font-bold text-foreground transition-all shadow-xs cursor-pointer"
             >
-              <QrCode className="w-4 h-4 text-indigo-600" />
+              <QrCode className="w-4 h-4 text-primary" />
               <span>Scan Loket Pickup</span>
             </Link>
             <Link
               href="/admin/books/new"
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Tambah Buku</span>
@@ -85,28 +106,28 @@ export default async function AdminDashboardPage() {
         <StatCard
           title="Pengajuan Menunggu"
           value={pendingRequestsCount}
-          description="Perlu diverifikasi pustakawan"
+          description="Perlu verifikasi & persetujuan loket"
           icon={Inbox}
           variant={pendingRequestsCount > 0 ? 'amber' : 'default'}
         />
         <StatCard
-          title="Peminjaman Fisik Aktif"
+          title="Peminjaman Aktif"
           value={activeLoansCount}
-          description="Buku sedang di tangan peminjam"
+          description="Buku fisik sedang di tangan pemustaka"
           icon={ArrowRightLeft}
           variant="primary"
         />
         <StatCard
-          title="Koleksi Fisik Tersedia"
+          title="Stok Fisik Tersedia"
           value={`${availableBooks} / ${totalBooks}`}
           description="Buku siap di rak perpustakaan"
           icon={BookOpen}
           variant="emerald"
         />
         <StatCard
-          title="Denda Belum Terbayar"
+          title="Denda Belum Lunas"
           value={`${unpaidFinesCount} Tagihan`}
-          description="Perlu konfirmasi pelunasan"
+          description="Menunggu konfirmasi pelunasan loket"
           icon={CircleAlert}
           variant={unpaidFinesCount > 0 ? 'rose' : 'default'}
         />
@@ -115,47 +136,57 @@ export default async function AdminDashboardPage() {
       {/* Section Pengajuan Terbaru */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-semibold text-[var(--foreground)]">
-            Pengajuan Peminjaman Terbaru
-          </h3>
+          <div>
+            <h3 className="text-base font-bold text-foreground">
+              Pengajuan Peminjaman Terbaru
+            </h3>
+            <p className="text-xs text-muted mt-0.5">
+              Antrean reservasi buku pemustaka yang memerlukan tindakan pustakawan.
+            </p>
+          </div>
           <Link
             href="/admin/requests"
-            className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="text-xs font-bold text-primary hover:underline transition-colors"
           >
-            Lihat Semua Pengajuan
+            Lihat Semua Pengajuan →
           </Link>
         </div>
 
         {recentRequests.length > 0 ? (
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
+          <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
+                <thead className="bg-surface-secondary border-b border-border text-muted uppercase font-bold tracking-wider text-[11px]">
                   <tr>
                     <th className="px-5 py-3.5">No. Pengajuan</th>
                     <th className="px-5 py-3.5">Nama Anggota</th>
-                    <th className="px-5 py-3.5">Buku</th>
-                    <th className="px-5 py-3.5">Waktu Pengajuan</th>
+                    <th className="px-5 py-3.5">Jumlah Buku</th>
+                    <th className="px-5 py-3.5">Waktu Reservasi</th>
                     <th className="px-5 py-3.5">Status</th>
                     <th className="px-5 py-3.5 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-() text-[var(--foreground)]">
+                <tbody className="divide-y divide-border/60 text-foreground">
                   {recentRequests.map((req) => (
-                    <tr key={req.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                      <td className="px-5 py-4 font-mono font-bold">
+                    <tr
+                      key={req.id}
+                      className="hover:bg-slate-500/5 transition-colors"
+                    >
+                      <td className="px-5 py-4 font-mono font-bold text-foreground">
                         {req.request_number}
                       </td>
                       <td className="px-5 py-4">
-                        <div className="font-semibold">{req.user?.full_name}</div>
-                        <div className="text-[11px] text-[var(--foreground)] font-mono">
-                          {req.user?.member_number}
+                        <div className="font-bold text-sm text-foreground">
+                          {req.user?.full_name || 'Anggota'}
+                        </div>
+                        <div className="text-[11px] text-muted font-mono mt-0.5">
+                          {req.user?.member_number || '-'}
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-[var(--foreground)]">
+                      <td className="px-5 py-4 font-medium text-foreground">
                         {req.items?.length || 0} buku
                       </td>
-                      <td className="px-5 py-4 text-[var(--foreground)]">
+                      <td className="px-5 py-4 text-muted">
                         {formatDate(req.requested_at)}
                       </td>
                       <td className="px-5 py-4">
@@ -164,7 +195,7 @@ export default async function AdminDashboardPage() {
                       <td className="px-5 py-4 text-right">
                         <Link
                           href={`/admin/requests/${req.id}`}
-                          className="inline-flex items-center gap-1 font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-primary text-white hover:bg-primary-hover transition-colors shadow-xs"
                         >
                           <span>Proses</span>
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -177,9 +208,11 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="p-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-center text-xs text-[var(--foreground)]">
-            Belum ada pengajuan masuk.
-          </div>
+          <EmptyState
+            icon={Inbox}
+            title="Belum Ada Pengajuan Masuk"
+            description="Saat ini semua pengajuan peminjaman buku pemustaka telah selesai diproses."
+          />
         )}
       </div>
     </div>

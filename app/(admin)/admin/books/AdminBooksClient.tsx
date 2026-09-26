@@ -108,7 +108,7 @@ export function AdminBooksClient({ initialBooks, categories }: AdminBooksClientP
                   <th className="px-5 py-3.5 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-() text-[var(--foreground)]">
+              <tbody className="divide-y divide-border/60 text-[var(--foreground)]">
                 {filteredBooks.map((book) => (
                   <tr key={book.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                     <td className="px-5 py-4">

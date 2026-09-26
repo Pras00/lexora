@@ -51,7 +51,7 @@ export default async function HistoryPage() {
                   <th className="px-5 py-3.5">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-() text-[var(--foreground)]">
+              <tbody className="divide-y divide-border/60 text-[var(--foreground)]">
                 {returnedItems.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                     <td className="px-5 py-4 font-medium">

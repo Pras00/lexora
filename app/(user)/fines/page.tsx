@@ -98,7 +98,7 @@ export default async function FinesPage() {
                     <th className="px-5 py-3.5">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-() text-[var(--foreground)]">
+                <tbody className="divide-y divide-border/60 text-[var(--foreground)]">
                   {unpaidFines.map((fine) => (
                     <tr key={fine.id}>
                       <td className="px-5 py-4 font-semibold">
@@ -141,7 +141,7 @@ export default async function FinesPage() {
                     <th className="px-5 py-3.5">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-() text-[var(--foreground)]">
+                <tbody className="divide-y divide-border/60 text-[var(--foreground)]">
                   {paidFines.map((fine) => (
                     <tr key={fine.id} className="opacity-75">
                       <td className="px-5 py-4 font-medium">
