@@ -13,7 +13,6 @@ import {
   ArrowRight,
   Plus,
   QrCode,
-  Sparkles,
 } from 'lucide-react';
 
 interface LoanRequestItem {

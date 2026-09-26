@@ -5,7 +5,6 @@ import {
   BookOpen,
   ArrowRight,
   ArrowUpRight,
-  Sparkles,
   CheckCircle2,
   ShieldCheck,
   Clock,
@@ -113,12 +112,9 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left — Typography & Value Prop */}
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 text-xs font-bold tracking-wide mb-6 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-              </span>
-              <span>PERPUSTAKAAN DIGITAL MODERN</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary text-muted text-xs font-semibold mb-6 border border-border">
+              <Library className="w-3.5 h-3.5 text-primary" />
+              <span>Sistem Sirkulasi & Koleksi Buku Fisik</span>
             </div>
 
             <h1 className="leading-[1.12] tracking-tight text-4xl sm:text-5xl lg:text-6xl text-foreground font-sans">
@@ -231,10 +227,6 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 text-xs font-bold tracking-wide mb-3 border border-indigo-100 dark:border-indigo-900/50">
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-                <span>KOLEKSI REKOMENDASI</span>
-              </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
                 Buku <span className="font-serif italic font-normal text-primary">Populer</span> Pilihan
               </h2>

@@ -6,7 +6,6 @@ import {
   QrCode,
   Clock,
   ShieldCheck,
-  Sparkles,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { AuthBackground } from '@/components/layout/AuthBackground';
@@ -55,10 +54,9 @@ export function AuthSplitLayout({
               </div>
             </div>
 
-            {/* Pill Tag */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 text-[11px] font-bold tracking-wide mb-3.5 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
-              <Sparkles className="w-3 h-3 text-primary" />
-              <span>PORTAL LAYANAN LITERASI & SIRKULASI</span>
+            {/* Category Tag */}
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-surface-secondary text-muted text-[11px] font-semibold mb-3.5 border border-border">
+              <span>Layanan Perpustakaan & Sirkulasi Fisik</span>
             </div>
 
             {/* Main Headline */}

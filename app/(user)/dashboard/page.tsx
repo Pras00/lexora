@@ -13,7 +13,6 @@ import {
   ArrowRight,
   QrCode,
   Calendar,
-  Sparkles,
 } from 'lucide-react';
 
 interface BookInfo {
@@ -210,8 +209,7 @@ export default async function DashboardPage() {
                   <h4 className="font-bold text-sm text-foreground">
                     QR Pickup Pass Siap Digunakan
                   </h4>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-indigo-600 text-white">
-                    <Sparkles className="w-3 h-3" />
+                  <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-600 text-white">
                     Siap Ambil
                   </span>
                 </div>
