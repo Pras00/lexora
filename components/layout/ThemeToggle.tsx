@@ -24,41 +24,33 @@ export function ThemeToggle() {
   return (
     <motion.button
       type="button"
-      whileTap={{ scale: 0.88 }}
+      whileTap={{ scale: 0.92 }}
       whileHover={{ scale: 1.05 }}
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="relative flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-surface hover:bg-surface-secondary text-foreground transition-colors duration-200 shadow-2xs hover:shadow-xs focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer overflow-hidden group"
+      className="relative flex items-center justify-center w-9 h-9 rounded-xl border border-border bg-surface hover:bg-surface-secondary text-foreground transition-colors duration-150 shadow-2xs hover:shadow-xs focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer overflow-hidden group"
       aria-label={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
       title={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
     >
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence initial={false}>
         {isDark ? (
           <motion.div
             key="moon"
-            initial={{ scale: 0.3, rotate: -75, opacity: 0 }}
+            initial={{ scale: 0.5, rotate: -60, opacity: 0 }}
             animate={{ scale: 1, rotate: 0, opacity: 1 }}
-            exit={{ scale: 0.3, rotate: 75, opacity: 0 }}
-            transition={{
-              type: 'spring',
-              stiffness: 380,
-              damping: 22,
-            }}
-            className="flex items-center justify-center"
+            exit={{ scale: 0.5, rotate: 60, opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute flex items-center justify-center"
           >
             <Moon className="w-4 h-4 text-indigo-400 group-hover:text-indigo-300 transition-colors" />
           </motion.div>
         ) : (
           <motion.div
             key="sun"
-            initial={{ scale: 0.3, rotate: 75, opacity: 0 }}
+            initial={{ scale: 0.5, rotate: 60, opacity: 0 }}
             animate={{ scale: 1, rotate: 0, opacity: 1 }}
-            exit={{ scale: 0.3, rotate: -75, opacity: 0 }}
-            transition={{
-              type: 'spring',
-              stiffness: 380,
-              damping: 22,
-            }}
-            className="flex items-center justify-center"
+            exit={{ scale: 0.5, rotate: -60, opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute flex items-center justify-center"
           >
             <Sun className="w-4 h-4 text-amber-500 group-hover:text-amber-600 transition-colors" />
           </motion.div>
