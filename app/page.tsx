@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   Library,
   BookOpen,
@@ -16,6 +15,7 @@ import { UserMenu } from '@/components/layout/UserMenu';
 import { createClient } from '@/lib/supabase/server';
 import { HighlightBookCard } from '@/components/books/HighlightBookCard';
 import { HeroQuickSearch } from '@/components/home/HeroQuickSearch';
+import { HeroBookShowcase } from '@/components/home/HeroBookShowcase';
 import { User } from '@supabase/supabase-js';
 import { BookWithCategory, Profile } from '@/types';
 
@@ -72,24 +72,24 @@ const FALLBACK_FEATURED_BOOKS: BookWithCategory[] = [
   },
   {
     id: 'featured-3',
-    title: "Stargate's Echo",
-    author: 'Sarah Jenkins',
-    isbn: '978-0441013593',
-    category_id: 'cat-2',
-    publisher: 'Spectra Books',
-    published_year: 2024,
-    description: 'Kisah fiksi ilmiah epik tentang ekspedisi penjelajah ruang angkasa melintasi gerbang antardimensi.',
-    cover_url: '/covers/stargates-echo.jpg',
-    price: 185000,
-    total_stock: 6,
-    available_stock: 6,
+    title: 'Refactoring: Improving the Design of Existing Code',
+    author: 'Martin Fowler',
+    isbn: '978-0134757599',
+    category_id: 'cat-1',
+    publisher: 'Addison-Wesley Professional',
+    published_year: 2018,
+    description: 'Katalog teknik refactoring untuk meningkatkan struktur internal dan kualitas kode perangkat lunak.',
+    cover_url: '/covers/refactoring.jpg',
+    price: 310000,
+    total_stock: 4,
+    available_stock: 3,
     status: 'active',
     created_at: '',
     updated_at: '',
     category: {
-      id: 'cat-2',
-      name: 'Fiksi Spekulatif',
-      slug: 'fiksi-spekulatif',
+      id: 'cat-1',
+      name: 'Teknologi & Komputasi',
+      slug: 'teknologi-komputasi',
       description: null,
       created_at: '',
     },
@@ -144,24 +144,24 @@ const FALLBACK_FEATURED_BOOKS: BookWithCategory[] = [
   },
   {
     id: 'featured-6',
-    title: "The Wanderer's Star",
-    author: 'Michael Vance',
-    isbn: '978-0553381696',
-    category_id: 'cat-2',
-    publisher: 'Voyager Press',
-    published_year: 2023,
-    description: 'Perjalanan penuh misteri menelusuri jejak peradaban kuno yang hilang di tepi gugus galaksi terjauh.',
-    cover_url: '/covers/the-wanderers-star.jpg',
-    price: 195000,
-    total_stock: 3,
-    available_stock: 2,
+    title: 'Laskar Pelangi',
+    author: 'Andrea Hirata',
+    isbn: '978-9793062792',
+    category_id: 'cat-3',
+    publisher: 'Bentang Pustaka',
+    published_year: 2005,
+    description: 'Kisah inspiratif sepuluh anak Belitong dalam memperjuangkan mimpi dan pendidikan di tengah keterbatasan.',
+    cover_url: '/covers/laskar-pelangi.jpg',
+    price: 89000,
+    total_stock: 5,
+    available_stock: 5,
     status: 'active',
     created_at: '',
     updated_at: '',
     category: {
-      id: 'cat-2',
-      name: 'Fiksi Spekulatif',
-      slug: 'fiksi-spekulatif',
+      id: 'cat-3',
+      name: 'Sastra & Humaniora',
+      slug: 'sastra-humaniora',
       description: null,
       created_at: '',
     },
@@ -248,7 +248,7 @@ export default async function HomePage() {
       </header>
 
       {/* ── Hero Section ────────────────────────────────────────── */}
-      <section className="px-6 md:px-10 pt-12 pb-20 md:pt-16 md:pb-24 lg:pt-18 lg:pb-28 max-w-7xl mx-auto w-full relative">
+      <section className="px-6 py-8 md:px-10 pt-8 pb-14 md:pt-12 md:pb-18 lg:pt-12 lg:pb-20 max-w-7xl mx-auto w-full relative">
         {/* Soft atmospheric background without arbitrary bracket CSS */}
         <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
           <div className="absolute top-6 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
@@ -325,55 +325,7 @@ export default async function HomePage() {
 
           {/* Right — Book Showcase with Physical Library Context */}
           <div className="relative flex items-center justify-center lg:justify-end">
-            <div className="relative flex items-end justify-center gap-4 pt-4 pb-6">
-              {/* Left card */}
-              <div className="relative w-36 h-52 sm:w-44 sm:h-64 rounded-2xl overflow-hidden border border-border transform -rotate-6 hover:rotate-0 transition-transform duration-300 hidden sm:block shadow-md bg-surface">
-                <Image
-                  src="/covers/the-wanderers-star.jpg"
-                  alt="The Wanderer's Star"
-                  fill
-                  sizes="200px"
-                  className="object-cover"
-                />
-              </div>
-
-              {/* Center card */}
-              <div className="relative w-48 h-64 sm:w-56 sm:h-80 rounded-2xl overflow-hidden ring-4 ring-surface shadow-xl transform hover:-translate-y-2 transition-transform duration-300 z-10 bg-surface">
-                <Image
-                  src="/covers/stargates-echo.jpg"
-                  alt="Stargate's Echo"
-                  fill
-                  sizes="250px"
-                  className="object-cover"
-                  priority
-                />
-                <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-primary/90 backdrop-blur-xs text-white text-[10px] font-bold tracking-wider uppercase shadow-xs">
-                  Populer
-                </div>
-              </div>
-
-              {/* Right card */}
-              <div className="relative w-36 h-52 sm:w-44 sm:h-64 rounded-2xl overflow-hidden border border-border transform rotate-6 hover:rotate-0 transition-transform duration-300 hidden sm:block shadow-md bg-surface">
-                <Image
-                  src="/covers/neon-ghost.jpg"
-                  alt="Neon Ghost"
-                  fill
-                  sizes="200px"
-                  className="object-cover"
-                />
-              </div>
-
-              {/* Floating physical shelf proof chip */}
-              <div className="absolute -bottom-2 sm:-bottom-4 left-2 sm:left-6 px-4 py-2.5 rounded-2xl bg-surface/90 border border-border backdrop-blur-md shadow-md flex items-center gap-3 z-20">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-foreground">Stok Fisik Realtime</p>
-                  <p className="text-[11px] text-muted">Ambil di loket tanpa antre</p>
-                </div>
-              </div>
-            </div>
+            <HeroBookShowcase />
           </div>
         </div>
       </section>
