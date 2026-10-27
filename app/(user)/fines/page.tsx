@@ -3,10 +3,11 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { CircleAlert, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { CircleAlert, ShieldCheck } from 'lucide-react';
+import type { FineWithDetails } from '@/types';
 
 export default async function FinesPage() {
-  let fines: any[] = [];
+  let fines: FineWithDetails[] = [];
   let totalUnpaid = 0;
 
   try {
@@ -26,7 +27,7 @@ export default async function FinesPage() {
         .order('created_at', { ascending: false });
 
       if (data) {
-        fines = data;
+        fines = data as unknown as FineWithDetails[];
         totalUnpaid = data
           .filter((f) => f.status === 'unpaid')
           .reduce((acc, f) => acc + Number(f.amount), 0);
@@ -63,13 +64,13 @@ export default async function FinesPage() {
             <p className="text-3xl font-extrabold text-red-600 dark:text-red-400 mt-1">
               {formatCurrency(totalUnpaid)}
             </p>
-            <p className="text-xs text-[var(--foreground)] mt-1">
+            <p className="text-xs text-foreground mt-1">
               Akun Anda terkunci untuk mengajukan peminjaman buku baru sampai denda ini diselesaikan.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-xs text-[var(--foreground)] max-w-sm">
-            <p className="font-semibold text-[var(--foreground)] mb-1">Cara Pembayaran:</p>
+          <div className="p-4 rounded-xl bg-surface border border-border text-xs text-foreground max-w-sm">
+            <p className="font-semibold text-foreground mb-1">Cara Pembayaran:</p>
             <p>
               Harap datang ke loket sirkulasi fisik perpustakaan dan lakukan pembayaran tunai/QRIS kepada petugas jaga untuk verifikasi pelunasan.
             </p>
@@ -85,11 +86,11 @@ export default async function FinesPage() {
       {/* Tabel Denda Belum Lunas */}
       {unpaidFines.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-sm font-bold text-[var(--foreground)]">Denda yang Perlu Diselesaikan</h3>
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
+          <h3 className="text-sm font-bold text-foreground">Denda yang Perlu Diselesaikan</h3>
+          <div className="rounded-2xl border border-border bg-surface overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
+                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-border text-foreground uppercase font-semibold">
                   <tr>
                     <th className="px-5 py-3.5">Buku Terkait</th>
                     <th className="px-5 py-3.5">Jenis Denda</th>
@@ -98,13 +99,13 @@ export default async function FinesPage() {
                     <th className="px-5 py-3.5">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/60 text-[var(--foreground)]">
+                <tbody className="divide-y divide-border/60 text-foreground">
                   {unpaidFines.map((fine) => (
                     <tr key={fine.id}>
                       <td className="px-5 py-4 font-semibold">
                         {fine.loan_item?.book?.title || 'Buku Perpustakaan'}
                       </td>
-                      <td className="px-5 py-4 text-[var(--foreground)]">
+                      <td className="px-5 py-4 text-foreground">
                         {fineTypeLabels[fine.type] || fine.type}
                       </td>
                       <td className="px-5 py-4">
@@ -128,11 +129,11 @@ export default async function FinesPage() {
       {/* Riwayat Denda yang Sudah Lunas */}
       {paidFines.length > 0 && (
         <div className="space-y-3 pt-4">
-          <h3 className="text-sm font-bold text-[var(--foreground)]">Riwayat Denda Lunas</h3>
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden">
+          <h3 className="text-sm font-bold text-foreground">Riwayat Denda Lunas</h3>
+          <div className="rounded-2xl border border-border bg-surface overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
+                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-border text-foreground uppercase font-semibold">
                   <tr>
                     <th className="px-5 py-3.5">Buku Terkait</th>
                     <th className="px-5 py-3.5">Jenis Denda</th>
@@ -141,19 +142,19 @@ export default async function FinesPage() {
                     <th className="px-5 py-3.5">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/60 text-[var(--foreground)]">
+                <tbody className="divide-y divide-border/60 text-foreground">
                   {paidFines.map((fine) => (
                     <tr key={fine.id} className="opacity-75">
                       <td className="px-5 py-4 font-medium">
                         {fine.loan_item?.book?.title || 'Buku Perpustakaan'}
                       </td>
-                      <td className="px-5 py-4 text-[var(--foreground)]">
+                      <td className="px-5 py-4 text-foreground">
                         {fineTypeLabels[fine.type] || fine.type}
                       </td>
                       <td className="px-5 py-4 font-mono">
                         {formatCurrency(fine.amount)}
                       </td>
-                      <td className="px-5 py-4 text-[var(--foreground)]">
+                      <td className="px-5 py-4 text-foreground">
                         {formatDate(fine.paid_at)}
                       </td>
                       <td className="px-5 py-4">

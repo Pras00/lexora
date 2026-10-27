@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -16,10 +16,10 @@ interface HighlightBookCardProps {
 export function HighlightBookCard({ book, isLoggedIn }: HighlightBookCardProps) {
   const router = useRouter();
   const { addItem, hasItem } = useCartStore();
-  const [imgError, setImgError] = useState(false);
+  const [imgError, setImgError] = useState<boolean>(false);
   const isAdded = hasItem(book.id);
 
-  const handleBorrowClick = (e: React.MouseEvent) => {
+  const handleBorrowClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -35,11 +35,11 @@ export function HighlightBookCard({ book, isLoggedIn }: HighlightBookCardProps) 
   const inStock = book.available_stock > 0;
 
   return (
-    <div className="group flex flex-col bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 shadow-sm hover:shadow-md">
-      {/* Cover */}
+    <article className="group flex flex-col bg-surface border border-border rounded-2xl overflow-hidden hover:border-border-strong hover:shadow-md transition-all duration-300">
+      {/* Cover Image Container */}
       <Link
         href={`/catalog/${book.id}`}
-        className="relative h-64 w-full bg-slate-100 dark:bg-slate-800/50 block overflow-hidden"
+        className="relative h-64 w-full bg-surface-secondary block overflow-hidden"
         aria-label={`Lihat detail ${book.title}`}
       >
         {book.cover_url && !imgError ? (
@@ -52,22 +52,22 @@ export function HighlightBookCard({ book, isLoggedIn }: HighlightBookCardProps) 
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-[var(--foreground)] p-4 text-center bg-[var(--surface)]">
-            <BookOpen className="w-10 h-10 stroke-1 mb-2 opacity-40" />
-            <span className="text-xs font-medium line-clamp-2">{book.title}</span>
+          <div className="flex flex-col items-center justify-center h-full text-muted p-4 text-center bg-surface-secondary">
+            <BookOpen className="w-10 h-10 stroke-1 mb-2 opacity-50" />
+            <span className="text-xs font-medium text-foreground line-clamp-2">{book.title}</span>
           </div>
         )}
 
         {/* Kategori label */}
         {book.category && (
-          <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase bg-white/90 dark:bg-slate-900/90 text-indigo-700 dark:text-indigo-400 rounded-full backdrop-blur-sm shadow-xs border border-indigo-100 dark:border-indigo-900/50">
+          <span className="absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase bg-surface/90 text-primary rounded-full backdrop-blur-xs shadow-xs border border-border">
             {book.category.name}
           </span>
         )}
 
         {/* Stock badge */}
         <span
-          className={`absolute bottom-3 right-3 px-2.5 py-1 text-[10px] font-bold tracking-wide rounded-full backdrop-blur-sm shadow-xs border ${
+          className={`absolute bottom-3 right-3 px-2.5 py-1 text-[10px] font-bold tracking-wide rounded-full backdrop-blur-xs shadow-xs border ${
             inStock
               ? 'bg-emerald-500/90 text-white border-emerald-600/50'
               : 'bg-rose-500/90 text-white border-rose-600/50'
@@ -77,19 +77,19 @@ export function HighlightBookCard({ book, isLoggedIn }: HighlightBookCardProps) 
         </span>
       </Link>
 
-      {/* Info */}
+      {/* Book Metadata */}
       <div className="flex-1 flex flex-col p-5 gap-3">
         <div>
           <Link href={`/catalog/${book.id}`}>
-            <h3 className="font-bold text-lg leading-tight text-[var(--foreground)] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2" title={book.title}>
+            <h3 className="font-bold text-lg leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2" title={book.title}>
               {book.title}
             </h3>
           </Link>
-          <p className="text-sm font-medium text-[var(--foreground)] mt-1.5">
+          <p className="text-sm font-medium text-muted mt-1.5">
             {book.author} · {book.published_year}
           </p>
           {book.description && (
-            <p className="text-sm text-[var(--foreground)] mt-2 line-clamp-2 leading-relaxed">
+            <p className="text-sm text-muted mt-2 line-clamp-2 leading-relaxed">
               {book.description}
             </p>
           )}
@@ -103,10 +103,10 @@ export function HighlightBookCard({ book, isLoggedIn }: HighlightBookCardProps) 
             disabled={!inStock}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-bold rounded-xl transition-all cursor-pointer ${
               !inStock
-                ? 'bg-[var(--surface)] text-[var(--foreground)] cursor-not-allowed border border-[var(--border)]'
+                ? 'bg-surface-secondary text-muted cursor-not-allowed border border-border'
                 : isAdded
-                ? 'bg-emerald-100 text-emerald-700 border border-emerald-200 hover:bg-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-900/50'
-                : 'bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-400 dark:border-indigo-900/50 dark:hover:bg-indigo-900/60'
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+                : 'bg-accent-subtle text-primary border border-border hover:bg-primary hover:text-white'
             }`}
           >
             {isAdded ? (
@@ -124,13 +124,13 @@ export function HighlightBookCard({ book, isLoggedIn }: HighlightBookCardProps) 
 
           <Link
             href={`/catalog/${book.id}`}
-            className="flex items-center justify-center w-11 h-11 rounded-xl border border-[var(--border)] text-[var(--foreground)] hover:border-indigo-200 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:border-indigo-800 dark:hover:text-indigo-400 dark:hover:bg-indigo-950/50 transition-all"
+            className="flex items-center justify-center w-11 h-11 rounded-xl border border-border text-foreground hover:border-primary hover:text-primary hover:bg-surface-secondary transition-all"
             title="Lihat Detail"
           >
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>
-    </div>
+    </article>
   );
 }

@@ -23,6 +23,12 @@
   --font-serif: var(--font-lora), Georgia, serif;
 }
 
+@utility bg-grid-pattern {
+  background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, #000 70%, transparent 100%);
+}
+
 @layer base {
   :root {
     /* Soft Modern SaaS — Light */

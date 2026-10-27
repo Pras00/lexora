@@ -4,10 +4,17 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { formatDate } from '@/lib/utils';
-import { BookmarkCheck, Clock, ArrowRight, BookOpen, AlertTriangle } from 'lucide-react';
+import { BookmarkCheck, Clock, ArrowRight, AlertTriangle } from 'lucide-react';
+import type { Loan, LoanItem, Book } from '@/types';
+
+type ActiveLoan = Loan & {
+  items: (LoanItem & {
+    book: Book | null;
+  })[];
+};
 
 export default async function LoansPage() {
-  let activeLoans: any[] = [];
+  let activeLoans: ActiveLoan[] = [];
 
   try {
     const supabase = await createClient();
@@ -27,7 +34,7 @@ export default async function LoansPage() {
         .order('created_at', { ascending: false });
 
       if (data) {
-        activeLoans = data;
+        activeLoans = data as unknown as ActiveLoan[];
       }
     }
   } catch (err) {
@@ -46,12 +53,12 @@ export default async function LoansPage() {
           {activeLoans.map((loan) => (
             <div
               key={loan.id}
-              className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xs space-y-4"
+              className="p-6 rounded-2xl border border-border bg-surface shadow-xs space-y-4"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[var(--border)] gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-border gap-2">
                 <div>
-                  <span className="text-xs text-[var(--foreground)]">Tanggal Pengambilan Fisik:</span>
-                  <p className="text-sm font-semibold text-[var(--foreground)] mt-0.5">
+                  <span className="text-xs text-foreground">Tanggal Pengambilan Fisik:</span>
+                  <p className="text-sm font-semibold text-foreground mt-0.5">
                     {formatDate(loan.pickup_confirmed_at)}
                   </p>
                 </div>
@@ -66,19 +73,19 @@ export default async function LoansPage() {
 
               {/* Items */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {loan.items?.map((item: any) => {
+                {loan.items?.map((item) => {
                   const isOverdue = new Date(item.due_date) < new Date() && item.status === 'borrowed';
 
                   return (
                     <div
                       key={item.id}
-                      className="p-4 rounded-xl border border-[var(--border)] bg-slate-50/50 dark:bg-slate-900/30 flex items-start justify-between gap-3"
+                      className="p-4 rounded-xl border border-border bg-slate-50/50 dark:bg-slate-900/30 flex items-start justify-between gap-3"
                     >
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-semibold text-[var(--foreground)] truncate">
+                        <h4 className="text-sm font-semibold text-foreground truncate">
                           {item.book?.title}
                         </h4>
-                        <p className="text-xs text-[var(--foreground)] mt-0.5">{item.book?.author}</p>
+                        <p className="text-xs text-foreground mt-0.5">{item.book?.author}</p>
                         
                         <div className="flex items-center gap-1.5 text-xs mt-2.5">
                           {isOverdue ? (
@@ -87,7 +94,7 @@ export default async function LoansPage() {
                               Terlambat! Batas: {formatDate(item.due_date)}
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1 text-[var(--foreground)]">
+                            <span className="flex items-center gap-1 text-foreground">
                               <Clock className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                               Jatuh tempo: {formatDate(item.due_date)}
                             </span>

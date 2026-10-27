@@ -37,7 +37,7 @@ export function UserLayoutClient({ children, user }: UserLayoutClientProps) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[var(--surface)]">
+    <div className="flex min-h-screen bg-surface">
       {/* Sidebar Desktop */}
       <UserSidebar />
 

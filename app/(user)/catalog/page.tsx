@@ -86,9 +86,24 @@ const fallbackBooks: BookWithCategory[] = [
   },
 ];
 
-export default async function CatalogPage() {
+interface CatalogPageProps {
+  searchParams?: Promise<{
+    q?: string | string[];
+    cat?: string | string[];
+    category?: string | string[];
+  }>;
+}
+
+export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   let books: BookWithCategory[] = fallbackBooks;
   let categories: Category[] = fallbackCategories;
+
+  const resolvedParams = searchParams ? await searchParams : {};
+  const rawQ = resolvedParams.q;
+  const rawCat = resolvedParams.cat || resolvedParams.category;
+
+  const initialQuery = typeof rawQ === 'string' ? rawQ : Array.isArray(rawQ) ? rawQ[0] || '' : '';
+  const initialCategory = typeof rawCat === 'string' ? rawCat : Array.isArray(rawCat) ? rawCat[0] || 'all' : 'all';
 
   try {
     const supabase = await createClient();
@@ -121,7 +136,12 @@ export default async function CatalogPage() {
         title="Katalog Koleksi Buku"
         description="Jelajahi dan pilih buku yang ingin Anda pinjam dari perpustakaan Lexora."
       />
-      <BookCatalogClient initialBooks={books} categories={categories} />
+      <BookCatalogClient
+        initialBooks={books}
+        categories={categories}
+        initialQuery={initialQuery}
+        initialCategory={initialCategory}
+      />
     </div>
   );
 }

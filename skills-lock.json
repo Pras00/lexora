@@ -5,7 +5,7 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/engineering/codebase-design/SKILL.md",
-      "computedHash": "caea3cb8a8281ff829fd1a2b985044e77601b62f301adf43f689ccfc74c15f6f"
+      "computedHash": "fb1d8ab98ad151551eeade003e3ae55a46578a380fd9fc3ed4dbf9c2fbce0a9f"
     },
     "frontend-design": {
       "source": "anthropics/skills",
@@ -23,7 +23,7 @@
       "source": "pbakaus/impeccable",
       "sourceType": "github",
       "skillPath": ".agents/skills/impeccable/SKILL.md",
-      "computedHash": "d55800186ff7651be356015b103047b9dd84f83172cc257042a322491df3502e"
+      "computedHash": "08c1403e2daff28509af4ca7fc5915cb748b1a6b72181b6142ba35fb2c258d89"
     }
   }
 }

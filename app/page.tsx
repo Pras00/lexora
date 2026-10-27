@@ -6,22 +6,172 @@ import {
   ArrowRight,
   ArrowUpRight,
   CheckCircle2,
-  ShieldCheck,
-  Clock,
+  QrCode,
+  BookOpenCheck,
+  Building2,
+  BookmarkCheck,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { UserMenu } from '@/components/layout/UserMenu';
 import { createClient } from '@/lib/supabase/server';
 import { HighlightBookCard } from '@/components/books/HighlightBookCard';
+import { HeroQuickSearch } from '@/components/home/HeroQuickSearch';
 import { User } from '@supabase/supabase-js';
 import { BookWithCategory, Profile } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
+const FALLBACK_FEATURED_BOOKS: BookWithCategory[] = [
+  {
+    id: 'featured-1',
+    title: 'Clean Code: A Handbook of Agile Software Craftsmanship',
+    author: 'Robert C. Martin',
+    isbn: '978-0132350884',
+    category_id: 'cat-1',
+    publisher: 'Prentice Hall',
+    published_year: 2008,
+    description: 'Panduan fundamental tentang penulisan kode yang rapi, mudah dipelihara, dan berstandar industri.',
+    cover_url: '/covers/clean-code.jpg',
+    price: 250000,
+    total_stock: 5,
+    available_stock: 5,
+    status: 'active',
+    created_at: '',
+    updated_at: '',
+    category: {
+      id: 'cat-1',
+      name: 'Teknologi & Komputasi',
+      slug: 'teknologi-komputasi',
+      description: null,
+      created_at: '',
+    },
+  },
+  {
+    id: 'featured-2',
+    title: 'Designing Data-Intensive Applications',
+    author: 'Martin Kleppmann',
+    isbn: '978-1449373320',
+    category_id: 'cat-1',
+    publisher: "O'Reilly Media",
+    published_year: 2017,
+    description: 'Eksplorasi mendalam mengenai keandalan, skalabilitas, dan pemeliharaan sistem data terdistribusi.',
+    cover_url: '/covers/ddia.jpg',
+    price: 380000,
+    total_stock: 4,
+    available_stock: 4,
+    status: 'active',
+    created_at: '',
+    updated_at: '',
+    category: {
+      id: 'cat-1',
+      name: 'Teknologi & Komputasi',
+      slug: 'teknologi-komputasi',
+      description: null,
+      created_at: '',
+    },
+  },
+  {
+    id: 'featured-3',
+    title: "Stargate's Echo",
+    author: 'Sarah Jenkins',
+    isbn: '978-0441013593',
+    category_id: 'cat-2',
+    publisher: 'Spectra Books',
+    published_year: 2024,
+    description: 'Kisah fiksi ilmiah epik tentang ekspedisi penjelajah ruang angkasa melintasi gerbang antardimensi.',
+    cover_url: '/covers/stargates-echo.jpg',
+    price: 185000,
+    total_stock: 6,
+    available_stock: 6,
+    status: 'active',
+    created_at: '',
+    updated_at: '',
+    category: {
+      id: 'cat-2',
+      name: 'Fiksi Spekulatif',
+      slug: 'fiksi-spekulatif',
+      description: null,
+      created_at: '',
+    },
+  },
+  {
+    id: 'featured-4',
+    title: 'Bumi Manusia',
+    author: 'Pramoedya Ananta Toer',
+    isbn: '978-9799731234',
+    category_id: 'cat-3',
+    publisher: 'Lentera Dipantara',
+    published_year: 1980,
+    description: 'Mahakarya sastra Indonesia yang mengisahkan pergulatan batin Minke di tengah tatanan kolonial Hindia Belanda.',
+    cover_url: '/covers/bumi-manusia.jpg',
+    price: 115000,
+    total_stock: 5,
+    available_stock: 5,
+    status: 'active',
+    created_at: '',
+    updated_at: '',
+    category: {
+      id: 'cat-3',
+      name: 'Sastra & Humaniora',
+      slug: 'sastra-humaniora',
+      description: null,
+      created_at: '',
+    },
+  },
+  {
+    id: 'featured-5',
+    title: 'The Lean Startup',
+    author: 'Eric Ries',
+    isbn: '978-0307887894',
+    category_id: 'cat-4',
+    publisher: 'Crown Business',
+    published_year: 2011,
+    description: 'Metodologi inovasi berkelanjutan dan validasi ide bisnis dengan siklus Build-Measure-Learn yang teruji.',
+    cover_url: '/covers/lean-startup.jpg',
+    price: 220000,
+    total_stock: 4,
+    available_stock: 3,
+    status: 'active',
+    created_at: '',
+    updated_at: '',
+    category: {
+      id: 'cat-4',
+      name: 'Bisnis & Manajemen',
+      slug: 'bisnis-manajemen',
+      description: null,
+      created_at: '',
+    },
+  },
+  {
+    id: 'featured-6',
+    title: "The Wanderer's Star",
+    author: 'Michael Vance',
+    isbn: '978-0553381696',
+    category_id: 'cat-2',
+    publisher: 'Voyager Press',
+    published_year: 2023,
+    description: 'Perjalanan penuh misteri menelusuri jejak peradaban kuno yang hilang di tepi gugus galaksi terjauh.',
+    cover_url: '/covers/the-wanderers-star.jpg',
+    price: 195000,
+    total_stock: 3,
+    available_stock: 2,
+    status: 'active',
+    created_at: '',
+    updated_at: '',
+    category: {
+      id: 'cat-2',
+      name: 'Fiksi Spekulatif',
+      slug: 'fiksi-spekulatif',
+      description: null,
+      created_at: '',
+    },
+  },
+];
+
 export default async function HomePage() {
-  let featuredBooks: BookWithCategory[] = [];
+  let featuredBooks: BookWithCategory[] = FALLBACK_FEATURED_BOOKS;
   let user: User | null = null;
-  let userRole: string = 'member';
+  let userRole = 'member';
   let userProfile: Profile | null = null;
 
   try {
@@ -99,27 +249,24 @@ export default async function HomePage() {
 
       {/* ── Hero Section ────────────────────────────────────────── */}
       <section className="px-6 md:px-10 py-16 md:py-24 max-w-7xl mx-auto w-full relative">
-        {/* Subtle, taste-driven background atmosphere (Not noisy, not AI slop) */}
+        {/* Soft atmospheric background without arbitrary bracket CSS */}
         <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
-          {/* Soft ambient orb */}
-          <div className="absolute top-10 right-1/4 w-[420px] h-[420px] bg-indigo-500/10 dark:bg-indigo-600/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-10 left-10 w-[300px] h-[300px] bg-amber-500/5 dark:bg-amber-600/5 rounded-full blur-3xl" />
-
-          {/* Architectural micro-dot pattern with radial fade */}
-          <div className="absolute inset-0 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-40 [mask-image:radial-gradient(ellipse_at_50%_30%,black_35%,transparent_75%)]" />
+          <div className="absolute top-10 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 left-10 w-72 h-72 bg-amber-500/5 rounded-full blur-3xl" />
+          <div className="absolute inset-0 bg-grid-pattern opacity-40" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left — Typography & Value Prop */}
+          {/* Left — Typography, Search, & Value Prop */}
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary text-muted text-xs font-semibold mb-6 border border-border">
               <Library className="w-3.5 h-3.5 text-primary" />
               <span>Sistem Sirkulasi & Koleksi Buku Fisik</span>
             </div>
 
-            <h1 className="leading-[1.12] tracking-tight text-4xl sm:text-5xl lg:text-6xl text-foreground font-sans">
+            <h1 className="leading-tight tracking-tight text-4xl sm:text-5xl lg:text-6xl text-foreground font-sans font-bold">
               Jelajahi Dunia{' '}
-              <span className="font-serif italic text-primary relative">
+              <span className="font-serif italic font-normal text-primary">
                 Literasi
               </span>
               <br />
@@ -131,7 +278,8 @@ export default async function HomePage() {
               <strong className="text-foreground font-semibold">QR Pickup Pass</strong>.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3 mt-9">
+            {/* Quick Actions */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 mt-8">
               <Link
                 href="#koleksi-pilihan"
                 className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 text-sm font-bold bg-primary text-white rounded-xl hover:bg-primary-hover hover:shadow-xs transition-all active:scale-95 cursor-pointer"
@@ -148,8 +296,11 @@ export default async function HomePage() {
               </Link>
             </div>
 
+            {/* Interactive Hero Quick Search */}
+            <HeroQuickSearch />
+
             {/* Micro proof metrics bar */}
-            <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-12 pt-8 border-t border-border">
+            <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-10 pt-8 border-t border-border">
               <div>
                 <p className="text-2xl font-extrabold text-foreground tracking-tight">500+</p>
                 <p className="text-xs font-semibold text-muted mt-0.5">Koleksi Buku</p>
@@ -164,10 +315,15 @@ export default async function HomePage() {
                 <p className="text-2xl font-extrabold text-foreground tracking-tight">QR Pass</p>
                 <p className="text-xs font-semibold text-muted mt-0.5">Pickup Cepat</p>
               </div>
+              <div className="w-px h-8 bg-border" />
+              <div>
+                <p className="text-2xl font-extrabold text-foreground tracking-tight">0 Biaya</p>
+                <p className="text-xs font-semibold text-muted mt-0.5">Reservasi Mandiri</p>
+              </div>
             </div>
           </div>
 
-          {/* Right — Book Fan Showcase with Floating Proof Card */}
+          {/* Right — Book Showcase with Physical Library Context */}
           <div className="relative flex items-center justify-center lg:justify-end">
             <div className="relative flex items-end justify-center gap-4 py-8">
               {/* Left card */}
@@ -191,7 +347,7 @@ export default async function HomePage() {
                   className="object-cover"
                   priority
                 />
-                <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-primary/90 backdrop-blur-md text-white text-[10px] font-bold tracking-wider uppercase shadow-xs">
+                <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-primary/90 backdrop-blur-xs text-white text-[10px] font-bold tracking-wider uppercase shadow-xs">
                   Populer
                 </div>
               </div>
@@ -207,7 +363,7 @@ export default async function HomePage() {
                 />
               </div>
 
-              {/* Floating tactful proof chip */}
+              {/* Floating physical shelf proof chip */}
               <div className="absolute -bottom-2 sm:-bottom-4 left-2 sm:left-6 px-4 py-2.5 rounded-2xl bg-surface/90 border border-border backdrop-blur-md shadow-md flex items-center gap-3 z-20">
                 <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                   <CheckCircle2 className="w-4 h-4" />
@@ -227,6 +383,10 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary text-primary text-xs font-semibold mb-3 border border-border">
+                <BookmarkCheck className="w-3.5 h-3.5" />
+                <span>Koleksi Terpopuler</span>
+              </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
                 Buku <span className="font-serif italic font-normal text-primary">Populer</span> Pilihan
               </h2>
@@ -264,9 +424,13 @@ export default async function HomePage() {
       </section>
 
       {/* ── 3 Langkah Sederhana ───────────────────────────────────── */}
-      <section className="px-6 md:px-10 py-20 border-t border-border">
+      <section className="px-6 md:px-10 py-20 border-t border-border bg-background">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary text-primary text-xs font-semibold mb-3 border border-border">
+              <BookOpenCheck className="w-3.5 h-3.5" />
+              <span>Alur Sirkulasi Cepat</span>
+            </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
               Tiga Langkah <span className="font-serif italic font-normal text-primary">Sederhana</span>
             </h2>
@@ -276,72 +440,159 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-linear-to-r from-transparent via-indigo-200 dark:via-indigo-900 to-transparent -z-10" />
+            {/* Horizontal flow line for desktop */}
+            <div className="hidden md:block absolute top-1/2 left-16 right-16 h-px bg-border -z-10" />
 
             {/* Step 1 */}
-            <div className="bg-surface border border-border rounded-3xl p-8 text-center shadow-xs hover:shadow-sm hover:border-indigo-300 dark:hover:border-indigo-800 transition-all hover:-translate-y-1 relative z-10">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-primary flex items-center justify-center text-xl font-black mb-5 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
-                1
+            <div className="bg-surface border border-border rounded-3xl p-8 text-center shadow-xs hover:shadow-md hover:border-border-strong transition-all hover:-translate-y-1 relative z-10">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-accent-subtle text-primary flex items-center justify-center mb-5 border border-border shadow-2xs">
+                <BookOpenCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-foreground mb-2">Pilih Buku</h3>
+              <span className="inline-block px-2.5 py-0.5 text-[11px] font-bold text-primary bg-accent-subtle rounded-md mb-3 border border-border">
+                Langkah 01
+              </span>
+              <h3 className="text-base font-bold text-foreground mb-2">Pilih & Reservasi Buku</h3>
               <p className="text-xs text-muted leading-relaxed">
-                Jelajahi katalog digital, periksa ketersediaan stok buku fisik secara realtime, lalu tambahkan ke keranjang.
+                Jelajahi ratusan buku di katalog digital, periksa stok fisik yang tersedia di rak secara realtime, lalu masukkan ke keranjang peminjaman.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="bg-surface border border-border rounded-3xl p-8 text-center shadow-xs hover:shadow-sm hover:border-indigo-300 dark:hover:border-indigo-800 transition-all hover:-translate-y-1 relative z-10">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-primary flex items-center justify-center text-xl font-black mb-5 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
-                2
+            <div className="bg-surface border border-border rounded-3xl p-8 text-center shadow-xs hover:shadow-md hover:border-border-strong transition-all hover:-translate-y-1 relative z-10">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-accent-subtle text-primary flex items-center justify-center mb-5 border border-border shadow-2xs">
+                <QrCode className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-foreground mb-2">Terima QR Pass</h3>
+              <span className="inline-block px-2.5 py-0.5 text-[11px] font-bold text-primary bg-accent-subtle rounded-md mb-3 border border-border">
+                Langkah 02
+              </span>
+              <h3 className="text-base font-bold text-foreground mb-2">Terbitkan QR Pickup Pass</h3>
               <p className="text-xs text-muted leading-relaxed">
-                Pustakawan menyetujui pengajuan Anda dan sistem menerbitkan kode QR Pickup Pass instan.
+                Setelah permohonan disetujui petugas perpustakaan, sistem langsung menerbitkan kode QR Pickup Pass pada dashboard akun Anda.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="bg-surface border border-border rounded-3xl p-8 text-center shadow-xs hover:shadow-sm hover:border-indigo-300 dark:hover:border-indigo-800 transition-all hover:-translate-y-1 relative z-10">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-primary flex items-center justify-center text-xl font-black mb-5 border border-indigo-100 dark:border-indigo-900/50 shadow-2xs">
-                3
+            <div className="bg-surface border border-border rounded-3xl p-8 text-center shadow-xs hover:shadow-md hover:border-border-strong transition-all hover:-translate-y-1 relative z-10">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-accent-subtle text-primary flex items-center justify-center mb-5 border border-border shadow-2xs">
+                <Building2 className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-foreground mb-2">Ambil di Loket</h3>
+              <span className="inline-block px-2.5 py-0.5 text-[11px] font-bold text-primary bg-accent-subtle rounded-md mb-3 border border-border">
+                Langkah 03
+              </span>
+              <h3 className="text-base font-bold text-foreground mb-2">Ambil di Loket Sirkulasi</h3>
               <p className="text-xs text-muted leading-relaxed">
-                Tunjukkan QR Pass ke petugas loket sirkulasi — buku langsung diserahkan tanpa antre formulir manual.
+                Tunjukkan QR Pass pada petugas loket perpustakaan. Buku fisik langsung diserah-terimakan dalam hitungan detik tanpa antrean manual.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── CTA Banner ──────────────────────────────────────────── */}
-      <section className="px-4 pb-12 pt-6">
-        <div className="max-w-5xl mx-auto w-full">
-          <div className="bg-primary rounded-3xl p-8 md:p-12 text-center shadow-lg relative overflow-hidden">
-            {/* Soft decorative blur */}
-            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 bg-indigo-900/40 rounded-full blur-xl pointer-events-none" />
+      {/* ── Asymmetric Split CTA Banner with Member Pass Preview ── */}
+      <section className="px-6 md:px-10 py-16">
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="bg-primary rounded-3xl p-8 md:p-12 text-white shadow-xl relative overflow-hidden">
+            {/* Subtle radial backdrops */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-black/20 rounded-full blur-2xl pointer-events-none" />
 
-            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white relative z-10">
-              Mulai Pengalaman Membaca Lebih Cerdas Hari Ini
-            </h2>
-            <p className="text-indigo-100 mt-3 max-w-xl mx-auto leading-relaxed text-sm relative z-10">
-              Daftarkan akun anggota perpustakaan Lexora sekarang dan nikmati kemudahan reservasi literatur fisik secara mandiri.
-            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+              {/* Left Column: Proposition & Action */}
+              <div className="lg:col-span-7">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs text-white text-xs font-semibold mb-4 border border-white/20">
+                  <Library className="w-3.5 h-3.5" />
+                  <span>Keanggotaan Perpustakaan Lexora</span>
+                </div>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-3 mt-8 relative z-10">
-              <Link
-                href={
-                  user
-                    ? userRole === 'admin'
-                      ? '/admin/dashboard'
-                      : '/dashboard'
-                    : '/register'
-                }
-                className="inline-flex justify-center items-center px-7 py-3.5 text-sm font-bold bg-white text-primary rounded-xl hover:bg-slate-50 hover:scale-105 transition-all shadow-xs"
-              >
-                {user ? 'Buka Dashboard Saya' : 'Daftar Jadi Anggota'}
-              </Link>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                  Satu Kartu Anggota Digital, Akses ke Ratusan Literatur Fisik
+                </h2>
+
+                <p className="text-indigo-100 mt-4 leading-relaxed text-sm sm:text-base">
+                  Bergabung bersama komunitas pembaca aktif Lexora. Nikmati kemudahan reservasi buku kapan saja, notifikasi pengingat otomatis, dan riwayat peminjaman yang transparan.
+                </p>
+
+                {/* Benefits Checklist */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
+                  <div className="flex items-center gap-2 text-xs font-medium text-white/90">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                    <span>Maksimal 3 buku per peminjaman</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-medium text-white/90">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                    <span>Perpanjangan masa pinjam mandiri</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-medium text-white/90">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                    <span>QR Pickup Pass instan di loket</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-medium text-white/90">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                    <span>Bebas antre formulir kertas</span>
+                  </div>
+                </div>
+
+                <div className="mt-8 flex flex-col sm:flex-row items-center gap-3">
+                  <Link
+                    href={
+                      user
+                        ? userRole === 'admin'
+                          ? '/admin/dashboard'
+                          : '/dashboard'
+                        : '/register'
+                    }
+                    className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 text-sm font-bold bg-white text-primary rounded-xl hover:bg-slate-50 hover:shadow-md transition-all active:scale-95"
+                  >
+                    <span>{user ? 'Buka Dashboard Saya' : 'Daftar Jadi Anggota Gratis'}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  {!user && (
+                    <Link
+                      href="/login"
+                      className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-6 py-3.5 text-sm font-semibold text-white/90 hover:text-white border border-white/20 hover:bg-white/10 rounded-xl transition-colors"
+                    >
+                      <span>Masuk ke Akun</span>
+                    </Link>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column: Tactile Digital Library Card Preview */}
+              <div className="lg:col-span-5 flex justify-center">
+                <div className="w-full max-w-sm rounded-2xl bg-white/10 border border-white/25 backdrop-blur-md p-6 text-white shadow-2xl relative">
+                  <div className="flex items-center justify-between border-b border-white/15 pb-4 mb-4">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-white text-primary flex items-center justify-center font-bold">
+                        <Library className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-black tracking-widest uppercase">LEXORA PASS</p>
+                        <p className="text-[10px] text-indigo-200">Digital Library ID</p>
+                      </div>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] font-bold border border-emerald-400/30">
+                      AKTIF
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-4 py-2">
+                    <div className="w-16 h-16 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0 shadow-xs">
+                      {/* Stylized QR mockup graphic */}
+                      <QrCode className="w-full h-full text-slate-900" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[11px] text-indigo-200 uppercase font-semibold">Nomor Anggota</p>
+                      <p className="text-sm font-mono font-bold tracking-wider">LX-2026-9812</p>
+                      <p className="text-[11px] text-indigo-200">Akses Sirkulasi Fisik: Penuh</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-white/15 flex items-center justify-between text-[11px] text-indigo-200">
+                    <span>Masa Berlaku: 1 Tahun</span>
+                    <span className="text-white font-medium">Perpustakaan Lexora</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

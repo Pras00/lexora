@@ -10,14 +10,18 @@ import { BookOpen, SlidersHorizontal, X } from 'lucide-react';
 interface BookCatalogClientProps {
   initialBooks: BookWithCategory[];
   categories: Category[];
+  initialQuery?: string;
+  initialCategory?: string;
 }
 
 export function BookCatalogClient({
   initialBooks,
   categories,
+  initialQuery = '',
+  initialCategory = 'all',
 }: BookCatalogClientProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [onlyAvailable, setOnlyAvailable] = useState(false);
 
   const filteredBooks = useMemo(() => {

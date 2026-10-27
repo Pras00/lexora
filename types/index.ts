@@ -48,3 +48,10 @@ export type LoanRequestWithDetails = LoanRequest & {
   items: RequestItemWithBook[];
   pass?: PickupPass | null;
 };
+
+export type FineWithDetails = Fine & {
+  loan_item: (LoanItem & {
+    book: Book | null;
+  }) | null;
+  user?: Profile | null;
+};
