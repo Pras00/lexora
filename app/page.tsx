@@ -248,10 +248,10 @@ export default async function HomePage() {
       </header>
 
       {/* ── Hero Section ────────────────────────────────────────── */}
-      <section className="px-6 md:px-10 pt-8 pb-14 md:pt-10 md:pb-16 lg:pt-12 lg:pb-20 max-w-7xl mx-auto w-full relative">
+      <section className="px-6 md:px-10 pt-12 pb-20 md:pt-16 md:pb-24 lg:pt-18 lg:pb-28 max-w-7xl mx-auto w-full relative">
         {/* Soft atmospheric background without arbitrary bracket CSS */}
         <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
-          <div className="absolute top-4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute top-6 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-10 left-10 w-72 h-72 bg-amber-500/5 rounded-full blur-3xl" />
           <div className="absolute inset-0 bg-grid-pattern opacity-40" />
         </div>
@@ -259,7 +259,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Left — Typography, Search, & Value Prop */}
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary text-muted text-xs font-semibold mb-3.5 border border-border">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary text-muted text-xs font-semibold mb-4 border border-border">
               <Library className="w-3.5 h-3.5 text-primary" />
               <span>Sistem Sirkulasi & Koleksi Buku Fisik</span>
             </div>
@@ -300,7 +300,7 @@ export default async function HomePage() {
             <HeroQuickSearch />
 
             {/* Micro proof metrics bar */}
-            <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-8 pt-6 border-t border-border">
+            <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-8 pt-6 pb-2 border-t border-border">
               <div>
                 <p className="text-2xl font-extrabold text-foreground tracking-tight">500+</p>
                 <p className="text-xs font-semibold text-muted mt-0.5">Koleksi Buku</p>
@@ -325,7 +325,7 @@ export default async function HomePage() {
 
           {/* Right — Book Showcase with Physical Library Context */}
           <div className="relative flex items-center justify-center lg:justify-end">
-            <div className="relative flex items-end justify-center gap-4 pt-2 pb-6">
+            <div className="relative flex items-end justify-center gap-4 pt-4 pb-6">
               {/* Left card */}
               <div className="relative w-36 h-52 sm:w-44 sm:h-64 rounded-2xl overflow-hidden border border-border transform -rotate-6 hover:rotate-0 transition-transform duration-300 hidden sm:block shadow-md bg-surface">
                 <Image
