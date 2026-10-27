@@ -248,18 +248,18 @@ export default async function HomePage() {
       </header>
 
       {/* ── Hero Section ────────────────────────────────────────── */}
-      <section className="px-6 md:px-10 py-16 md:py-24 max-w-7xl mx-auto w-full relative">
+      <section className="px-6 md:px-10 pt-8 pb-14 md:pt-10 md:pb-16 lg:pt-12 lg:pb-20 max-w-7xl mx-auto w-full relative">
         {/* Soft atmospheric background without arbitrary bracket CSS */}
         <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
-          <div className="absolute top-10 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute top-4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-10 left-10 w-72 h-72 bg-amber-500/5 rounded-full blur-3xl" />
           <div className="absolute inset-0 bg-grid-pattern opacity-40" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Left — Typography, Search, & Value Prop */}
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary text-muted text-xs font-semibold mb-6 border border-border">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-secondary text-muted text-xs font-semibold mb-3.5 border border-border">
               <Library className="w-3.5 h-3.5 text-primary" />
               <span>Sistem Sirkulasi & Koleksi Buku Fisik</span>
             </div>
@@ -273,13 +273,13 @@ export default async function HomePage() {
               <span className="font-extrabold">dengan Mudah</span>
             </h1>
 
-            <p className="text-base sm:text-lg text-muted max-w-lg leading-relaxed mt-6">
+            <p className="text-base sm:text-lg text-muted max-w-lg leading-relaxed mt-4 sm:mt-5">
               Temukan ratusan koleksi buku pilihan, pantau ketersediaan stok fisik secara realtime, dan lakukan reservasi tanpa antre menggunakan{' '}
               <strong className="text-foreground font-semibold">QR Pickup Pass</strong>.
             </p>
 
             {/* Quick Actions */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 mt-8">
+            <div className="flex flex-col sm:flex-row items-center gap-3 mt-6 sm:mt-7">
               <Link
                 href="#koleksi-pilihan"
                 className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 text-sm font-bold bg-primary text-white rounded-xl hover:bg-primary-hover hover:shadow-xs transition-all active:scale-95 cursor-pointer"
@@ -300,7 +300,7 @@ export default async function HomePage() {
             <HeroQuickSearch />
 
             {/* Micro proof metrics bar */}
-            <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-10 pt-8 border-t border-border">
+            <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-8 pt-6 border-t border-border">
               <div>
                 <p className="text-2xl font-extrabold text-foreground tracking-tight">500+</p>
                 <p className="text-xs font-semibold text-muted mt-0.5">Koleksi Buku</p>
@@ -325,7 +325,7 @@ export default async function HomePage() {
 
           {/* Right — Book Showcase with Physical Library Context */}
           <div className="relative flex items-center justify-center lg:justify-end">
-            <div className="relative flex items-end justify-center gap-4 py-8">
+            <div className="relative flex items-end justify-center gap-4 pt-2 pb-6">
               {/* Left card */}
               <div className="relative w-36 h-52 sm:w-44 sm:h-64 rounded-2xl overflow-hidden border border-border transform -rotate-6 hover:rotate-0 transition-transform duration-300 hidden sm:block shadow-md bg-surface">
                 <Image

@@ -30,7 +30,7 @@ export function HeroQuickSearch() {
   };
 
   return (
-    <div className="w-full max-w-lg mt-8">
+    <div className="w-full max-w-lg mt-6">
       <form
         onSubmit={handleSubmit}
         className="flex items-center gap-2 p-1.5 bg-surface border border-border rounded-2xl shadow-xs focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all"
