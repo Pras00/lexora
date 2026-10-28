@@ -34,7 +34,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${plusJakarta.variable} ${lora.variable}`}
     >
-      <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased">
+      <body className="min-h-screen bg-background text-foreground antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

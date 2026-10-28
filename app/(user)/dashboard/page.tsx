@@ -177,7 +177,7 @@ export default async function DashboardPage() {
               : 'Tidak ada tagihan denda'
           }
           icon={CircleAlert}
-          variant={unpaidFinesTotal > 0 ? 'rose' : 'emerald'}
+          variant="rose"
         />
         <StatCard
           title="Riwayat Selesai"

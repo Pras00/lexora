@@ -4,6 +4,7 @@ import QRCode from 'react-qr-code';
 import { Clock, ShieldCheck } from 'lucide-react';
 import { formatDateTime } from '@/lib/utils';
 import { StatusBadge } from '@/components/shared/StatusBadge';
+import { LexoraMark } from '@/components/shared/LexoraLogo';
 
 interface PickupPassProps {
   pass: {
@@ -22,13 +23,16 @@ export function PickupPass({ pass, requestNumber }: PickupPassProps) {
     <div className="rounded-2xl border-2 border-primary/30 bg-surface p-6 shadow-xs overflow-hidden relative">
       {/* Top Banner */}
       <div className="flex items-center justify-between pb-4 border-b border-border">
-        <div>
-          <span className="text-xs font-semibold text-primary uppercase tracking-wider">
-            Kartu Pengambilan Buku (Pickup Pass)
-          </span>
-          <h3 className="text-lg font-bold text-foreground mt-0.5">
-            {requestNumber}
-          </h3>
+        <div className="flex items-center gap-3">
+          <LexoraMark className="w-9 h-9" />
+          <div>
+            <span className="text-xs font-semibold text-primary uppercase tracking-wider">
+              Kartu Pengambilan Buku (Pickup Pass)
+            </span>
+            <h3 className="text-lg font-bold text-foreground mt-0.5">
+              {requestNumber}
+            </h3>
+          </div>
         </div>
         <StatusBadge status={isActive ? 'approved' : pass.status} />
       </div>

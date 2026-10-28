@@ -3,8 +3,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { X, Library } from 'lucide-react';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LexoraLogo } from '@/components/shared/LexoraLogo';
 
 interface NavItem {
   name: string;
@@ -50,14 +51,9 @@ export function MobileNav({ isOpen, onClose, navigation, isAdmin }: MobileNavPro
                 href="/"
                 onClick={onClose}
                 title="Kembali ke Beranda"
-                className="flex items-center gap-2.5 hover:opacity-85 transition-opacity cursor-pointer"
+                className="flex items-center hover:opacity-85 transition-opacity group cursor-pointer"
               >
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-white">
-                  <Library className="w-4 h-4" />
-                </div>
-                <span className="font-bold text-lg text-foreground">
-                  Lexora {isAdmin && <span className="text-xs font-semibold text-primary">(Admin)</span>}
-                </span>
+                <LexoraLogo size="sm" badge={isAdmin ? 'Admin' : undefined} />
               </Link>
               <button
                 onClick={onClose}

@@ -10,9 +10,9 @@ import {
   History,
   AlertCircle,
   User,
-  Library,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LexoraLogo } from '@/components/shared/LexoraLogo';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -33,14 +33,9 @@ export function UserSidebar() {
       <Link
         href="/"
         title="Kembali ke Beranda"
-        className="flex items-center gap-3 h-16 px-6 border-b border-border hover:bg-surface-secondary/60 transition-colors group cursor-pointer"
+        className="flex items-center h-16 px-6 border-b border-border hover:bg-surface-secondary/60 transition-colors group cursor-pointer"
       >
-        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-          <Library className="w-4 h-4" />
-        </div>
-        <span className="font-extrabold text-lg tracking-tight text-foreground">
-          Lexora
-        </span>
+        <LexoraLogo size="md" />
       </Link>
 
       {/* Navigation */}

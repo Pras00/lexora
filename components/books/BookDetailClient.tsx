@@ -31,15 +31,15 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
     <div className="space-y-6">
       <Link
         href="/catalog"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-muted hover:text-foreground transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Katalog
       </Link>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-6 md:p-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-6 md:p-8 rounded-2xl border border-border bg-surface">
         {/* Cover Image */}
-        <div className="relative h-80 md:h-[420px] w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
+        <div className="relative h-80 md:h-105 w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
           {book.cover_url && !imgError ? (
             <Image
               src={book.cover_url}
@@ -51,10 +51,10 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-[var(--foreground)] p-6 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+            <div className="flex flex-col items-center justify-center h-full text-foreground p-6 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
               <BookOpen className="w-16 h-16 stroke-1 text-indigo-500 opacity-60 mb-3" />
-              <span className="text-sm font-medium text-[var(--foreground)]">{book.title}</span>
-              <span className="text-xs text-[var(--foreground)] mt-1">{book.author}</span>
+              <span className="text-sm font-medium text-foreground">{book.title}</span>
+              <span className="text-xs text-muted mt-1">{book.author}</span>
             </div>
           )}
         </div>
@@ -68,52 +68,52 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
               </span>
             )}
 
-            <h1 className="text-2xl md:text-3xl font-bold text-[var(--foreground)] tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
               {book.title}
             </h1>
 
-            <p className="text-sm font-medium text-[var(--foreground)] mt-1.5">
-              Karya <strong className="text-[var(--foreground)]">{book.author}</strong>
+            <p className="text-sm font-medium text-muted mt-1.5">
+              Karya <strong className="text-foreground">{book.author}</strong>
             </p>
 
             {/* Metadata Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 my-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border)] text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 my-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-border text-xs">
               <div className="flex items-center gap-2">
                 <Barcode className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <div>
-                  <p className="text-[var(--foreground)]">ISBN</p>
-                  <p className="font-mono font-medium text-[var(--foreground)]">{book.isbn}</p>
+                  <p className="text-muted">ISBN</p>
+                  <p className="font-mono font-medium text-foreground">{book.isbn}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <Building className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <div>
-                  <p className="text-[var(--foreground)]">Penerbit</p>
-                  <p className="font-medium text-[var(--foreground)] truncate">{book.publisher || '-'}</p>
+                  <p className="text-muted">Penerbit</p>
+                  <p className="font-medium text-foreground truncate">{book.publisher || '-'}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <div>
-                  <p className="text-[var(--foreground)]">Tahun Terbit</p>
-                  <p className="font-medium text-[var(--foreground)]">{book.published_year || '-'}</p>
+                  <p className="text-muted">Tahun Terbit</p>
+                  <p className="font-medium text-foreground">{book.published_year || '-'}</p>
                 </div>
               </div>
             </div>
 
             {/* Sinopsis */}
             <div>
-              <h4 className="text-sm font-semibold text-[var(--foreground)] mb-2">Deskripsi Buku</h4>
-              <p className="text-xs md:text-sm text-[var(--foreground)] leading-relaxed">
+              <h4 className="text-sm font-semibold text-foreground mb-2">Deskripsi Buku</h4>
+              <p className="text-xs md:text-sm text-muted leading-relaxed">
                 {book.description || 'Tidak ada deskripsi detail untuk buku ini.'}
               </p>
             </div>
           </div>
 
           {/* Action Bar Bawah */}
-          <div className="mt-8 pt-6 border-t border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <span
@@ -126,8 +126,8 @@ export function BookDetailClient({ book }: BookDetailClientProps) {
                   {isOutOfStock ? 'Stok Fisik Habis' : `Tersedia: ${book.available_stock} dari ${book.total_stock} buku`}
                 </span>
               </div>
-              <p className="text-[11px] text-[var(--foreground)] mt-1 flex items-center gap-1">
-                <ShieldAlert className="w-3 h-3 text-amber-500" />
+              <p className="text-xs text-muted mt-1 flex items-center gap-1">
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
                 Estimasi nilai buku: {formatCurrency(book.price)} (acuan ganti rugi jika rusak/hilang)
               </p>
             </div>

@@ -130,7 +130,7 @@ export default async function AdminDashboardPage() {
           value={`${unpaidFinesCount} Tagihan`}
           description="Menunggu konfirmasi pelunasan loket"
           icon={CircleAlert}
-          variant={unpaidFinesCount > 0 ? 'rose' : 'default'}
+          variant="rose"
         />
       </div>
 

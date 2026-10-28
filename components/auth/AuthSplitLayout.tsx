@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-  Library,
   BookOpen,
   QrCode,
   Clock,
@@ -9,6 +8,7 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { AuthBackground } from '@/components/layout/AuthBackground';
+import { LexoraLogo } from '@/components/shared/LexoraLogo';
 
 interface AuthSplitLayoutProps {
   children: React.ReactNode;
@@ -42,25 +42,26 @@ export function AuthSplitLayout({
         <div className="hidden lg:flex lg:col-span-7 flex-col justify-between py-2">
           <div>
             {/* Brand Title Badge */}
-            <div className="flex items-center gap-3 mb-3.5">
-              <div className="w-9 h-9 rounded-2xl bg-primary text-white flex items-center justify-center shadow-xs">
-                <Library className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="font-bold text-base tracking-tight">Lexora</span>
-                <span className="text-[10px] font-bold text-muted block -mt-1 tracking-wide uppercase">
-                  Sistem Informasi Perpustakaan
-                </span>
-              </div>
-            </div>
+            <Link
+              href="/"
+              title="Kembali ke Beranda"
+              className="inline-flex mb-4 group focus:outline-none"
+            >
+              <LexoraLogo
+                size="md"
+                subtitle="Sistem Informasi Perpustakaan"
+              />
+            </Link>
 
-            {/* Category Tag */}
-            <div className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-surface-secondary text-muted text-[11px] font-semibold mb-3.5 border border-border">
-              <span>Layanan Perpustakaan & Sirkulasi Fisik</span>
+            <div>
+              {/* Category Tag */}
+              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-surface-secondary text-muted text-xs font-semibold mb-3.5 border border-border">
+                <span>Layanan Perpustakaan & Sirkulasi Fisik</span>
+              </div>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-2xl sm:text-3xl xl:text-4xl font-extrabold tracking-tight text-foreground leading-[1.18] font-sans">
+            <h1 className="text-2xl sm:text-3xl xl:text-4xl font-extrabold tracking-tight text-foreground leading-tight font-sans">
               Akses <span className="font-serif italic font-normal text-primary">Literatur</span> Tanpa Batas,
               <br />
               Peminjaman Tanpa Antre
@@ -82,7 +83,7 @@ export function AuthSplitLayout({
                 <h4 className="text-xs font-bold text-foreground">
                   Katalog Realtime
                 </h4>
-                <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+                <p className="text-xs text-muted mt-0.5 leading-relaxed">
                   Cek stok buku di rak sebelum datang ke perpustakaan.
                 </p>
               </div>
@@ -95,7 +96,7 @@ export function AuthSplitLayout({
                 <h4 className="text-xs font-bold text-foreground">
                   QR Pickup Pass
                 </h4>
-                <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+                <p className="text-xs text-muted mt-0.5 leading-relaxed">
                   Ambil buku di loket dalam hitungan detik tanpa kertas.
                 </p>
               </div>
@@ -108,7 +109,7 @@ export function AuthSplitLayout({
                 <h4 className="text-xs font-bold text-foreground">
                   Pantauan Jatuh Tempo
                 </h4>
-                <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+                <p className="text-xs text-muted mt-0.5 leading-relaxed">
                   Pengingat otomatis masa pinjam 14 hari bebas denda.
                 </p>
               </div>
@@ -121,7 +122,7 @@ export function AuthSplitLayout({
                 <h4 className="text-xs font-bold text-foreground">
                   Akun Terpadu
                 </h4>
-                <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+                <p className="text-xs text-muted mt-0.5 leading-relaxed">
                   Riwayat peminjaman dan denda tersimpan dengan aman.
                 </p>
               </div>
@@ -129,23 +130,23 @@ export function AuthSplitLayout({
           </div>
 
           {/* Subtext info */}
-          <div className="mt-5 pt-3.5 border-t border-border flex items-center justify-between text-[11px] text-muted">
+          <div className="mt-5 pt-3.5 border-t border-border flex items-center justify-between text-xs text-muted">
             <span>© 2026 Lexora Library System</span>
             <span>Platform Sirkulasi Modern</span>
           </div>
         </div>
 
         {/* ── Right Column: Auth Form Card (Desktop: 5 cols, Mobile/Tablet: Centered) ── */}
-        <div className="w-full lg:col-span-5 max-w-[480px] mx-auto py-2">
+        <div className="w-full lg:col-span-5 max-w-lg mx-auto py-2">
           <div className="relative rounded-3xl border border-border bg-surface p-5 sm:p-7 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
             {/* Top subtle highlight gradient */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-indigo-500 via-primary to-indigo-700" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-indigo-500 via-primary to-amber-500" />
 
             {/* Mobile/Tablet brand logo badge */}
             <div className="lg:hidden flex items-center justify-center mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center shadow-xs">
-                <Library className="w-5 h-5" />
-              </div>
+              <Link href="/" title="Kembali ke Beranda" className="group focus:outline-none">
+                <LexoraLogo size="md" />
+              </Link>
             </div>
 
             {/* Form Header */}

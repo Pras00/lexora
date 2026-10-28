@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { UserMenu } from '@/components/layout/UserMenu';
+import { LexoraLogo, LexoraMark } from '@/components/shared/LexoraLogo';
 import { getCurrentUser } from '@/lib/auth';
 import { sql } from '@/lib/db/neon';
 import { HighlightBookCard } from '@/components/books/HighlightBookCard';
@@ -196,11 +197,8 @@ export default async function HomePage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col relative overflow-hidden">
       {/* ── Navbar ──────────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 h-16 px-6 md:px-10 flex items-center justify-between border-b border-border bg-surface/80 backdrop-blur-md transition-colors">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-            <Library className="w-5 h-5" />
-          </div>
-          <span className="font-bold text-lg tracking-tight">Lexora</span>
+        <Link href="/" className="group focus:outline-none">
+          <LexoraLogo size="md" />
         </Link>
 
         <div className="flex items-center gap-2">
@@ -503,15 +501,13 @@ export default async function HomePage() {
                 <div className="w-full max-w-sm rounded-2xl bg-white/10 border border-white/25 backdrop-blur-md p-6 text-white shadow-2xl relative">
                   <div className="flex items-center justify-between border-b border-white/15 pb-4 mb-4">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-white text-primary flex items-center justify-center font-bold">
-                        <Library className="w-4 h-4" />
-                      </div>
+                      <LexoraMark variant="inverted" className="w-8 h-8" />
                       <div>
                         <p className="text-xs font-black tracking-widest uppercase">LEXORA PASS</p>
-                        <p className="text-[10px] text-indigo-200">Digital Library ID</p>
+                        <p className="text-xs text-indigo-200">Digital Library ID</p>
                       </div>
                     </div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 text-[10px] font-bold border border-emerald-400/30">
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 text-xs font-bold border border-emerald-400/30">
                       AKTIF
                     </span>
                   </div>
@@ -522,13 +518,13 @@ export default async function HomePage() {
                       <QrCode className="w-full h-full text-slate-900" />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-[11px] text-indigo-200 uppercase font-semibold">Nomor Anggota</p>
+                      <p className="text-xs text-indigo-200 uppercase font-semibold">Nomor Anggota</p>
                       <p className="text-sm font-mono font-bold tracking-wider">LX-2026-9812</p>
-                      <p className="text-[11px] text-indigo-200">Akses Sirkulasi Fisik: Penuh</p>
+                      <p className="text-xs text-indigo-200">Akses Sirkulasi Fisik: Penuh</p>
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-white/15 flex items-center justify-between text-[11px] text-indigo-200">
+                  <div className="mt-4 pt-3 border-t border-white/15 flex items-center justify-between text-xs text-indigo-200">
                     <span>Masa Berlaku: 1 Tahun</span>
                     <span className="text-white font-medium">Perpustakaan Lexora</span>
                   </div>
@@ -542,12 +538,9 @@ export default async function HomePage() {
       {/* ── Footer ──────────────────────────────────────────────── */}
       <footer className="px-6 md:px-10 py-10 border-t border-border bg-surface mt-auto">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center shadow-2xs">
-              <Library className="w-4 h-4" />
-            </div>
-            <span className="font-bold tracking-tight text-foreground">Lexora</span>
-          </div>
+          <Link href="/" className="group focus:outline-none">
+            <LexoraLogo size="sm" />
+          </Link>
           <p className="text-xs font-medium text-muted">
             © 2026 Lexora — Sistem Informasi Perpustakaan Digital & Sirkulasi Fisik
           </p>

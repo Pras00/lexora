@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 164 36" fill="none">
+  <title>Lexora — Sistem Informasi Perpustakaan</title>
+  <!-- Brand Mark -->
+  <rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="#4338CA" />
+  <rect x="2" y="2" width="32" height="32" rx="8.5" stroke="#FFFFFF" stroke-opacity="0.16" stroke-width="1" />
+  <path
+    d="M16.5 7.5H22.5C25.2614 7.5 27.5 9.73858 27.5 12.5V18.5C27.5 19.6046 26.6046 20.5 25.5 20.5H18.5C17.3954 20.5 16.5 19.6046 16.5 18.5V7.5Z"
+    fill="#E0E7FF"
+  />
+  <path
+    d="M20.25 7.5H23.75V15.25L22 13.75L20.25 15.25V7.5Z"
+    fill="#F59E0B"
+  />
+  <path
+    d="M8.5 9.5C8.5 8.39543 9.39543 7.5 10.5 7.5H14V21.5C14 22.3284 14.6716 23 15.5 23H25.5C26.6046 23 27.5 23.8954 27.5 25V26.5C27.5 27.6046 26.6046 28.5 25.5 28.5H11.5C9.84315 28.5 8.5 27.1569 8.5 25.5V9.5Z"
+    fill="#FFFFFF"
+  />
+  <rect x="10.25" y="10.25" width="2" height="4.5" rx="1" fill="#4338CA" fill-opacity="0.35" />
+
+  <!-- Wordmark -->
+  <text
+    x="46"
+    y="25.5"
+    fill="#0F172A"
+    font-family="'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif"
+    font-size="22"
+    font-weight="800"
+    letter-spacing="-0.03em"
+  >Lexora</text>
+  <circle cx="123" cy="23.5" r="2.2" fill="#F59E0B" />
+</svg>
+

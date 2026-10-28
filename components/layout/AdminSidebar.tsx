@@ -11,9 +11,9 @@ import {
   Users,
   CircleAlert,
   BarChart3,
-  ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LexoraLogo } from '@/components/shared/LexoraLogo';
 
 const adminNavigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -35,22 +35,9 @@ export function AdminSidebar() {
       <Link
         href="/"
         title="Kembali ke Beranda"
-        className="flex items-center gap-2.5 h-16 px-6 border-b border-border hover:bg-surface-secondary/60 transition-colors group cursor-pointer"
+        className="flex items-center h-16 px-6 border-b border-border hover:bg-surface-secondary/60 transition-colors group cursor-pointer"
       >
-        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary text-white shadow-xs group-hover:scale-105 transition-transform">
-          <ShieldCheck className="w-5 h-5" />
-        </div>
-        <div>
-          <div className="flex items-center gap-1.5">
-            <span className="font-bold text-lg text-foreground tracking-tight">Lexora</span>
-            <span className="px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wider rounded bg-primary/10 text-primary">
-              Admin
-            </span>
-          </div>
-          <span className="block text-xs text-muted font-medium -mt-1">
-            Panel Pustakawan
-          </span>
-        </div>
+        <LexoraLogo size="md" badge="Admin" subtitle="Panel Pustakawan" />
       </Link>
 
       {/* Navigation Links */}
