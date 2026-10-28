@@ -10,11 +10,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "*.supabase.co",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
         hostname: "covers.openlibrary.org",
         pathname: "/**",
       },

@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
+import { sql } from '@/lib/db/neon';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -17,28 +18,39 @@ export default async function LoansPage() {
   let activeLoans: ActiveLoan[] = [];
 
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user } = await getCurrentUser();
 
-    if (user) {
-      const { data } = await supabase
-        .from('loans')
-        .select(`
-          *,
-          items:loan_items(*, book:books(*))
-        `)
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+    if (user && process.env.DATABASE_URL) {
+      const data = await sql`
+        SELECT l.*,
+          (
+            SELECT json_agg(
+              json_build_object(
+                'id', li.id,
+                'status', li.status,
+                'due_date', li.due_date,
+                'extension_count', li.extension_count,
+                'returned_at', li.returned_at,
+                'damage_level', li.damage_level,
+                'replacement_cost', li.replacement_cost,
+                'book', json_build_object('id', b.id, 'title', b.title, 'author', b.author, 'cover_url', b.cover_url, 'isbn', b.isbn)
+              )
+            )
+            FROM loan_items li
+            JOIN books b ON li.book_id = b.id
+            WHERE li.loan_id = l.id
+          ) as items
+        FROM loans l
+        WHERE l.user_id = ${user.id} AND l.status = 'active'
+        ORDER BY l.created_at DESC
+      `;
 
       if (data) {
         activeLoans = data as unknown as ActiveLoan[];
       }
     }
   } catch (err) {
-    console.warn('Error fetching loans:', err);
+    console.warn('Error fetching loans from NeonDB:', err);
   }
 
   return (

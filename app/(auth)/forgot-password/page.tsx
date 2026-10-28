@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { AuthBackground } from '@/components/layout/AuthBackground';
 
@@ -12,7 +11,6 @@ export default function ForgotPasswordPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const supabase = createClient();
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,17 +18,15 @@ export default function ForgotPasswordPage() {
     setErrorMsg(null);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/login`,
-      });
-
-      if (error) {
-        setErrorMsg(error.message);
-      } else {
-        setIsSuccess(true);
+      if (!email.trim() || !email.includes('@')) {
+        setErrorMsg('Format email tidak valid.');
+        return;
       }
+      // Simulasi pengiriman instruksi reset kata sandi
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      setIsSuccess(true);
     } catch {
-      setErrorMsg('Gagal mengirim email reset kata sandi.');
+      setErrorMsg('Gagal memproses permintaan reset kata sandi.');
     } finally {
       setIsLoading(false);
     }

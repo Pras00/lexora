@@ -1,41 +1,45 @@
-import { createClient } from '@/lib/supabase/server';
+import { sql } from '@/lib/db/neon';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { formatCurrency } from '@/lib/utils';
-import { BarChart3, TrendingUp, CheckCircle, AlertTriangle, Coins } from 'lucide-react';
+import { TrendingUp, CheckCircle, AlertTriangle, Coins } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminReportsPage() {
   let totalLoans = 0;
   let totalReturned = 0;
-  let totalOverdue = 0;
   let totalFineCollected = 0;
   let totalFineOutstanding = 0;
 
   try {
-    const supabase = await createClient();
-
-    const [itemsRes, finesRes] = await Promise.all([
-      supabase.from('loan_items').select('id, status'),
-      supabase.from('fines').select('amount, status'),
+    const [loanStats, fineStats] = await Promise.all([
+      sql`
+        SELECT 
+          COUNT(*)::int as total_loans,
+          COUNT(CASE WHEN status = 'returned' THEN 1 END)::int as total_returned,
+          COUNT(CASE WHEN status = 'overdue' THEN 1 END)::int as total_overdue
+        FROM public.loan_items
+      `,
+      sql`
+        SELECT 
+          COALESCE(SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END), 0)::int as total_fine_collected,
+          COALESCE(SUM(CASE WHEN status = 'unpaid' THEN amount ELSE 0 END), 0)::int as total_fine_outstanding
+        FROM public.fines
+      `,
     ]);
 
-    if (itemsRes.data) {
-      totalLoans = itemsRes.data.length;
-      totalReturned = itemsRes.data.filter((i) => i.status === 'returned').length;
-      totalOverdue = itemsRes.data.filter((i) => i.status === 'overdue').length;
+    if (loanStats && loanStats.length > 0) {
+      totalLoans = Number(loanStats[0].total_loans) || 0;
+      totalReturned = Number(loanStats[0].total_returned) || 0;
     }
 
-    if (finesRes.data) {
-      totalFineCollected = finesRes.data
-        .filter((f) => f.status === 'paid')
-        .reduce((acc, f) => acc + Number(f.amount), 0);
-
-      totalFineOutstanding = finesRes.data
-        .filter((f) => f.status === 'unpaid')
-        .reduce((acc, f) => acc + Number(f.amount), 0);
+    if (fineStats && fineStats.length > 0) {
+      totalFineCollected = Number(fineStats[0].total_fine_collected) || 0;
+      totalFineOutstanding = Number(fineStats[0].total_fine_outstanding) || 0;
     }
   } catch (err) {
-    console.warn('Error fetching reports data:', err);
+    console.warn('Error fetching reports data from NeonDB:', err);
   }
 
   const returnRate = totalLoans > 0 ? Math.round((totalReturned / totalLoans) * 100) : 100;

@@ -10,9 +10,7 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PickupPass } from '@/components/requests/PickupPass';
 import { formatDate, formatDateTime } from '@/lib/utils';
-import { calculatePickupDeadline } from '@/lib/working-days';
-import { generatePickupCode } from '@/lib/pickup-code';
-import { createClient } from '@/lib/supabase/client';
+import { reviewLoanRequest } from '@/app/actions/requests';
 
 interface AdminRequestReviewClientProps {
   request: LoanRequestWithDetails;
@@ -33,7 +31,6 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const supabase = createClient();
 
   const isPending = request.status === 'pending';
 
@@ -63,55 +60,10 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
     setErrorMsg(null);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const approvedBookIds = Object.entries(decisions)
-        .filter(([_, d]) => d.approved)
-        .map(([bookId]) => bookId);
-
-      // Skenario A: Semua Ditolak
-      if (approvedBookIds.length === 0) {
-        // Update request jadi rejected
-        await supabase
-          .from('loan_requests')
-          .update({
-            status: 'rejected',
-            admin_id: user?.id || null,
-            processed_at: new Date().toISOString(),
-          })
-          .eq('id', request.id);
-
-        for (const item of request.items) {
-          await supabase
-            .from('loan_request_items')
-            .update({
-              status: 'rejected',
-              rejection_reason: decisions[item.book_id]?.reason || 'Ditolak oleh petugas.',
-            })
-            .eq('id', item.id);
-        }
-
-        router.refresh();
+      const res = await reviewLoanRequest(request.id, decisions);
+      if (!res.success) {
+        setErrorMsg(res.error || 'Gagal memproses persetujuan pengajuan.');
         return;
-      }
-
-      // Skenario B: Ada yang Disetujui (Atomic RPC)
-      const pickupDeadline = calculatePickupDeadline(new Date(), 2);
-      const pickupCode = generatePickupCode();
-
-      // Panggil atomic RPC function di Supabase
-      const { error: rpcError } = await supabase.rpc('approve_loan_request', {
-        p_request_id: request.id,
-        p_admin_id: user?.id || null,
-        p_approved_book_ids: approvedBookIds,
-        p_pickup_deadline: pickupDeadline.toISOString(),
-        p_pickup_code: pickupCode,
-      });
-
-      if (rpcError) {
-        throw new Error(rpcError.message);
       }
 
       router.refresh();

@@ -1,9 +1,9 @@
-import { createClient } from '@/lib/supabase/server';
+import { sql } from '@/lib/db/neon';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { BookCatalogClient } from '@/components/books/BookCatalogClient';
 import { BookWithCategory, Category } from '@/types';
 
-// Fallback data jika database Supabase belum terisi
+// Fallback data jika database belum terisi
 const fallbackCategories: Category[] = [
   { id: 'cat-1', name: 'Teknologi & Pemrograman', slug: 'teknologi-pemrograman', description: null, created_at: '' },
   { id: 'cat-2', name: 'Sains & Matematika', slug: 'sains-matematika', description: null, created_at: '' },
@@ -106,25 +106,24 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   const initialCategory = typeof rawCat === 'string' ? rawCat : Array.isArray(rawCat) ? rawCat[0] || 'all' : 'all';
 
   try {
-    const supabase = await createClient();
+    if (process.env.DATABASE_URL) {
+      const [dbBooks, dbCats] = await Promise.all([
+        sql`
+          SELECT b.*, json_build_object('id', c.id, 'name', c.name, 'slug', c.slug) as category
+          FROM books b
+          LEFT JOIN categories c ON b.category_id = c.id
+          WHERE b.status = 'active'
+          ORDER BY b.created_at DESC
+        `,
+        sql`SELECT * FROM categories ORDER BY name ASC`,
+      ]);
 
-    const [booksRes, categoriesRes] = await Promise.all([
-      supabase
-        .from('books')
-        .select('*, category:categories(*)')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false }),
-      supabase
-        .from('categories')
-        .select('*')
-        .order('name', { ascending: true }),
-    ]);
-
-    if (booksRes.data && booksRes.data.length > 0) {
-      books = booksRes.data as unknown as BookWithCategory[];
-    }
-    if (categoriesRes.data && categoriesRes.data.length > 0) {
-      categories = categoriesRes.data as Category[];
+      if (dbBooks && dbBooks.length > 0) {
+        books = dbBooks as unknown as BookWithCategory[];
+      }
+      if (dbCats && dbCats.length > 0) {
+        categories = dbCats as unknown as Category[];
+      }
     }
   } catch (error) {
     console.warn('Menggunakan data fallback untuk katalog:', error);

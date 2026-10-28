@@ -42,21 +42,21 @@ export function MobileNav({ isOpen, onClose, navigation, isAdmin }: MobileNavPro
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-y-0 left-0 w-72 bg-[var(--surface)] border-r border-[var(--border)] shadow-xl flex flex-col z-50"
+            className="fixed inset-y-0 left-0 w-72 bg-surface border-r border-border shadow-xl flex flex-col z-50"
           >
             {/* Header */}
-            <div className="flex items-center justify-between h-16 px-6 border-b border-[var(--border)]">
+            <div className="flex items-center justify-between h-16 px-6 border-b border-border">
               <div className="flex items-center gap-2.5">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600 text-white">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-white">
                   <Library className="w-4 h-4" />
                 </div>
-                <span className="font-bold text-lg text-[var(--foreground)]">
-                  Lexora {isAdmin && <span className="text-xs font-semibold text-indigo-600">[Admin]</span>}
+                <span className="font-bold text-lg text-foreground">
+                  Lexora {isAdmin && <span className="text-xs font-semibold text-primary">(Admin)</span>}
                 </span>
               </div>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-[var(--foreground)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="p-1.5 rounded-lg text-muted hover:text-foreground hover:bg-surface-secondary transition-colors cursor-pointer"
                 aria-label="Tutup menu navigasi"
               >
                 <X className="w-5 h-5" />
@@ -80,8 +80,8 @@ export function MobileNav({ isOpen, onClose, navigation, isAdmin }: MobileNavPro
                     className={cn(
                       'flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors',
                       isActive
-                        ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-semibold'
-                        : 'text-[var(--foreground)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800'
+                        ? 'bg-primary/10 text-primary font-semibold'
+                        : 'text-muted hover:text-foreground hover:bg-surface-secondary'
                     )}
                   >
                     <Icon className="w-4 h-4" />

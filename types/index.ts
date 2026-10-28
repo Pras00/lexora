@@ -55,3 +55,20 @@ export type FineWithDetails = Fine & {
   }) | null;
   user?: Profile | null;
 };
+
+export interface User {
+  id: string;
+  email?: string;
+  phone?: string;
+  user_metadata?: {
+    full_name?: string;
+    role?: string;
+    [key: string]: any;
+  };
+  app_metadata?: Record<string, any>;
+  aud?: string;
+  role?: string;
+  created_at?: string;
+  [key: string]: any;
+}
+

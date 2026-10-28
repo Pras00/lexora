@@ -1,5 +1,6 @@
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
 import { UserLayoutClient } from './UserLayoutClient';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,31 +9,15 @@ export default async function UserLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let userEmail = 'user@lexora.id';
-  let profile = null;
+  const { user, profile } = await getCurrentUser();
 
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      userEmail = user.email || userEmail;
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      profile = data;
-    }
-  } catch (error) {
-    // Fallback jika belum terhubung env Supabase
-    console.warn('Supabase not configured or unreachable:', error);
+  // Pengguna yang belum login dialihkan ke halaman login
+  if (!user) {
+    redirect('/login');
   }
 
   return (
-    <UserLayoutClient user={{ email: userEmail, profile }}>
+    <UserLayoutClient user={{ email: user.email || undefined, profile }}>
       {children}
     </UserLayoutClient>
   );

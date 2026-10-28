@@ -1,10 +1,11 @@
 -- ==============================================================================
 -- LEXORA — SISTEM INFORMASI PERPUSTAKAAN
--- Supabase PostgreSQL Database Migration Script
+-- NeonDB PostgreSQL Database Migration Schema
 -- ==============================================================================
 
 -- 1. EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 2. ENUMS
 DO $$ BEGIN
@@ -86,12 +87,14 @@ EXCEPTION
 END $$;
 
 -- 3. SEQUENCES UNTUK IDENTIFIER OTOMATIS
-CREATE SEQUENCE IF NOT EXISTS member_number_seq START 1;
+CREATE SEQUENCE IF NOT EXISTS member_number_seq START 3;
 CREATE SEQUENCE IF NOT EXISTS request_number_seq START 1;
 
--- 4. TABEL PROFILES (Terhubung ke Supabase Auth)
+-- 4. TABEL PROFILES & AKUN
 CREATE TABLE IF NOT EXISTS public.profiles (
-    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT,
     role user_role DEFAULT 'member' NOT NULL,
     full_name TEXT NOT NULL,
     phone TEXT,
@@ -245,42 +248,6 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 -- 16. HELPER FUNCTIONS & TRIGGERS
 -- ==============================================================================
 
--- Trigger: Otomatis buat Profile saat User mendaftar di auth.users
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER 
-SECURITY DEFINER
-SET search_path = public
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    new_member_num TEXT;
-    user_role_val public.user_role;
-BEGIN
-    new_member_num := 'LX-' || LPAD(nextval('public.member_number_seq')::TEXT, 4, '0');
-    
-    BEGIN
-        user_role_val := COALESCE((NEW.raw_user_meta_data->>'role')::public.user_role, 'member'::public.user_role);
-    EXCEPTION WHEN OTHERS THEN
-        user_role_val := 'member'::public.user_role;
-    END;
-
-    INSERT INTO public.profiles (id, full_name, role, member_number)
-    VALUES (
-        NEW.id,
-        COALESCE(NEW.raw_user_meta_data->>'full_name', 'Member Lexora'),
-        user_role_val,
-        new_member_num
-    )
-    ON CONFLICT (id) DO NOTHING;
-    RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-    AFTER INSERT ON auth.users
-    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
 -- Trigger: Otomatis generate request_number (BR-YYYY-00001)
 CREATE OR REPLACE FUNCTION public.set_request_number()
 RETURNS TRIGGER AS $$
@@ -302,9 +269,7 @@ CREATE TRIGGER trg_set_request_number
     BEFORE INSERT ON public.loan_requests
     FOR EACH ROW EXECUTE FUNCTION public.set_request_number();
 
--- ==============================================================================
--- 17. ATOMIC TRANSACTION: APPROVE LOAN REQUEST & DECREMENT STOCK
--- ==============================================================================
+-- Stored Procedure: Atomic Approve Loan Request
 CREATE OR REPLACE FUNCTION public.approve_loan_request(
     p_request_id UUID,
     p_admin_id UUID,
@@ -361,111 +326,5 @@ BEGIN
 
     RETURN TRUE;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql;
 
--- ==============================================================================
--- 18. ROW LEVEL SECURITY (RLS) POLICIES
--- ==============================================================================
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.books ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.loan_requests ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.loan_request_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.pickup_passes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.loans ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.loan_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.loan_extensions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.waitlist ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.fines ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
-
--- Helper function: cek apakah current user adalah admin
-CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS BOOLEAN AS $$
-BEGIN
-    RETURN EXISTS (
-        SELECT 1 FROM public.profiles
-        WHERE id = auth.uid() AND role = 'admin'
-    );
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Profiles Policies
-CREATE POLICY "Users can view own profile" ON public.profiles
-    FOR SELECT USING (auth.uid() = id OR public.is_admin());
-
-CREATE POLICY "Users can update own profile" ON public.profiles
-    FOR UPDATE USING (auth.uid() = id OR public.is_admin());
-
--- Categories & Books Policies (Read public/auth, write admin)
-CREATE POLICY "Public can view categories" ON public.categories
-    FOR SELECT USING (true);
-CREATE POLICY "Admin can manage categories" ON public.categories
-    FOR ALL USING (public.is_admin());
-
-CREATE POLICY "Public can view active books" ON public.books
-    FOR SELECT USING (true);
-CREATE POLICY "Admin can manage books" ON public.books
-    FOR ALL USING (public.is_admin());
-
--- Loan Requests Policies
-CREATE POLICY "Users can view own requests" ON public.loan_requests
-    FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
-CREATE POLICY "Users can create loan request" ON public.loan_requests
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Admin can update loan request" ON public.loan_requests
-    FOR UPDATE USING (public.is_admin() OR auth.uid() = user_id);
-
--- Loan Request Items
-CREATE POLICY "Users can view request items" ON public.loan_request_items
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM public.loan_requests r 
-            WHERE r.id = loan_request_items.request_id AND (r.user_id = auth.uid() OR public.is_admin())
-        )
-    );
-CREATE POLICY "Users can create request items" ON public.loan_request_items
-    FOR INSERT WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM public.loan_requests r 
-            WHERE r.id = loan_request_items.request_id AND r.user_id = auth.uid()
-        )
-    );
-
--- Pickup Passes
-CREATE POLICY "Users can view own pickup pass" ON public.pickup_passes
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM public.loan_requests r 
-            WHERE r.id = pickup_passes.request_id AND (r.user_id = auth.uid() OR public.is_admin())
-        )
-    );
-CREATE POLICY "Admin can update pickup pass" ON public.pickup_passes
-    FOR UPDATE USING (public.is_admin());
-
--- Loans & Loan Items
-CREATE POLICY "Users can view own loans" ON public.loans
-    FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
-CREATE POLICY "Admin can manage loans" ON public.loans
-    FOR ALL USING (public.is_admin());
-
--- Loan Items
-CREATE POLICY "Users can view own loan items" ON public.loan_items
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM public.loans l 
-            WHERE l.id = loan_items.loan_id AND (l.user_id = auth.uid() OR public.is_admin())
-        )
-    );
-CREATE POLICY "Admin can manage loan items" ON public.loan_items
-    FOR ALL USING (public.is_admin());
-
--- Fines
-CREATE POLICY "Users can view own fines" ON public.fines
-    FOR SELECT USING (auth.uid() = user_id OR public.is_admin());
-CREATE POLICY "Admin can manage fines" ON public.fines
-    FOR ALL USING (public.is_admin());
-
--- Notifications
-CREATE POLICY "Users can view and manage own notifications" ON public.notifications
-    FOR ALL USING (auth.uid() = user_id);

@@ -1,9 +1,36 @@
 -- ==============================================================================
--- LEXORA — SAMPLE SEED DATA
--- Data Awal Kategori dan Buku untuk Uji Coba Katalog Perpustakaan
+-- LEXORA — NEONDB SEED DATA
+-- Akun Pengguna Default, Kategori, dan Buku Fisik
 -- ==============================================================================
 
--- 1. Kategori Buku
+-- 1. Akun Default (Pustakawan & Anggota)
+INSERT INTO public.profiles (id, email, password_hash, role, full_name, phone, member_number, status) VALUES
+(
+    '11111111-1111-1111-1111-111111111111',
+    'admin@lexora.id',
+    crypt('admin12345', gen_salt('bf')),
+    'admin',
+    'Pustakawan Utama',
+    '081234567890',
+    'LX-0001',
+    'active'
+),
+(
+    '22222222-2222-2222-2222-222222222222',
+    'member@lexora.id',
+    crypt('member12345', gen_salt('bf')),
+    'member',
+    'Pras Santoso',
+    '081298765432',
+    'LX-0002',
+    'active'
+)
+ON CONFLICT (email) DO UPDATE 
+SET password_hash = EXCLUDED.password_hash,
+    role = EXCLUDED.role,
+    full_name = EXCLUDED.full_name;
+
+-- 2. Kategori Buku
 INSERT INTO public.categories (id, name, slug, description) VALUES
 ('a0000000-0000-0000-0000-000000000001', 'Teknologi & Pemrograman', 'teknologi-pemrograman', 'Buku-buku seputar rekayasa perangkat lunak, web development, dan AI.'),
 ('a0000000-0000-0000-0000-000000000002', 'Sains & Matematika', 'sains-matematika', 'Buku ilmu pengetahuan alam, fisika, biologi, dan matematika murni.'),
@@ -11,7 +38,7 @@ INSERT INTO public.categories (id, name, slug, description) VALUES
 ('a0000000-0000-0000-0000-000000000004', 'Bisnis & Manajemen', 'bisnis-manajemen', 'Panduan kewirausahaan, manajemen produk, kepemimpinan, dan finansial.')
 ON CONFLICT (slug) DO NOTHING;
 
--- 2. Sampel Koleksi Buku
+-- 3. Sampel Koleksi Buku
 INSERT INTO public.books (title, author, isbn, category_id, publisher, published_year, description, cover_url, price, total_stock, available_stock, status) VALUES
 (
     'Clean Code: A Handbook of Agile Software Craftsmanship',
@@ -182,3 +209,4 @@ INSERT INTO public.books (title, author, isbn, category_id, publisher, published
     'active'
 )
 ON CONFLICT (isbn) DO NOTHING;
+

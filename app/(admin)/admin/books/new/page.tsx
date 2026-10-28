@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { sql } from '@/lib/db/neon';
 import { BookForm } from '@/components/books/BookForm';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Category } from '@/types';
@@ -7,15 +7,10 @@ export default async function NewBookPage() {
   let categories: Category[] = [];
 
   try {
-    const supabase = await createClient();
-    const { data } = await supabase
-      .from('categories')
-      .select('*')
-      .order('name', { ascending: true });
-
-    if (data) categories = data;
+    const rows = await sql`SELECT * FROM categories ORDER BY name ASC`;
+    if (rows) categories = rows as unknown as Category[];
   } catch (err) {
-    console.warn('Error fetching categories:', err);
+    console.warn('Error fetching categories from NeonDB:', err);
   }
 
   return (

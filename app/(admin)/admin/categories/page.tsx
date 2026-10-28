@@ -1,28 +1,24 @@
-import { createClient } from '@/lib/supabase/server';
+import { sql } from '@/lib/db/neon';
 import { AdminCategoriesClient } from './AdminCategoriesClient';
 
 export default async function AdminCategoriesPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let categoriesWithCount: any[] = [];
 
   try {
-    const supabase = await createClient();
-    const [catRes, booksRes] = await Promise.all([
-      supabase.from('categories').select('*').order('name', { ascending: true }),
-      supabase.from('books').select('category_id'),
-    ]);
+    const rows = await sql`
+      SELECT c.*, COUNT(b.id)::int as "booksCount"
+      FROM categories c
+      LEFT JOIN books b ON b.category_id = c.id
+      GROUP BY c.id
+      ORDER BY c.name ASC
+    `;
 
-    if (catRes.data) {
-      const books = booksRes.data || [];
-      categoriesWithCount = catRes.data.map((cat) => {
-        const count = books.filter((b) => b.category_id === cat.id).length;
-        return {
-          ...cat,
-          booksCount: count,
-        };
-      });
+    if (rows) {
+      categoriesWithCount = rows;
     }
   } catch (err) {
-    console.warn('Error fetching categories:', err);
+    console.warn('Error fetching categories from NeonDB:', err);
   }
 
   return <AdminCategoriesClient categories={categoriesWithCount} />;

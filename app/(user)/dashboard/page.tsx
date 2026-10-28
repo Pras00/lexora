@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
+import { sql } from '@/lib/db/neon';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -80,65 +81,56 @@ export default async function DashboardPage() {
   let currentLoans: CurrentLoan[] = [];
 
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user } = await getCurrentUser();
 
-    if (user) {
-      const [loansRes, requestsRes, finesRes, completedRes, passesRes] =
+    if (user && process.env.DATABASE_URL) {
+      const [loansData, pendingCount, unpaidFines, completedCount, passesData] =
         await Promise.all([
-          supabase
-            .from('loans')
-            .select(
-              'id, status, items:loan_items(id, status, due_date, book:books(title, author))'
-            )
-            .eq('user_id', user.id)
-            .eq('status', 'active')
-            .limit(10),
-          supabase
-            .from('loan_requests')
-            .select('id', { count: 'exact', head: true })
-            .eq('user_id', user.id)
-            .eq('status', 'pending'),
-          supabase
-            .from('fines')
-            .select('amount')
-            .eq('user_id', user.id)
-            .eq('status', 'unpaid'),
-          supabase
-            .from('loans')
-            .select('id', { count: 'exact', head: true })
-            .eq('user_id', user.id)
-            .eq('status', 'completed'),
-          supabase
-            .from('loan_requests')
-            .select(
-              'id, request_number, pass:pickup_passes(id, pickup_code, expires_at)'
-            )
-            .eq('user_id', user.id)
-            .eq('status', 'approved')
-            .limit(5),
+          sql`
+            SELECT l.id, l.status,
+              (
+                SELECT json_agg(
+                  json_build_object(
+                    'id', li.id,
+                    'status', li.status,
+                    'due_date', li.due_date,
+                    'book', json_build_object('title', b.title, 'author', b.author)
+                  )
+                )
+                FROM loan_items li
+                JOIN books b ON li.book_id = b.id
+                WHERE li.loan_id = l.id
+              ) as items
+            FROM loans l
+            WHERE l.user_id = ${user.id} AND l.status = 'active'
+            LIMIT 10
+          `,
+          sql`SELECT count(*) as count FROM loan_requests WHERE user_id = ${user.id} AND status = 'pending'`,
+          sql`SELECT COALESCE(SUM(amount), 0) as total FROM fines WHERE user_id = ${user.id} AND status = 'unpaid'`,
+          sql`SELECT count(*) as count FROM loans WHERE user_id = ${user.id} AND status = 'completed'`,
+          sql`
+            SELECT lr.id, lr.request_number,
+              json_build_object('id', pp.id, 'pickup_code', pp.pickup_code, 'expires_at', pp.expires_at) as pass
+            FROM loan_requests lr
+            JOIN pickup_passes pp ON pp.request_id = lr.id
+            WHERE lr.user_id = ${user.id} AND lr.status = 'approved'
+            LIMIT 5
+          `,
         ]);
 
-      if (loansRes.data) {
-        currentLoans = loansRes.data as unknown as CurrentLoan[];
+      if (loansData) {
+        currentLoans = loansData as unknown as CurrentLoan[];
         activeLoansCount = currentLoans.reduce(
           (acc, loan) =>
             acc +
-            (loan.items?.filter((i: LoanItem) => i.status === 'borrowed').length ||
-              0),
+            (loan.items?.filter((i: LoanItem) => i.status === 'borrowed').length || 0),
           0
         );
       }
-      if (requestsRes.count != null) pendingRequestsCount = requestsRes.count;
-      if (finesRes.data)
-        unpaidFinesTotal = finesRes.data.reduce(
-          (acc, f) => acc + Number(f.amount),
-          0
-        );
-      if (completedRes.count != null) completedLoansCount = completedRes.count;
-      if (passesRes.data) activePasses = passesRes.data as unknown as ActivePass[];
+      if (pendingCount[0]) pendingRequestsCount = Number(pendingCount[0].count);
+      if (unpaidFines[0]) unpaidFinesTotal = Number(unpaidFines[0].total);
+      if (completedCount[0]) completedLoansCount = Number(completedCount[0].count);
+      if (passesData) activePasses = passesData as unknown as ActivePass[];
     }
   } catch (err) {
     console.warn('Dashboard data fetch fallback:', err);

@@ -12,12 +12,12 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { UserMenu } from '@/components/layout/UserMenu';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
+import { sql } from '@/lib/db/neon';
 import { HighlightBookCard } from '@/components/books/HighlightBookCard';
 import { HeroQuickSearch } from '@/components/home/HeroQuickSearch';
 import { HeroBookShowcase } from '@/components/home/HeroBookShowcase';
-import { User } from '@supabase/supabase-js';
-import { BookWithCategory, Profile } from '@/types';
+import { BookWithCategory } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -170,40 +170,26 @@ const FALLBACK_FEATURED_BOOKS: BookWithCategory[] = [
 
 export default async function HomePage() {
   let featuredBooks: BookWithCategory[] = FALLBACK_FEATURED_BOOKS;
-  let user: User | null = null;
-  let userRole = 'member';
-  let userProfile: Profile | null = null;
 
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user: authUser },
-    } = await supabase.auth.getUser();
+  const { user, profile: userProfile } = await getCurrentUser();
+  const userRole = userProfile?.role || user?.user_metadata?.role || 'member';
 
-    user = authUser;
-    userRole = user?.user_metadata?.role || 'member';
-
-    if (user) {
-      const { data: prof } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
-      if (prof) userProfile = prof as Profile;
+  if (process.env.DATABASE_URL) {
+    try {
+      const dbBooks = await sql`
+        SELECT b.*, json_build_object('id', c.id, 'name', c.name, 'slug', c.slug) as category
+        FROM books b
+        LEFT JOIN categories c ON b.category_id = c.id
+        WHERE b.status = 'active'
+        ORDER BY b.created_at DESC
+        LIMIT 6
+      `;
+      if (dbBooks && dbBooks.length > 0) {
+        featuredBooks = dbBooks as unknown as BookWithCategory[];
+      }
+    } catch (neonErr) {
+      console.warn('NeonDB query books warning:', neonErr);
     }
-
-    const { data: books } = await supabase
-      .from('books')
-      .select('*, category:categories(*)')
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(6);
-
-    if (books && books.length > 0) {
-      featuredBooks = books as unknown as BookWithCategory[];
-    }
-  } catch (err) {
-    console.warn('Fallback loading featured books:', err);
   }
 
   return (
@@ -281,14 +267,14 @@ export default async function HomePage() {
             {/* Quick Actions */}
             <div className="flex flex-col sm:flex-row items-center gap-3 mt-6 sm:mt-7">
               <Link
-                href="#koleksi-pilihan"
+                href={user ? "#koleksi-pilihan" : "/login?redirectTo=%23koleksi-pilihan"}
                 className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 text-sm font-bold bg-primary text-white rounded-xl hover:bg-primary-hover hover:shadow-xs transition-all active:scale-95 cursor-pointer"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>Pinjam Buku Sekarang</span>
               </Link>
               <Link
-                href="/catalog"
+                href={user ? "/catalog" : "/login?redirectTo=/catalog"}
                 className="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-7 py-3.5 text-sm font-bold border border-border bg-surface text-foreground rounded-xl hover:border-primary hover:text-primary transition-colors cursor-pointer shadow-2xs"
               >
                 <span>Lihat Katalog</span>
@@ -297,7 +283,7 @@ export default async function HomePage() {
             </div>
 
             {/* Interactive Hero Quick Search */}
-            <HeroQuickSearch />
+            <HeroQuickSearch isAuthenticated={Boolean(user)} />
 
             {/* Micro proof metrics bar */}
             <div className="flex flex-wrap items-center gap-6 sm:gap-8 mt-8 pt-6 pb-2 border-t border-border">

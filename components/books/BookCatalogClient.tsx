@@ -5,7 +5,7 @@ import { BookWithCategory, Category } from '@/types';
 import { BookCard } from './BookCard';
 import { SearchInput } from '@/components/shared/SearchInput';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { BookOpen, SlidersHorizontal, X } from 'lucide-react';
+import { BookOpen, X } from 'lucide-react';
 
 interface BookCatalogClientProps {
   initialBooks: BookWithCategory[];
@@ -42,7 +42,9 @@ export function BookCatalogClient({
         const matchTitle = book.title.toLowerCase().includes(query);
         const matchAuthor = book.author.toLowerCase().includes(query);
         const matchIsbn = book.isbn.toLowerCase().includes(query);
-        return matchTitle || matchAuthor || matchIsbn;
+        const matchCategory = book.category?.name?.toLowerCase().includes(query) ?? false;
+        const matchDescription = book.description?.toLowerCase().includes(query) ?? false;
+        return matchTitle || matchAuthor || matchIsbn || matchCategory || matchDescription;
       }
 
       return true;

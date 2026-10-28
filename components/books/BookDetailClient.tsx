@@ -14,7 +14,6 @@ import {
   Calendar,
   Building,
   Barcode,
-  Info,
   ShieldAlert,
 } from 'lucide-react';
 

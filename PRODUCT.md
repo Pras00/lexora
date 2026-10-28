@@ -34,5 +34,5 @@ Lexora adalah platform sistem informasi perpustakaan digital dan manajemen sirku
 - **Platform:** Modern Web Application (Desktop & Mobile Web)
 - **Framework:** Next.js 16 (App Router, Turbopack, React 19)
 - **Styling:** Tailwind CSS v4 (@theme token mapping)
-- **Database & Auth:** Supabase (PostgreSQL, Row Level Security, Supabase Auth)
+- **Database & Auth:** Neon Serverless PostgreSQL (@neondatabase/serverless, pgcrypto, Secure HTTP-only Session)
 - **State & Utils:** Zustand, Lucide React, Framer Motion

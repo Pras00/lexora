@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { sql } from '@/lib/db/neon';
 import { BookForm } from '@/components/books/BookForm';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Book, Category } from '@/types';
@@ -15,16 +15,15 @@ export default async function EditBookPage({ params }: EditBookPageProps) {
   let categories: Category[] = [];
 
   try {
-    const supabase = await createClient();
-    const [bookRes, catRes] = await Promise.all([
-      supabase.from('books').select('*').eq('id', id).single(),
-      supabase.from('categories').select('*').order('name', { ascending: true }),
+    const [bookRows, catRows] = await Promise.all([
+      sql`SELECT * FROM books WHERE id::text = ${id} LIMIT 1`,
+      sql`SELECT * FROM categories ORDER BY name ASC`,
     ]);
 
-    if (bookRes.data) book = bookRes.data;
-    if (catRes.data) categories = catRes.data;
+    if (bookRows && bookRows.length > 0) book = bookRows[0] as unknown as Book;
+    if (catRows) categories = catRows as unknown as Category[];
   } catch (err) {
-    console.warn('Error fetching book for edit:', err);
+    console.warn('Error fetching book for edit from NeonDB:', err);
   }
 
   if (!book) {

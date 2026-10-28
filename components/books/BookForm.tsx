@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { bookSchema, BookInput } from '@/lib/validations/book.schema';
 import { Category, Book } from '@/types';
-import { createClient } from '@/lib/supabase/client';
+import { createBook, updateBook } from '@/app/actions/books';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -20,7 +20,6 @@ export function BookForm({ categories, initialData, isEditing = false }: BookFor
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const supabase = createClient();
 
   const {
     register,
@@ -54,48 +53,13 @@ export function BookForm({ categories, initialData, isEditing = false }: BookFor
     setErrorMsg(null);
 
     try {
-      if (isEditing && initialData) {
-        // Hitung selisih total_stock untuk menyesuaikan available_stock
-        const stockDiff = values.totalStock - initialData.total_stock;
-        const newAvailableStock = Math.max(0, initialData.available_stock + stockDiff);
+      const res = isEditing && initialData
+        ? await updateBook(initialData.id, values)
+        : await createBook(values);
 
-        const { error } = await supabase
-          .from('books')
-          .update({
-            title: values.title,
-            author: values.author,
-            isbn: values.isbn,
-            category_id: values.categoryId,
-            publisher: values.publisher || null,
-            published_year: values.publishedYear || null,
-            description: values.description || null,
-            cover_url: values.coverUrl || null,
-            price: values.price,
-            total_stock: values.totalStock,
-            available_stock: newAvailableStock,
-            status: values.status,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', initialData.id);
-
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('books').insert({
-          title: values.title,
-          author: values.author,
-          isbn: values.isbn,
-          category_id: values.categoryId,
-          publisher: values.publisher || null,
-          published_year: values.publishedYear || null,
-          description: values.description || null,
-          cover_url: values.coverUrl || null,
-          price: values.price,
-          total_stock: values.totalStock,
-          available_stock: values.totalStock,
-          status: values.status,
-        });
-
-        if (error) throw error;
+      if (!res.success) {
+        setErrorMsg(res.error || 'Gagal menyimpan data buku.');
+        return;
       }
 
       router.push('/admin/books');

@@ -11,22 +11,35 @@ const TRENDING_TOPICS = [
   { label: 'Sains', query: 'Sains' },
 ] as const;
 
-export function HeroQuickSearch() {
+interface HeroQuickSearchProps {
+  isAuthenticated?: boolean;
+}
+
+export function HeroQuickSearch({ isAuthenticated = false }: HeroQuickSearchProps) {
   const router = useRouter();
   const [query, setQuery] = useState('');
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const trimmed = query.trim();
-    if (trimmed) {
-      router.push(`/catalog?q=${encodeURIComponent(trimmed)}`);
+    const targetUrl = trimmed ? `/catalog?q=${encodeURIComponent(trimmed)}` : '/catalog';
+
+    if (!isAuthenticated) {
+      // Alur usecase aman: user yang belum login diarahkan ke login dulu bersama tujuan pencarian
+      router.push(`/login?redirectTo=${encodeURIComponent(targetUrl)}`);
     } else {
-      router.push('/catalog');
+      router.push(targetUrl);
     }
   };
 
   const handleTopicClick = (topicQuery: string) => {
-    router.push(`/catalog?q=${encodeURIComponent(topicQuery)}`);
+    const targetUrl = `/catalog?q=${encodeURIComponent(topicQuery)}`;
+
+    if (!isAuthenticated) {
+      router.push(`/login?redirectTo=${encodeURIComponent(targetUrl)}`);
+    } else {
+      router.push(targetUrl);
+    }
   };
 
   return (
@@ -43,7 +56,7 @@ export function HeroQuickSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Cari judul buku, penulis, atau topik..."
-          className="w-full bg-transparent border-0 text-sm text-foreground placeholder:text-muted focus:outline-hidden px-2 py-1.5"
+          className="w-full bg-transparent border-0 text-sm text-foreground placeholder:text-muted focus:outline-none px-2 py-1.5"
           aria-label="Pencarian cepat katalog buku"
         />
         <button
@@ -57,13 +70,13 @@ export function HeroQuickSearch() {
 
       {/* Trending / Recommended Quick Filter Pills */}
       <div className="flex flex-wrap items-center gap-2 mt-3 text-xs text-muted">
-        <span className="font-semibold text-foreground/80 text-[11px]">Topik Populer:</span>
+        <span className="font-semibold text-foreground/80 text-xs">Topik Populer:</span>
         {TRENDING_TOPICS.map((topic) => (
           <button
             key={topic.label}
             type="button"
             onClick={() => handleTopicClick(topic.query)}
-            className="px-2.5 py-1 rounded-lg bg-surface-secondary text-muted hover:text-foreground hover:bg-surface border border-border transition-colors text-[11px] font-medium cursor-pointer"
+            className="px-2.5 py-1 rounded-lg bg-surface-secondary text-muted hover:text-foreground hover:bg-surface border border-border transition-colors text-xs font-medium cursor-pointer"
           >
             #{topic.label}
           </button>

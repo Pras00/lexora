@@ -16,7 +16,6 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { registerSchema, RegisterInput } from '@/lib/validations/auth.schema';
-import { createClient } from '@/lib/supabase/client';
 
 export function RegisterForm() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -24,7 +23,6 @@ export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const supabase = createClient();
 
   const {
     register,
@@ -39,28 +37,20 @@ export function RegisterForm() {
     setErrorMsg(null);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-        options: {
-          data: {
-            full_name: values.fullName,
-            phone: values.phone || null,
-            role: 'member',
-          },
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-        },
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
       });
 
-      if (error) {
-        setErrorMsg(error.message);
-        setIsLoading(false);
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setErrorMsg(data.error || 'Gagal memproses pendaftaran.');
         return;
       }
 
-      if (data.user) {
-        setIsSuccess(true);
-      }
+      setIsSuccess(true);
     } catch {
       setErrorMsg('Gagal memproses pendaftaran. Silakan periksa koneksi internet Anda.');
     } finally {

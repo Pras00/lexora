@@ -1,28 +1,15 @@
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
 import { ProfileClient } from '@/app/(user)/profile/ProfileClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminProfilePage() {
-  let userEmail = 'admin@lexora.id';
-  let profile = null;
+  const { user, profile } = await getCurrentUser();
 
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      userEmail = user.email || userEmail;
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      profile = data;
-    }
-  } catch (err) {
-    console.warn('Error fetching profile:', err);
-  }
-
-  return <ProfileClient userEmail={userEmail} initialProfile={profile} />;
+  return (
+    <ProfileClient
+      userEmail={user?.email || 'admin@lexora.id'}
+      initialProfile={profile}
+    />
+  );
 }

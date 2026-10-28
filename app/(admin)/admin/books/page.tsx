@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { sql } from '@/lib/db/neon';
 import { AdminBooksClient } from './AdminBooksClient';
 import { BookWithCategory, Category } from '@/types';
 
@@ -7,19 +7,22 @@ export default async function AdminBooksPage() {
   let categories: Category[] = [];
 
   try {
-    const supabase = await createClient();
-    const [booksRes, catRes] = await Promise.all([
-      supabase
-        .from('books')
-        .select('*, category:categories(*)')
-        .order('created_at', { ascending: false }),
-      supabase.from('categories').select('*').order('name', { ascending: true }),
-    ]);
+    if (process.env.DATABASE_URL) {
+      const [booksData, catData] = await Promise.all([
+        sql`
+          SELECT b.*, json_build_object('id', c.id, 'name', c.name, 'slug', c.slug) as category
+          FROM books b
+          LEFT JOIN categories c ON b.category_id = c.id
+          ORDER BY b.created_at DESC
+        `,
+        sql`SELECT * FROM categories ORDER BY name ASC`,
+      ]);
 
-    if (booksRes.data) books = booksRes.data as unknown as BookWithCategory[];
-    if (catRes.data) categories = catRes.data as Category[];
+      if (booksData) books = booksData as unknown as BookWithCategory[];
+      if (catData) categories = catData as unknown as Category[];
+    }
   } catch (err) {
-    console.warn('Error fetching admin books:', err);
+    console.warn('Error fetching admin books from NeonDB:', err);
   }
 
   return <AdminBooksClient initialBooks={books} categories={categories} />;

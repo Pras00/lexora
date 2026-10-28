@@ -11,7 +11,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PickupPass } from '@/components/requests/PickupPass';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { formatDate, formatDateTime } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
+import { cancelLoanRequest } from '@/app/actions/requests';
 
 interface RequestDetailClientProps {
   request: LoanRequestWithDetails;
@@ -21,44 +21,16 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
   const router = useRouter();
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const supabase = createClient();
 
   const canCancel = request.status === 'pending' || request.status === 'approved';
 
   const handleCancelRequest = async () => {
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('loan_requests')
-        .update({ status: 'cancelled' })
-        .eq('id', request.id);
-
-      if (error) throw error;
-
-      // Jika sebelumnya approved, kembalikan available_stock buku yang sudah di-approve
-      if (request.status === 'approved') {
-        const approvedItems = request.items.filter((i) => i.status === 'approved');
-        for (const item of approvedItems) {
-          // Tambah kembali stok
-          const { data: book } = await supabase
-            .from('books')
-            .select('available_stock')
-            .eq('id', item.book_id)
-            .single();
-
-          if (book) {
-            await supabase
-              .from('books')
-              .update({ available_stock: book.available_stock + 1 })
-              .eq('id', item.book_id);
-          }
-        }
-
-        // Batalkan pass jika ada
-        await supabase
-          .from('pickup_passes')
-          .update({ status: 'cancelled' })
-          .eq('request_id', request.id);
+      const res = await cancelLoanRequest(request.id);
+      if (!res.success) {
+        alert(res.error || 'Gagal membatalkan pengajuan.');
+        return;
       }
 
       setIsCancelModalOpen(false);

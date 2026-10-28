@@ -8,7 +8,7 @@ import { Trash2, BookOpen, Clock, AlertCircle, CheckCircle2, ArrowRight } from '
 import { useCartStore } from '@/stores/cart.store';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { createClient } from '@/lib/supabase/client';
+import { createLoanRequest } from '@/app/actions/requests';
 
 export function NewRequestClient() {
   const router = useRouter();
@@ -16,7 +16,6 @@ export function NewRequestClient() {
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const supabase = createClient();
 
   useEffect(() => {
     setMounted(true);
@@ -56,78 +55,17 @@ export function NewRequestClient() {
     setErrorMsg(null);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const bookIds = items.map((item) => item.book.id);
+      const res = await createLoanRequest(bookIds);
 
-      if (!user) {
-        router.push('/login?redirectTo=/requests/new');
+      if (!res.success) {
+        setErrorMsg(res.error || 'Gagal membuat pengajuan peminjaman.');
         return;
-      }
-
-      // 1. Cek apakah user memiliki denda yang belum dibayar
-      const { data: unpaidFines } = await supabase
-        .from('fines')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('status', 'unpaid');
-
-      if (unpaidFines && unpaidFines.length > 0) {
-        setErrorMsg('Anda memiliki denda yang belum diselesaikan. Harap lunasi denda sebelum mengajukan peminjaman baru.');
-        setIsLoading(false);
-        return;
-      }
-
-      // 2. Cek apakah user sedang ditangguhkan (suspended)
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('status, suspended_until')
-        .eq('id', user.id)
-        .single();
-
-      if (profile?.status === 'suspended') {
-        const until = profile.suspended_until ? new Date(profile.suspended_until).toLocaleDateString('id-ID') : 'beberapa hari ke depan';
-        setErrorMsg(`Akun Anda sedang ditangguhkan hingga ${until} karena riwayat no-show 3x.`);
-        setIsLoading(false);
-        return;
-      }
-
-      // 3. Simpan Loan Request ke database
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 24); // Auto-expire 24 jam
-
-      const { data: request, error: reqError } = await supabase
-        .from('loan_requests')
-        .insert({
-          user_id: user.id,
-          status: 'pending',
-          expires_at: expiresAt.toISOString(),
-        })
-        .select()
-        .single();
-
-      if (reqError || !request) {
-        throw new Error(reqError?.message || 'Gagal membuat pengajuan peminjaman.');
-      }
-
-      // 4. Masukkan item-item buku
-      const requestItems = items.map((item) => ({
-        request_id: request.id,
-        book_id: item.book.id,
-        status: 'pending' as const,
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('loan_request_items')
-        .insert(requestItems);
-
-      if (itemsError) {
-        throw new Error(itemsError.message);
       }
 
       // Sukses: Bersihkan keranjang dan alihkan ke detail pengajuan
       clearCart();
-      router.push(`/requests/${request.id}`);
+      router.push(`/requests/${res.requestId}`);
       router.refresh();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Terjadi kesalahan sistem.';

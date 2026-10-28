@@ -1,4 +1,5 @@
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
+import { sql } from '@/lib/db/neon';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -11,30 +12,34 @@ export default async function FinesPage() {
   let totalUnpaid = 0;
 
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user } = await getCurrentUser();
 
-    if (user) {
-      const { data } = await supabase
-        .from('fines')
-        .select(`
-          *,
-          loan_item:loan_items(*, book:books(*))
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+    if (user && process.env.DATABASE_URL) {
+      const data = await sql`
+        SELECT f.*,
+          json_build_object(
+            'id', li.id,
+            'status', li.status,
+            'due_date', li.due_date,
+            'damage_level', li.damage_level,
+            'book', json_build_object('id', b.id, 'title', b.title, 'author', b.author, 'cover_url', b.cover_url)
+          ) as loan_item
+        FROM fines f
+        LEFT JOIN loan_items li ON f.loan_item_id = li.id
+        LEFT JOIN books b ON li.book_id = b.id
+        WHERE f.user_id = ${user.id}
+        ORDER BY f.created_at DESC
+      `;
 
       if (data) {
         fines = data as unknown as FineWithDetails[];
         totalUnpaid = data
-          .filter((f) => f.status === 'unpaid')
-          .reduce((acc, f) => acc + Number(f.amount), 0);
+          .filter((f) => (f as unknown as { status: string }).status === 'unpaid')
+          .reduce((acc, f) => acc + Number((f as unknown as { amount: string | number }).amount), 0);
       }
     }
   } catch (err) {
-    console.warn('Error fetching fines:', err);
+    console.warn('Error fetching fines from NeonDB:', err);
   }
 
   const unpaidFines = fines.filter((f) => f.status === 'unpaid');

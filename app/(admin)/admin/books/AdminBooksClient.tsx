@@ -9,7 +9,7 @@ import { SearchInput } from '@/components/shared/SearchInput';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { formatCurrency } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
+import { deleteBook } from '@/app/actions/books';
 import { useRouter } from 'next/navigation';
 
 interface AdminBooksClientProps {
@@ -21,7 +21,6 @@ export function AdminBooksClient({ initialBooks, categories }: AdminBooksClientP
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [selectedCat, setSelectedCat] = useState('all');
-  const supabase = createClient();
 
   const filteredBooks = useMemo(() => {
     return initialBooks.filter((b) => {
@@ -42,8 +41,11 @@ export function AdminBooksClient({ initialBooks, categories }: AdminBooksClientP
     if (!confirm(`Apakah Anda yakin ingin menghapus buku "${title}"?`)) return;
 
     try {
-      const { error } = await supabase.from('books').delete().eq('id', id);
-      if (error) throw error;
+      const res = await deleteBook(id);
+      if (!res.success) {
+        alert(res.error || 'Gagal menghapus buku.');
+        return;
+      }
       router.refresh();
     } catch (err: any) {
       alert('Gagal menghapus buku: ' + (err.message || 'Buku mungkin sedang terkait riwayat pinjaman.'));

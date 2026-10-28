@@ -9,7 +9,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge';
 import { formatDate, formatCurrency } from '@/lib/utils';
 import { calculateOverdueFine, calculateDamageReplacementCost } from '@/lib/fine-calculator';
 import { DamageLevel } from '@/types';
-import { createClient } from '@/lib/supabase/client';
+import { returnLoanItem } from '@/app/actions/loans';
 
 interface AdminLoanReturnClientProps {
   loan: any;
@@ -27,143 +27,26 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
 
   const [processingItemId, setProcessingItemId] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const supabase = createClient();
 
   const handleReturnItem = async (item: any) => {
     setProcessingItemId(item.id);
     setMsg(null);
 
     const condition = selectedConditions[item.id] || 'none';
-    const now = new Date();
 
     try {
-      // 1. Hitung Denda Keterlambatan
-      const { daysOverdue, fineAmount: overdueFine } = calculateOverdueFine(item.due_date, now);
-
-      // 2. Hitung Biaya Kerusakan / Kehilangan
-      const replacementCost = calculateDamageReplacementCost(item.book.price, condition);
-
-      // 3. Tentukan status baru item
-      let newStatus: 'returned' | 'damaged' | 'lost' = 'returned';
-      if (condition === 'lost') newStatus = 'lost';
-      else if (condition === 'minor' || condition === 'major') newStatus = 'damaged';
-
-      // 4. Update data loan_items
-      const { error: itemUpdateError } = await supabase
-        .from('loan_items')
-        .update({
-          status: newStatus,
-          returned_at: now.toISOString(),
-          damage_level: condition,
-          replacement_cost: replacementCost,
-        })
-        .eq('id', item.id);
-
-      if (itemUpdateError) throw itemUpdateError;
-
-      // 5. Buat tagihan Denda Keterlambatan jika ada
-      if (overdueFine > 0) {
-        await supabase.from('fines').insert({
-          loan_item_id: item.id,
-          user_id: loan.user_id,
-          type: 'overdue',
-          amount: overdueFine,
-          days_overdue: daysOverdue,
-          status: 'unpaid',
+      const res = await returnLoanItem(loan.id, item.id, condition);
+      if (!res.success) {
+        setMsg({
+          type: 'error',
+          text: res.error || 'Gagal memproses pengembalian buku.',
         });
-      }
-
-      // 6. Buat tagihan Biaya Fisik jika rusak/hilang
-      if (replacementCost > 0) {
-        const fineType =
-          condition === 'lost'
-            ? 'lost'
-            : condition === 'major'
-            ? 'damage_major'
-            : 'damage_minor';
-
-        await supabase.from('fines').insert({
-          loan_item_id: item.id,
-          user_id: loan.user_id,
-          type: fineType,
-          amount: replacementCost,
-          status: 'unpaid',
-        });
-      }
-
-      // 7. Update stok inventori buku
-      const { data: book } = await supabase
-        .from('books')
-        .select('available_stock, total_stock')
-        .eq('id', item.book_id)
-        .single();
-
-      if (book) {
-        if (condition === 'lost' || condition === 'major') {
-          // Buku ditarik permanen / hilang: kurangi total_stock
-          await supabase
-            .from('books')
-            .update({
-              total_stock: Math.max(0, book.total_stock - 1),
-            })
-            .eq('id', item.book_id);
-        } else {
-          // Buku kembali dalam kondisi baik / rusak ringan yang bisa diperbaiki: kembalikan available_stock
-          await supabase
-            .from('books')
-            .update({
-              available_stock: book.available_stock + 1,
-            })
-            .eq('id', item.book_id);
-        }
-      }
-
-      // 8. Cek Waitlist Antrean
-      const { data: waitlistEntry } = await supabase
-        .from('waitlist')
-        .select('*')
-        .eq('book_id', item.book_id)
-        .eq('status', 'waiting')
-        .order('position', { ascending: true })
-        .limit(1)
-        .single();
-
-      if (waitlistEntry) {
-        // Tandai peminjam pertama bahwa buku sudah tersedia
-        await supabase
-          .from('waitlist')
-          .update({ status: 'notified' })
-          .eq('id', waitlistEntry.id);
-
-        await supabase.from('notifications').insert({
-          user_id: waitlistEntry.user_id,
-          type: 'waitlist_available',
-          title: 'Buku Dalam Antrean Anda Tersedia!',
-          message: `Buku "${item.book?.title}" yang Anda tunggu telah tersedia kembali di perpustakaan.`,
-          related_id: item.book_id,
-          related_type: 'book',
-        });
-      }
-
-      // 9. Cek apakah semua buku dalam loan ini sudah selesai
-      const { data: remainingBorrowed } = await supabase
-        .from('loan_items')
-        .select('id')
-        .eq('loan_id', loan.id)
-        .eq('status', 'borrowed');
-
-      if (!remainingBorrowed || remainingBorrowed.length === 0) {
-        await supabase
-          .from('loans')
-          .update({ status: 'completed' })
-          .eq('id', loan.id);
+        return;
       }
 
       setMsg({
         type: 'success',
-        text: `Buku "${item.book?.title}" berhasil diproses! ${
-          overdueFine > 0 ? `Denda keterlambatan: ${formatCurrency(overdueFine)}. ` : ''
-        }${replacementCost > 0 ? `Biaya penggantian fisik: ${formatCurrency(replacementCost)}.` : ''}`,
+        text: `Buku "${item.book?.title}" berhasil diproses kembali ke perpustakaan.`,
       });
 
       router.refresh();

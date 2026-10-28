@@ -21,7 +21,8 @@ Lexora dibangun menggunakan ekosistem *web development* modern:
 - **Framework:** [Next.js 16](https://nextjs.org/) (App Router, React Server Components, Turbopack)
 - **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
 - **Bahasa:** [TypeScript](https://www.typescriptlang.org/)
-- **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL & Supabase Auth)
+- **Database:** [Neon Serverless PostgreSQL](https://neon.tech/) (`@neondatabase/serverless`)
+- **Autentikasi & Sesi:** Cookie Session HttpOnly dengan hashing PostgreSQL `pgcrypto` (`crypt`)
 - **Ikonografi:** [Lucide React](https://lucide.dev/)
 
 ## 🚀 Panduan Instalasi Lokal
@@ -30,7 +31,7 @@ Ikuti langkah-langkah di bawah ini untuk menjalankan Lexora di komputer lokal An
 
 ### 1. Prasyarat
 - **Node.js** (versi 18.17 atau yang lebih baru)
-- **Akun Supabase** (untuk manajemen Database dan Auth)
+- **Akun NeonDB** (Serverless PostgreSQL)
 
 ### 2. Kloning Repositori
 ```bash
@@ -44,14 +45,14 @@ npm install
 ```
 
 ### 4. Konfigurasi Environment Variables
-Buat file `.env.local` di root direktori proyek, lalu tambahkan kredensial Supabase milik Anda:
+Buat file `.env.local` di root direktori proyek, lalu tambahkan connection string NeonDB milik Anda:
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+DATABASE_URL=postgresql://neondb_owner:password@ep-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+DIRECT_URL=postgresql://neondb_owner:password@ep.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
 ```
 
-### 5. Inisialisasi Database (Supabase)
-Jalankan skrip SQL yang berada di dalam folder `supabase/schema.sql` pada SQL Editor di dashboard Supabase Anda untuk membangun struktur tabel, fungsi otomatis, dan RLS (Row Level Security).
+### 5. Inisialisasi Database (NeonDB)
+Jalankan skrip SQL yang berada di dalam folder `neon/schema.sql` dan `neon/seed.sql` pada SQL Editor di dashboard NeonDB Anda untuk membangun struktur tabel, fungsi otomatis, dan data awal perpustakaan.
 
 ### 6. Jalankan Development Server
 ```bash
@@ -63,17 +64,17 @@ Buka [http://localhost:3000](http://localhost:3000) di browser untuk melihat has
 
 ```
 lexora/
-├── app/               # Rute aplikasi Next.js (App Router)
+├── app/               # Rute aplikasi Next.js (App Router, Server Actions)
 │   ├── (admin)/       # Halaman khusus peran Admin (Dashboard, Inventori, dll)
 │   ├── (auth)/        # Halaman autentikasi (Login, Register)
 │   ├── (user)/        # Halaman khusus Anggota (Dashboard Anggota, Profil, dll)
+│   ├── actions/       # Server Actions untuk mutasi data aman
 │   ├── api/           # API Routes dan Cron Jobs
 │   └── globals.css    # Variabel CSS & Tema Global
 ├── components/        # Komponen UI React yang dapat digunakan ulang (Reusable)
-├── lib/               # Utilitas, konfigurasi, dan Supabase Client (Middleware/Server/Client)
-├── scripts/           # Skrip otomatisasi (Seeding Database, Generate Mockup)
+├── lib/               # Utilitas, konfigurasi koneksi NeonDB (lib/db/neon.ts), dan Autentikasi
+├── neon/              # Skema database SQL dan seed data NeonDB
 ├── stores/            # Manajemen State global (mis. Zustand)
-├── supabase/          # Skema database SQL dan panduan Supabase
 └── types/             # Definisi tipe (Types/Interfaces) TypeScript
 ```
 

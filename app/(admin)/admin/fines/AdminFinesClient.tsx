@@ -7,7 +7,7 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
+import { confirmFinePayment } from '@/app/actions/fines';
 
 interface AdminFinesClientProps {
   fines: any[];
@@ -17,7 +17,6 @@ export function AdminFinesClient({ fines }: AdminFinesClientProps) {
   const router = useRouter();
   const [filter, setFilter] = useState<'unpaid' | 'paid' | 'all'>('unpaid');
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
-  const supabase = createClient();
 
   const filteredFines = fines.filter((f) => {
     if (filter === 'all') return true;
@@ -29,20 +28,11 @@ export function AdminFinesClient({ fines }: AdminFinesClientProps) {
 
     setConfirmingId(fineId);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const { error } = await supabase
-        .from('fines')
-        .update({
-          status: 'paid',
-          paid_at: new Date().toISOString(),
-          confirmed_by: user?.id || null,
-        })
-        .eq('id', fineId);
-
-      if (error) throw error;
+      const res = await confirmFinePayment(fineId);
+      if (!res.success) {
+        alert('Gagal mengonfirmasi pelunasan: ' + res.error);
+        return;
+      }
       router.refresh();
     } catch (err: any) {
       alert('Gagal mengonfirmasi pelunasan: ' + err.message);

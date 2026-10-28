@@ -6,7 +6,7 @@ import { Plus, Trash2, Tags, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Category } from '@/types';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { createClient } from '@/lib/supabase/client';
+import { createCategory, deleteCategory } from '@/app/actions/categories';
 
 interface AdminCategoriesClientProps {
   categories: (Category & { booksCount: number })[];
@@ -18,7 +18,6 @@ export function AdminCategoriesClient({ categories }: AdminCategoriesClientProps
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const supabase = createClient();
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,22 +26,12 @@ export function AdminCategoriesClient({ categories }: AdminCategoriesClientProps
     setIsLoading(true);
     setMsg(null);
 
-    // Otomatis buat slug
-    const slug = name
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/[\s_-]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-
     try {
-      const { error } = await supabase.from('categories').insert({
-        name: name.trim(),
-        slug,
-        description: description.trim() || null,
-      });
-
-      if (error) throw error;
+      const res = await createCategory(name, description);
+      if (!res.success) {
+        setMsg({ type: 'error', text: res.error || 'Gagal menambahkan kategori.' });
+        return;
+      }
 
       setMsg({ type: 'success', text: `Kategori "${name}" berhasil ditambahkan.` });
       setName('');
@@ -59,8 +48,11 @@ export function AdminCategoriesClient({ categories }: AdminCategoriesClientProps
     if (!confirm(`Hapus kategori "${catName}"?`)) return;
 
     try {
-      const { error } = await supabase.from('categories').delete().eq('id', id);
-      if (error) throw error;
+      const res = await deleteCategory(id);
+      if (!res.success) {
+        alert(res.error || 'Gagal menghapus kategori.');
+        return;
+      }
       router.refresh();
     } catch (err: any) {
       alert('Gagal menghapus kategori: ' + (err.message || 'Kategori ini sedang memiliki buku terkait.'));

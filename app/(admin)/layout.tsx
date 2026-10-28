@@ -1,5 +1,6 @@
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
 import { AdminLayoutClient } from './AdminLayoutClient';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,30 +9,19 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let userEmail = 'admin@lexora.id';
-  let profile = null;
+  const { user, profile } = await getCurrentUser();
 
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  if (!user) {
+    redirect('/login?redirectTo=/admin/dashboard');
+  }
 
-    if (user) {
-      userEmail = user.email || userEmail;
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      profile = data;
-    }
-  } catch (error) {
-    console.warn('Supabase not configured or unreachable:', error);
+  const role = profile?.role || user.user_metadata?.role;
+  if (role !== 'admin') {
+    redirect('/dashboard');
   }
 
   return (
-    <AdminLayoutClient user={{ email: userEmail, profile }}>
+    <AdminLayoutClient user={{ email: user.email || undefined, profile }}>
       {children}
     </AdminLayoutClient>
   );

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { sql } from '@/lib/db/neon';
 import { BookDetailClient } from '@/components/books/BookDetailClient';
 import { BookWithCategory } from '@/types';
 
@@ -13,21 +13,22 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
   let book: BookWithCategory | null = null;
 
   try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from('books')
-      .select('*, category:categories(*)')
-      .eq('id', id)
-      .single();
+    const rows = await sql`
+      SELECT b.*, json_build_object('id', c.id, 'name', c.name, 'slug', c.slug) as category
+      FROM books b
+      LEFT JOIN categories c ON b.category_id = c.id
+      WHERE b.id::text = ${id}
+      LIMIT 1
+    `;
 
-    if (data && !error) {
-      book = data as unknown as BookWithCategory;
+    if (rows && rows.length > 0) {
+      book = rows[0] as unknown as BookWithCategory;
     }
   } catch (err) {
-    console.warn('Error fetching book detail:', err);
+    console.warn('Error fetching book detail from NeonDB:', err);
   }
 
-  // Fallback demo mock jika id book-1 .. book-4
+  // Fallback demo mock jika id book-1
   if (!book) {
     const mockBooks: Record<string, BookWithCategory> = {
       'book-1': {

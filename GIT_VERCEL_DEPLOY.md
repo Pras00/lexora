@@ -51,28 +51,18 @@ Sebelum menekan tombol Deploy, buka bagian **Environment Variables** (klik tanda
 
 | Key | Value | Catatan |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://xyz.supabase.co` | Project URL dari Supabase |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOi...` | Anon/Public API Key |
-| `SUPABASE_SERVICE_ROLE_KEY` | `eyJhbGciOi...` | Service Role Key (wajib untuk cron & admin) |
+| `DATABASE_URL` | `postgresql://neondb_owner:password@ep-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require` | Connection pooling URL dari NeonDB |
+| `DIRECT_URL` | `postgresql://neondb_owner:password@ep.ap-southeast-1.aws.neon.tech/neondb?sslmode=require` | Direct connection URL dari NeonDB |
 | `CRON_SECRET` | `lexora_secret_cron_2026` | Token otorisasi background jobs |
-| `NEXT_PUBLIC_APP_URL` | `https://lexora.vercel.app` | Domain Vercel Anda (bisa diisi sementara, lalu disesuaikan) |
-| `RESEND_API_KEY` | `re_...` | (Opsional jika ingin email aktif) |
+| `NEXT_PUBLIC_APP_URL` | `https://lexora.vercel.app` | Domain Vercel Anda |
+| `RESEND_API_KEY` | `re_...` | (Opsional jika ingin notifikasi email aktif) |
 | `RESEND_FROM_EMAIL` | `Lexora <onboarding@resend.dev>` | Alamat pengirim email |
 
 ### 3. Jalankan Deploy
 1. Klik tombol **"Deploy"**.
-2. Vercel akan otomatis meng-compile Next.js 15 App Router dan membuat deployment live dalam waktu ~1 menit.
-3. Setelah selesai, Anda akan mendapatkan URL domain live Anda (misalnya: `https://lexora-iota.vercel.app`).
+2. Vercel akan otomatis meng-compile Next.js App Router dan membuat deployment live dalam waktu ~1 menit.
+3. Setelah selesai, Anda akan mendapatkan URL domain live Anda (misalnya: `https://lexora.vercel.app`).
 
----
-
-## Bagian C: Update Supabase Redirect URL (Penting!)
-
-Agar login dan email verifikasi berfungsi di website live Vercel Anda:
-1. Kembali ke [Dashboard Supabase](https://supabase.com/dashboard).
-2. Pilih project Anda -> **Authentication** -> **URL Configuration**.
-3. Pada **Site URL**, ganti menjadi domain Vercel Anda:
-   `https://lexora-iota.vercel.app`
 4. Pada **Redirect URLs**, tambahkan:
    - `https://lexora-iota.vercel.app/**`
    - `https://lexora-iota.vercel.app/auth/callback`

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { User, Phone, Mail, Shield, CheckCircle2, AlertCircle, KeyRound } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
-import { createClient } from '@/lib/supabase/client';
+import { updateProfile, updatePassword } from '@/app/actions/profile';
 import { Profile } from '@/types';
 
 interface ProfileClientProps {
@@ -24,8 +24,6 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
   const [isLoadingPassword, setIsLoadingPassword] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const supabase = createClient();
-
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!initialProfile) return;
@@ -34,16 +32,11 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
     setMessage(null);
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: fullName,
-          phone: phone || null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', initialProfile.id);
-
-      if (error) throw error;
+      const res = await updateProfile(fullName, phone || null);
+      if (!res.success) {
+        setMessage({ type: 'error', text: res.error || 'Gagal memperbarui profil.' });
+        return;
+      }
 
       router.refresh(); // Invalidate server cache so layout updates instantly
       setMessage({ type: 'success', text: 'Data profil berhasil diperbarui.' });
@@ -74,11 +67,11 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
     setMessage(null);
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) throw error;
+      const res = await updatePassword(newPassword);
+      if (!res.success) {
+        setMessage({ type: 'error', text: res.error || 'Gagal mengubah kata sandi.' });
+        return;
+      }
 
       setMessage({ type: 'success', text: 'Kata sandi akun Anda berhasil diganti.' });
       setNewPassword('');

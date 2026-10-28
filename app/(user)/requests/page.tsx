@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
+import { sql } from '@/lib/db/neon';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -11,29 +12,47 @@ export default async function RequestsPage() {
   let requests: LoanRequestWithDetails[] = [];
 
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user } = await getCurrentUser();
 
-    if (user) {
-      const { data } = await supabase
-        .from('loan_requests')
-        .select(`
-          *,
-          user:profiles(*),
-          items:loan_request_items(*, book:books(*)),
-          pass:pickup_passes(*)
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+    if (user && process.env.DATABASE_URL) {
+      const data = await sql`
+        SELECT lr.*,
+          (
+            SELECT json_agg(
+              json_build_object(
+                'id', lri.id,
+                'status', lri.status,
+                'rejection_reason', lri.rejection_reason,
+                'book', json_build_object('id', b.id, 'title', b.title, 'author', b.author, 'cover_url', b.cover_url)
+              )
+            )
+            FROM loan_request_items lri
+            JOIN books b ON lri.book_id = b.id
+            WHERE lri.request_id = lr.id
+          ) as items,
+          (
+            SELECT row_to_json(pp.*)
+            FROM pickup_passes pp
+            WHERE pp.request_id = lr.id
+            LIMIT 1
+          ) as pass,
+          (
+            SELECT row_to_json(p.*)
+            FROM profiles p
+            WHERE p.id = lr.user_id
+            LIMIT 1
+          ) as user
+        FROM loan_requests lr
+        WHERE lr.user_id = ${user.id}
+        ORDER BY lr.created_at DESC
+      `;
 
       if (data) {
         requests = data as unknown as LoanRequestWithDetails[];
       }
     }
   } catch (err) {
-    console.warn('Error fetching requests:', err);
+    console.warn('Error fetching requests from NeonDB:', err);
   }
 
   return (

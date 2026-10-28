@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { sql } from '@/lib/db/neon';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -42,37 +42,39 @@ export default async function AdminDashboardPage() {
   let recentRequests: RecentLoanRequest[] = [];
 
   try {
-    const supabase = await createClient();
+    if (process.env.DATABASE_URL) {
+      const [booksData, requestsCount, loansCount, finesCount, recentReq] =
+        await Promise.all([
+          sql`SELECT COALESCE(SUM(total_stock), 0) as total, COALESCE(SUM(available_stock), 0) as available FROM books`,
+          sql`SELECT count(*) as count FROM loan_requests WHERE status = 'pending'`,
+          sql`SELECT count(*) as count FROM loans WHERE status = 'active'`,
+          sql`SELECT count(*) as count FROM fines WHERE status = 'unpaid'`,
+          sql`
+            SELECT lr.id, lr.request_number, lr.requested_at, lr.status,
+              json_build_object('full_name', p.full_name, 'member_number', p.member_number) as user,
+              (
+                SELECT json_agg(json_build_object('id', lri.id))
+                FROM loan_request_items lri
+                WHERE lri.request_id = lr.id
+              ) as items
+            FROM loan_requests lr
+            LEFT JOIN profiles p ON lr.user_id = p.id
+            ORDER BY lr.created_at DESC
+            LIMIT 5
+          `,
+        ]);
 
-    const [booksRes, requestsRes, loansRes, finesRes, recentReqRes] =
-      await Promise.all([
-        supabase.from('books').select('total_stock, available_stock'),
-        supabase.from('loan_requests').select('id').eq('status', 'pending'),
-        supabase.from('loans').select('id').eq('status', 'active'),
-        supabase.from('fines').select('id').eq('status', 'unpaid'),
-        supabase
-          .from('loan_requests')
-          .select('*, user:profiles(*), items:loan_request_items(*)')
-          .order('created_at', { ascending: false })
-          .limit(5),
-      ]);
-
-    if (booksRes.data) {
-      totalBooks = booksRes.data.reduce((acc, b) => acc + b.total_stock, 0);
-      availableBooks = booksRes.data.reduce(
-        (acc, b) => acc + b.available_stock,
-        0
-      );
-    }
-
-    if (requestsRes.data) pendingRequestsCount = requestsRes.data.length;
-    if (loansRes.data) activeLoansCount = loansRes.data.length;
-    if (finesRes.data) unpaidFinesCount = finesRes.data.length;
-    if (recentReqRes.data) {
-      recentRequests = recentReqRes.data as unknown as RecentLoanRequest[];
+      if (booksData[0]) {
+        totalBooks = Number(booksData[0].total);
+        availableBooks = Number(booksData[0].available);
+      }
+      if (requestsCount[0]) pendingRequestsCount = Number(requestsCount[0].count);
+      if (loansCount[0]) activeLoansCount = Number(loansCount[0].count);
+      if (finesCount[0]) unpaidFinesCount = Number(finesCount[0].count);
+      if (recentReq) recentRequests = recentReq as unknown as RecentLoanRequest[];
     }
   } catch (err) {
-    console.warn('Admin dashboard fetch error:', err);
+    console.warn('Admin dashboard fetch error from NeonDB:', err);
   }
 
   return (

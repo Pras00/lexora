@@ -1,28 +1,9 @@
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/auth';
 import { ProfileClient } from './ProfileClient';
 
 export default async function ProfilePage() {
-  let userEmail = 'member@lexora.id';
-  let profile = null;
-
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      userEmail = user.email || userEmail;
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      profile = data;
-    }
-  } catch (err) {
-    console.warn('Error fetching profile:', err);
-  }
+  const { user, profile } = await getCurrentUser();
+  const userEmail = user?.email || 'member@lexora.id';
 
   return <ProfileClient userEmail={userEmail} initialProfile={profile} />;
 }

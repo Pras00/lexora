@@ -1,106 +1,110 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/server';
+import { sql } from '@/lib/db/neon';
 
 export async function GET(request: NextRequest) {
-  // Verifikasi Bearer Token Cron Secret
+  // Verifikasi Bearer Token Cron Secret jika dikonfigurasi
   const authHeader = request.headers.get('authorization');
   if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const supabase = createAdminClient();
     const now = new Date().toISOString();
 
-    // 1. Cari request yang pending dan sudah melewati expires_at (> 24 jam)
-    const { data: expiredRequests, error: findError } = await supabase
-      .from('loan_requests')
-      .select('id')
-      .eq('status', 'pending')
-      .lt('expires_at', now);
+    // 1. Update loan_requests yang pending dan sudah melewati expires_at (> 24 jam)
+    const expiredRequests = await sql`
+      UPDATE public.loan_requests
+      SET status = 'expired'
+      WHERE status = 'pending' AND expires_at < ${now}
+      RETURNING id
+    `;
 
-    if (findError) throw findError;
-
-    if (expiredRequests && expiredRequests.length > 0) {
-      const ids = expiredRequests.map((r) => r.id);
-
-      await supabase
-        .from('loan_requests')
-        .update({ status: 'expired' })
-        .in('id', ids);
-
-      await supabase
-        .from('loan_request_items')
-        .update({ status: 'rejected', rejection_reason: 'Kedaluwarsa otomatis (melewati 24 jam).' })
-        .in('request_id', ids);
+    if (expiredRequests.length > 0) {
+      const expiredIds = expiredRequests.map((r: any) => r.id);
+      await sql`
+        UPDATE public.loan_request_items
+        SET status = 'rejected',
+            rejection_reason = 'Kedaluwarsa otomatis (melewati 24 jam).'
+        WHERE request_id = ANY(${expiredIds})
+      `;
     }
 
     // 2. Cari request yang approved tapi melewati pickup_deadline (not_picked_up)
-    const { data: notPickedUpRequests } = await supabase
-      .from('loan_requests')
-      .select('id, user_id, items:loan_request_items(book_id)')
-      .eq('status', 'approved')
-      .lt('pickup_deadline', now);
+    const notPickedUpRequests = await sql`
+      SELECT id, user_id
+      FROM public.loan_requests
+      WHERE status = 'approved' AND pickup_deadline < ${now}
+    `;
 
-    if (notPickedUpRequests && notPickedUpRequests.length > 0) {
-      for (const req of notPickedUpRequests) {
+    if (notPickedUpRequests.length > 0) {
+      for (const req of notPickedUpRequests as { id: string; user_id: string }[]) {
         // Update request status
-        await supabase
-          .from('loan_requests')
-          .update({ status: 'not_picked_up' })
-          .eq('id', req.id);
+        await sql`
+          UPDATE public.loan_requests
+          SET status = 'not_picked_up'
+          WHERE id = ${req.id}
+        `;
 
         // Update pickup pass status
-        await supabase
-          .from('pickup_passes')
-          .update({ status: 'expired' })
-          .eq('request_id', req.id);
+        await sql`
+          UPDATE public.pickup_passes
+          SET status = 'expired'
+          WHERE request_id = ${req.id}
+        `;
 
         // Kembalikan stok buku yang sempat di-hold
-        for (const item of ((req as any).items || [])) {
-          const { data: book } = await supabase
-            .from('books')
-            .select('available_stock')
-            .eq('id', item.book_id)
-            .single();
+        const items = await sql`
+          SELECT book_id
+          FROM public.loan_request_items
+          WHERE request_id = ${req.id} AND status = 'approved'
+        `;
 
-          if (book) {
-            await supabase
-              .from('books')
-              .update({ available_stock: book.available_stock + 1 })
-              .eq('id', item.book_id);
-          }
+        for (const item of items as { book_id: string }[]) {
+          await sql`
+            UPDATE public.books
+            SET available_stock = available_stock + 1
+            WHERE id = ${item.book_id}
+          `;
         }
 
         // Tambah no_show_count user
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('no_show_count')
-          .eq('id', req.user_id)
-          .single();
+        const profiles = await sql`
+          SELECT no_show_count
+          FROM public.profiles
+          WHERE id = ${req.user_id}
+          LIMIT 1
+        `;
 
-        if (profile) {
-          const newCount = profile.no_show_count + 1;
-          const updateData: any = { no_show_count: newCount };
-
+        if (profiles.length > 0) {
+          const newCount = (profiles[0].no_show_count || 0) + 1;
           if (newCount >= 3) {
             const suspendUntil = new Date();
             suspendUntil.setDate(suspendUntil.getDate() + 7);
-            updateData.status = 'suspended';
-            updateData.suspended_until = suspendUntil.toISOString();
+            await sql`
+              UPDATE public.profiles
+              SET no_show_count = ${newCount},
+                  status = 'suspended',
+                  suspended_until = ${suspendUntil.toISOString()}
+              WHERE id = ${req.user_id}
+            `;
+          } else {
+            await sql`
+              UPDATE public.profiles
+              SET no_show_count = ${newCount}
+              WHERE id = ${req.user_id}
+            `;
           }
-
-          await supabase.from('profiles').update(updateData).eq('id', req.user_id);
         }
       }
     }
 
     return NextResponse.json({
       success: true,
-      expiredCount: expiredRequests?.length || 0,
-      notPickedUpCount: notPickedUpRequests?.length || 0,
+      expiredCount: expiredRequests.length,
+      notPickedUpCount: notPickedUpRequests.length,
     });
   } catch (err: any) {
+    console.error('Cron expire-requests error:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

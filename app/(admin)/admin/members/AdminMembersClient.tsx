@@ -10,7 +10,7 @@ import { SearchInput } from '@/components/shared/SearchInput';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { formatDate } from '@/lib/utils';
 import { Profile } from '@/types';
-import { createClient } from '@/lib/supabase/client';
+import { updateMemberStatus } from '@/app/actions/members';
 
 interface AdminMembersClientProps {
   initialMembers: Profile[];
@@ -20,7 +20,6 @@ export function AdminMembersClient({ initialMembers }: AdminMembersClientProps) 
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const supabase = createClient();
 
   const filteredMembers = useMemo(() => {
     return initialMembers.filter((m) => {
@@ -39,25 +38,13 @@ export function AdminMembersClient({ initialMembers }: AdminMembersClientProps) 
 
   const handleUpdateStatus = async (id: string, newStatus: 'active' | 'suspended' | 'blocked') => {
     try {
-      const updateData: any = {
-        status: newStatus,
-        updated_at: new Date().toISOString(),
-      };
-
-      if (newStatus === 'suspended') {
-        const suspendedUntil = new Date();
-        suspendedUntil.setDate(suspendedUntil.getDate() + 7);
-        updateData.suspended_until = suspendedUntil.toISOString();
-      } else {
-        updateData.suspended_until = null;
-        if (newStatus === 'active') {
-          updateData.no_show_count = 0; // Reset no show count saat diaktifkan kembali
-        }
+      const res = await updateMemberStatus(id, newStatus);
+      if (!res.success) {
+        alert(res.error || 'Gagal memperbarui status anggota.');
+        return;
       }
-
-      await supabase.from('profiles').update(updateData).eq('id', id);
       router.refresh();
-    } catch (err) {
+    } catch {
       alert('Gagal memperbarui status anggota.');
     }
   };

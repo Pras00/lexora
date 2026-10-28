@@ -18,40 +18,26 @@ interface TopBarProps {
 
 export function TopBar({
   onToggleMobileSidebar,
-  user = {
-    email: 'user@lexora.id',
-    profile: {
-      id: '',
-      full_name: 'Member Lexora',
-      phone: null,
-      member_number: 'LX-0001',
-      role: 'member',
-      status: 'active',
-      no_show_count: 0,
-      suspended_until: null,
-      created_at: '',
-      updated_at: '',
-    },
-  },
+  user,
   title,
 }: TopBarProps) {
-  const isMember = user.profile?.role !== 'admin';
+  const isMember = user?.profile?.role !== 'admin';
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between h-16 px-5 md:px-6 bg-[var(--surface)]/80 backdrop-blur-md border-b border-[var(--border)] transition-colors">
+    <header className="sticky top-0 z-40 flex items-center justify-between h-16 px-5 md:px-6 bg-surface/80 backdrop-blur-md border-b border-border transition-colors">
       {/* Left */}
       <div className="flex items-center gap-3">
         {onToggleMobileSidebar && (
           <button
             onClick={onToggleMobileSidebar}
-            className="md:hidden p-1.5 text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
+            className="md:hidden p-1.5 text-foreground hover:text-primary transition-colors cursor-pointer"
             aria-label="Buka menu navigasi"
           >
             <Menu className="w-5 h-5" />
           </button>
         )}
         {title && (
-          <h1 className="text-sm font-semibold text-[var(--foreground)] truncate">
+          <h1 className="text-sm font-semibold text-foreground truncate">
             {title}
           </h1>
         )}
@@ -62,8 +48,8 @@ export function TopBar({
         {isMember && <CartButton />}
         <NotificationBell />
         <ThemeToggle />
-        <div className="w-px h-5 bg-[var(--surface)] mx-0.5" />
-        <UserMenu user={user} />
+        <div className="w-px h-5 bg-border mx-0.5" />
+        {user && <UserMenu user={user} />}
       </div>
     </header>
   );

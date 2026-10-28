@@ -7,7 +7,7 @@ import { ArrowLeft, Clock, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-r
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { formatDate } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
+import { extendLoanItem } from '@/app/actions/loans';
 
 interface LoanDetailClientProps {
   loan: any;
@@ -17,79 +17,24 @@ export function LoanDetailClient({ loan }: LoanDetailClientProps) {
   const router = useRouter();
   const [extendingItemId, setExtendingItemId] = useState<string | null>(null);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const supabase = createClient();
 
   const handleExtendItem = async (item: any) => {
-    // 1. Validasi batas maksimal perpanjangan (maks 1x)
-    if (item.extension_count >= 1) {
-      setStatusMsg({
-        type: 'error',
-        text: 'Buku ini sudah pernah diperpanjang 1 kali (batas maksimal perpanjangan).',
-      });
-      return;
-    }
-
-    // 2. Validasi apakah sudah overdue
-    const isOverdue = new Date(item.due_date) < new Date();
-    if (isOverdue) {
-      setStatusMsg({
-        type: 'error',
-        text: 'Buku yang sudah melewati batas waktu (overdue) tidak dapat diperpanjang secara mandiri. Harap kembalikan buku ke loket.',
-      });
-      return;
-    }
-
     setExtendingItemId(item.id);
     setStatusMsg(null);
 
     try {
-      // 3. Cek apakah ada antrean waitlist untuk buku ini
-      const { data: waitlist } = await supabase
-        .from('waitlist')
-        .select('id')
-        .eq('book_id', item.book_id)
-        .eq('status', 'waiting');
-
-      const hasWaitlist = waitlist && waitlist.length > 0;
-
-      if (hasWaitlist) {
-        // Ada antrean peminjam lain
+      const res = await extendLoanItem(item.id);
+      if (!res.success) {
         setStatusMsg({
           type: 'error',
-          text: 'Perpanjangan tidak dapat dilakukan karena terdapat anggota lain dalam daftar tunggu antrean buku ini.',
+          text: res.error || 'Gagal memproses perpanjangan buku.',
         });
-        setExtendingItemId(null);
         return;
       }
 
-      // 4. Auto-approve: Tambah 7 hari dari due_date saat ini
-      const oldDue = new Date(item.due_date);
-      const newDue = new Date(oldDue);
-      newDue.setDate(newDue.getDate() + 7);
-
-      const { error: updateError } = await supabase
-        .from('loan_items')
-        .update({
-          due_date: newDue.toISOString(),
-          extension_count: item.extension_count + 1,
-        })
-        .eq('id', item.id);
-
-      if (updateError) throw updateError;
-
-      // Catat record di loan_extensions
-      await supabase.from('loan_extensions').insert({
-        loan_item_id: item.id,
-        user_id: loan.user_id,
-        status: 'auto_approved',
-        old_due_date: oldDue.toISOString(),
-        new_due_date: newDue.toISOString(),
-        processed_at: new Date().toISOString(),
-      });
-
       setStatusMsg({
         type: 'success',
-        text: `Berhasil diperpanjang 7 hari! Tanggal jatuh tempo baru: ${formatDate(newDue)}.`,
+        text: `Berhasil diperpanjang 7 hari! Tanggal jatuh tempo baru: ${formatDate(res.newDueDate)}.`,
       });
 
       router.refresh();

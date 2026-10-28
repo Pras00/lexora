@@ -8,7 +8,7 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { formatDate } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
+import { verifyPickupAndCreateLoan } from '@/app/actions/loans';
 
 interface AdminLoansClientProps {
   activeLoans: any[];
@@ -24,8 +24,6 @@ export function AdminLoansClient({ activeLoans }: AdminLoansClientProps) {
     loanId?: string;
   } | null>(null);
 
-  const supabase = createClient();
-
   const handleVerifyAndCreateLoan = async (e: React.FormEvent) => {
     e.preventDefault();
     const code = pickupCodeInput.trim().toUpperCase();
@@ -35,76 +33,19 @@ export function AdminLoansClient({ activeLoans }: AdminLoansClientProps) {
     setVerifyResult(null);
 
     try {
-      // 1. Cari pickup pass
-      const { data: pass, error: passError } = await supabase
-        .from('pickup_passes')
-        .select('*, request:loan_requests(*, user:profiles(*), items:loan_request_items(*))')
-        .eq('pickup_code', code)
-        .single();
-
-      if (passError || !pass) {
-        throw new Error('Kode pickup tidak ditemukan. Harap periksa kembali 6 digit kode peminjam.');
+      const res = await verifyPickupAndCreateLoan(code);
+      if (!res.success) {
+        setVerifyResult({
+          type: 'error',
+          text: res.error || 'Gagal memproses kode pickup.',
+        });
+        return;
       }
-
-      if (pass.status !== 'active') {
-        throw new Error(`Kode pickup ini sudah tidak aktif (Status: ${pass.status}).`);
-      }
-
-      if (new Date(pass.expires_at) < new Date()) {
-        throw new Error('Batas waktu pengambilan untuk pass ini telah kedaluwarsa.');
-      }
-
-      // 2. Buat record Loans
-      const reqData = (pass as any).request;
-      const { data: newLoan, error: loanError } = await supabase
-        .from('loans')
-        .insert({
-          request_id: pass.request_id,
-          user_id: reqData?.user_id,
-          status: 'active',
-        })
-        .select()
-        .single();
-
-      if (loanError || !newLoan) {
-        throw new Error(loanError?.message || 'Gagal membuat data peminjaman.');
-      }
-
-      // 3. Masukkan item-item yang approved ke loan_items (due_date default H+14)
-      const approvedItems = (reqData?.items || []).filter((i: any) => i.status === 'approved');
-      const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + 14);
-
-      const loanItems = approvedItems.map((item: any) => ({
-        loan_id: newLoan.id,
-        book_id: item.book_id,
-        due_date: dueDate.toISOString(),
-        status: 'borrowed' as const,
-        damage_level: 'none' as const,
-        replacement_cost: 0,
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('loan_items')
-        .insert(loanItems);
-
-      if (itemsError) throw itemsError;
-
-      // 4. Update status pass menjadi 'used' dan request menjadi 'completed'
-      await supabase
-        .from('pickup_passes')
-        .update({ status: 'used', used_at: new Date().toISOString() })
-        .eq('id', pass.id);
-
-      await supabase
-        .from('loan_requests')
-        .update({ status: 'completed' })
-        .eq('id', pass.request_id);
 
       setVerifyResult({
         type: 'success',
-        text: `Pengambilan ${reqData?.request_number} atas nama ${reqData?.user?.full_name} berhasil dikonfirmasi! Peminjaman aktif telah dibuat.`,
-        loanId: newLoan.id,
+        text: res.text || 'Pengambilan berhasil diverifikasi!',
+        loanId: res.loanId,
       });
 
       setPickupCodeInput('');
