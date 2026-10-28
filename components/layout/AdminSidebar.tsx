@@ -32,8 +32,12 @@ export function AdminSidebar() {
   return (
     <aside className="hidden md:flex flex-col w-64 bg-surface border-r border-border min-h-screen shrink-0">
       {/* Admin Brand Logo & Badge */}
-      <div className="flex items-center gap-2.5 h-16 px-6 border-b border-border">
-        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary text-white shadow-xs">
+      <Link
+        href="/"
+        title="Kembali ke Beranda"
+        className="flex items-center gap-2.5 h-16 px-6 border-b border-border hover:bg-surface-secondary/60 transition-colors group cursor-pointer"
+      >
+        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary text-white shadow-xs group-hover:scale-105 transition-transform">
           <ShieldCheck className="w-5 h-5" />
         </div>
         <div>
@@ -47,7 +51,7 @@ export function AdminSidebar() {
             Panel Pustakawan
           </span>
         </div>
-      </div>
+      </Link>
 
       {/* Navigation Links */}
       <nav className="flex-1 px-3 py-4 space-y-1">

@@ -30,14 +30,18 @@ export function UserSidebar() {
   return (
     <aside className="hidden md:flex flex-col w-64 bg-surface border-r border-border h-screen sticky top-0 shrink-0">
       {/* Brand */}
-      <div className="flex items-center gap-3 h-16 px-6 border-b border-border">
-        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center shadow-xs">
+      <Link
+        href="/"
+        title="Kembali ke Beranda"
+        className="flex items-center gap-3 h-16 px-6 border-b border-border hover:bg-surface-secondary/60 transition-colors group cursor-pointer"
+      >
+        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
           <Library className="w-4 h-4" />
         </div>
         <span className="font-extrabold text-lg tracking-tight text-foreground">
           Lexora
         </span>
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 py-6 px-4">

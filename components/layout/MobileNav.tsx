@@ -46,14 +46,19 @@ export function MobileNav({ isOpen, onClose, navigation, isAdmin }: MobileNavPro
           >
             {/* Header */}
             <div className="flex items-center justify-between h-16 px-6 border-b border-border">
-              <div className="flex items-center gap-2.5">
+              <Link
+                href="/"
+                onClick={onClose}
+                title="Kembali ke Beranda"
+                className="flex items-center gap-2.5 hover:opacity-85 transition-opacity cursor-pointer"
+              >
                 <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-white">
                   <Library className="w-4 h-4" />
                 </div>
                 <span className="font-bold text-lg text-foreground">
                   Lexora {isAdmin && <span className="text-xs font-semibold text-primary">(Admin)</span>}
                 </span>
-              </div>
+              </Link>
               <button
                 onClick={onClose}
                 className="p-1.5 rounded-lg text-muted hover:text-foreground hover:bg-surface-secondary transition-colors cursor-pointer"

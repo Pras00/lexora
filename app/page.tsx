@@ -203,32 +203,35 @@ export default async function HomePage() {
           <span className="font-bold text-lg tracking-tight">Lexora</span>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <ThemeToggle />
           {user ? (
-            <UserMenu
-              user={{
-                id: user.id,
-                email: user.email,
-                user_metadata: user.user_metadata,
-                profile: userProfile,
-              }}
-            />
-          ) : (
             <>
+              <div className="h-4 w-px bg-border mx-1" aria-hidden="true" />
+              <UserMenu
+                user={{
+                  id: user.id,
+                  email: user.email,
+                  user_metadata: user.user_metadata,
+                  profile: userProfile,
+                }}
+              />
+            </>
+          ) : (
+            <div className="flex items-center gap-2 ml-1">
               <Link
                 href="/login"
-                className="px-4 py-2 text-sm font-semibold text-muted hover:text-foreground transition-colors"
+                className="px-3.5 py-2 text-sm font-semibold text-muted hover:text-foreground transition-colors"
               >
                 Masuk
               </Link>
               <Link
                 href="/register"
-                className="px-5 py-2 text-sm font-bold bg-primary text-white rounded-xl hover:bg-primary-hover hover:shadow-xs transition-all active:scale-95"
+                className="px-4.5 py-2 text-sm font-bold bg-primary text-white rounded-xl hover:bg-primary-hover hover:shadow-xs transition-all active:scale-95"
               >
                 Daftar
               </Link>
-            </>
+            </div>
           )}
         </div>
       </header>
