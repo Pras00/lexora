@@ -8,14 +8,28 @@ export default async function AdminRequestsPage() {
   try {
     const rows = await sql`
       SELECT lr.*,
-        json_build_object('id', p.id, 'full_name', p.full_name, 'member_number', p.member_number, 'phone', p.phone) as user,
+        json_build_object(
+          'id', p.id,
+          'full_name', p.full_name,
+          'member_number', p.member_number,
+          'phone', p.phone,
+          'status', p.status
+        ) as user,
         (
           SELECT json_agg(
             json_build_object(
               'id', lri.id,
+              'book_id', lri.book_id,
               'status', lri.status,
               'rejection_reason', lri.rejection_reason,
-              'book', json_build_object('id', b.id, 'title', b.title, 'author', b.author, 'cover_url', b.cover_url, 'available_stock', b.available_stock)
+              'book', json_build_object(
+                'id', b.id,
+                'title', b.title,
+                'author', b.author,
+                'cover_url', b.cover_url,
+                'available_stock', b.available_stock,
+                'isbn', b.isbn
+              )
             )
           )
           FROM loan_request_items lri

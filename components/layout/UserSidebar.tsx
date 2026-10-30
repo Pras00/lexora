@@ -33,13 +33,13 @@ export function UserSidebar() {
       <Link
         href="/"
         title="Kembali ke Beranda"
-        className="flex items-center h-16 px-6 border-b border-border hover:bg-surface-secondary/60 transition-colors group cursor-pointer"
+        className="flex items-center h-16 px-6 border-b border-border hover:bg-surface-secondary/60 transition-colors group cursor-pointer shrink-0"
       >
         <LexoraLogo size="md" />
       </Link>
 
       {/* Navigation */}
-      <nav className="flex-1 py-6 px-4">
+      <nav className="flex-1 py-6 px-4 overflow-y-auto">
         <p className="text-xs font-bold tracking-wider uppercase text-muted px-3 mb-3">
           Menu Utama
         </p>

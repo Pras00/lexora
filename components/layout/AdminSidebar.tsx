@@ -30,18 +30,18 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-surface border-r border-border min-h-screen shrink-0">
+    <aside className="hidden md:flex flex-col w-64 bg-surface border-r border-border h-screen sticky top-0 shrink-0">
       {/* Admin Brand Logo & Badge */}
       <Link
         href="/"
         title="Kembali ke Beranda"
-        className="flex items-center h-16 px-6 border-b border-border hover:bg-surface-secondary/60 transition-colors group cursor-pointer"
+        className="flex items-center h-16 px-6 border-b border-border hover:bg-surface-secondary/60 transition-colors group cursor-pointer shrink-0"
       >
         <LexoraLogo size="md" badge="Admin" subtitle="Panel Pustakawan" />
       </Link>
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {adminNavigation.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -71,16 +71,6 @@ export function AdminSidebar() {
           );
         })}
       </nav>
-
-      {/* Quick link ke portal user */}
-      <div className="p-4 border-t border-border">
-        <Link
-          href="/catalog"
-          className="flex items-center justify-center gap-2 w-full py-2.5 px-3 text-xs font-semibold rounded-xl border border-border text-foreground hover:bg-surface-secondary transition-colors shadow-xs"
-        >
-          <span>Buka Tampilan Anggota</span>
-        </Link>
-      </div>
     </aside>
   );
 }
