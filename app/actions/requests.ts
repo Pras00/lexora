@@ -47,6 +47,20 @@ export async function createLoanRequest(bookIds: string[]) {
       };
     }
 
+    // 2.5 Cek ketersediaan stok fisik di rak secara realtime
+    const booksInDb = await sql`
+      SELECT id, title, available_stock FROM public.books
+      WHERE id = ANY(${bookIds}::uuid[])
+    `;
+
+    const outOfStock = booksInDb.filter((b: any) => b.available_stock <= 0);
+    if (outOfStock.length > 0) {
+      return {
+        success: false,
+        error: `Buku "${outOfStock[0].title}" saat ini telah kehabisan stok fisik di rak. Harap hapus buku tersebut dari keranjang.`,
+      };
+    }
+
     // 3. Simpan Loan Request
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24); // Auto-expire 24 jam
@@ -55,15 +69,11 @@ export async function createLoanRequest(bookIds: string[]) {
       INSERT INTO public.loan_requests (
         user_id,
         status,
-        expires_at,
-        created_at,
-        updated_at
+        expires_at
       ) VALUES (
         ${user.id},
         'pending',
-        ${expiresAt.toISOString()},
-        now(),
-        now()
+        ${expiresAt.toISOString()}
       )
       RETURNING id, request_number
     `;
@@ -76,13 +86,11 @@ export async function createLoanRequest(bookIds: string[]) {
         INSERT INTO public.loan_request_items (
           request_id,
           book_id,
-          status,
-          created_at
+          status
         ) VALUES (
           ${request.id},
           ${bookId},
-          'pending',
-          now()
+          'pending'
         )
       `;
     }
@@ -118,8 +126,7 @@ export async function reviewLoanRequest(
         UPDATE public.loan_requests
         SET status = 'rejected',
             admin_id = ${user?.id || profile.id},
-            processed_at = now(),
-            updated_at = now()
+            processed_at = now()
         WHERE id = ${requestId}
       `;
 
@@ -223,7 +230,7 @@ export async function cancelLoanRequest(requestId: string) {
 
     await sql`
       UPDATE public.loan_requests
-      SET status = 'cancelled', updated_at = now()
+      SET status = 'cancelled'
       WHERE id = ${requestId}
     `;
 

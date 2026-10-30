@@ -14,6 +14,15 @@ interface CartStore {
   clearCart: () => void;
   hasItem: (bookId: string) => boolean;
   totalItems: () => number;
+  syncBooks: (
+    updates: {
+      id: string;
+      available_stock: number;
+      total_stock?: number;
+      price?: number;
+      category?: any;
+    }[]
+  ) => void;
 }
 
 const MAX_CART_ITEMS = 5;
@@ -73,6 +82,28 @@ export const useCartStore = create<CartStore>()(
 
       totalItems: () => {
         return get().items.length;
+      },
+
+      syncBooks: (updates) => {
+        const updateMap = new Map(updates.map((u) => [u.id, u]));
+        set({
+          items: get().items.map((item) => {
+            const update = updateMap.get(item.book.id);
+            if (update) {
+              return {
+                ...item,
+                book: {
+                  ...item.book,
+                  available_stock: update.available_stock,
+                  total_stock: update.total_stock ?? item.book.total_stock,
+                  price: update.price ?? item.book.price,
+                  ...(update.category ? { category: update.category } : {}),
+                },
+              };
+            }
+            return item;
+          }),
+        });
       },
     }),
     {

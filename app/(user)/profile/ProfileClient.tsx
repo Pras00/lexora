@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Phone, Mail, Shield, CheckCircle2, AlertCircle, KeyRound } from 'lucide-react';
+import { User, CheckCircle2, AlertCircle, KeyRound } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { updateProfile, updatePassword } from '@/app/actions/profile';

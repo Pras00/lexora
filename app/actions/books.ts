@@ -144,3 +144,46 @@ export async function deleteBook(id: string) {
   }
 }
 
+export async function getLatestBooksStock(bookIds: string[]) {
+  if (!bookIds || bookIds.length === 0) {
+    return { success: true, books: [] };
+  }
+
+  try {
+    const rows = await sql`
+      SELECT 
+        b.id,
+        b.title,
+        b.available_stock,
+        b.total_stock,
+        b.price,
+        b.status,
+        json_build_object(
+          'id', c.id,
+          'name', c.name,
+          'slug', c.slug
+        ) as category
+      FROM public.books b
+      LEFT JOIN public.categories c ON c.id = b.category_id
+      WHERE b.id = ANY(${bookIds}::uuid[])
+    `;
+
+    return {
+      success: true,
+      books: rows as {
+        id: string;
+        title: string;
+        available_stock: number;
+        total_stock: number;
+        price: number;
+        status: string;
+        category: { id: string; name: string; slug: string } | null;
+      }[],
+    };
+  } catch (err: any) {
+    console.error('Error fetching latest books stock:', err);
+    return { success: false, error: err.message || 'Gagal memverifikasi stok buku terbaru.' };
+  }
+}
+
+

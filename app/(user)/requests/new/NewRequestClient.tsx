@@ -16,24 +16,52 @@ import {
   MapPin,
   Calendar,
   Sparkles,
+  RefreshCw,
 } from 'lucide-react';
 import { useCartStore } from '@/stores/cart.store';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { createLoanRequest } from '@/app/actions/requests';
+import { getLatestBooksStock } from '@/app/actions/books';
 import { formatCurrency } from '@/lib/utils';
 import { BookWithCategory } from '@/types';
 
 export function NewRequestClient() {
   const router = useRouter();
-  const { items, removeItem, clearCart } = useCartStore();
+  const { items, removeItem, clearCart, syncBooks } = useCartStore();
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Sinkronisasi live ketersediaan stok fisik di rak saat membuka halaman
+  const syncCartStock = async () => {
+    if (items.length === 0) return;
+    setIsSyncing(true);
+    try {
+      const bookIds = items.map((item) => item.book.id);
+      const res = await getLatestBooksStock(bookIds);
+      if (res.success && res.books) {
+        syncBooks(res.books);
+        setLastSyncedAt(new Date());
+      }
+    } catch (err) {
+      console.error('Error auto-syncing cart books:', err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (mounted && items.length > 0) {
+      syncCartStock();
+    }
+  }, [mounted]);
 
   if (!mounted) {
     return (
@@ -72,12 +100,21 @@ export function NewRequestClient() {
   const totalSelected = items.length;
   const maxQuota = 5;
   const remainingQuota = maxQuota - totalSelected;
+  const outOfStockItems = items.filter((i) => i.book.available_stock <= 0);
+  const hasOutOfStock = outOfStockItems.length > 0;
   const totalValue = items.reduce(
     (acc, curr) => acc + (Number(curr.book.price) || 0),
     0
   );
 
   const handleSubmitRequest = async () => {
+    if (hasOutOfStock) {
+      setErrorMsg(
+        'Terdapat buku yang stok fisiknya telah habis di rak. Harap hapus terlebih dahulu sebelum mengirim pengajuan.'
+      );
+      return;
+    }
+
     setIsLoading(true);
     setErrorMsg(null);
 
@@ -87,12 +124,14 @@ export function NewRequestClient() {
 
       if (!res.success) {
         setErrorMsg(res.error || 'Gagal membuat pengajuan peminjaman.');
+        // Segarkan ulang stok jika server menolak karena kehabisan stok
+        syncCartStock();
         return;
       }
 
-      // Sukses: Bersihkan keranjang dan alihkan ke detail pengajuan
+      // Sukses: Bersihkan keranjang dan alihkan ke daftar pengajuan dengan auto-open
       clearCart();
-      router.push(`/requests/${res.requestId}`);
+      router.push(`/requests?openId=${res.requestId}`);
       router.refresh();
     } catch (err: unknown) {
       const message =
@@ -117,17 +156,58 @@ export function NewRequestClient() {
         </div>
       )}
 
+      {/* Peringatan Otomatis Jika Ada Buku Yang Kehabisan Stok di Rak */}
+      {hasOutOfStock && (
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 flex items-start gap-3 text-xs md:text-sm text-rose-700 dark:text-rose-300">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+          <div className="space-y-1">
+            <p className="font-bold">
+              Terdapat buku di keranjang Anda yang stok fisiknya baru saja habis di rak:
+            </p>
+            <ul className="list-disc list-inside space-y-0.5 text-xs">
+              {outOfStockItems.map((item) => (
+                <li key={item.book.id}>
+                  <span className="font-semibold">{item.book.title}</span> (Stok saat ini: 0)
+                </li>
+              ))}
+            </ul>
+            <p className="text-[11px] text-rose-600 dark:text-rose-400 pt-0.5">
+              Harap hapus buku yang habis tersebut dari keranjang untuk dapat mengirim pengajuan peminjaman.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* ── Kolom Kiri: Koleksi Buku di Keranjang (2 Kolom di Desktop) ── */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between pb-1">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-sm font-bold text-foreground">
                 Koleksi yang Diajukan
               </h3>
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
                 {totalSelected} dari {maxQuota} buku
               </span>
+
+              {/* Status Sinkronisasi Stok Live */}
+              {isSyncing ? (
+                <span className="inline-flex items-center gap-1.5 text-[11px] text-muted">
+                  <RefreshCw className="w-3 h-3 text-primary animate-spin" />
+                  <span>Menyinkronkan stok fisik...</span>
+                </span>
+              ) : lastSyncedAt ? (
+                <button
+                  type="button"
+                  onClick={syncCartStock}
+                  className="inline-flex items-center gap-1 text-[11px] text-muted hover:text-foreground transition-colors cursor-pointer"
+                  title="Klik untuk menyinkronkan stok fisik terbaru dari rak"
+                >
+                  <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                  <span>Stok live terverifikasi</span>
+                  <RefreshCw className="w-2.5 h-2.5 ml-0.5 opacity-60" />
+                </button>
+              ) : null}
             </div>
             <button
               type="button"
@@ -144,11 +224,16 @@ export function NewRequestClient() {
               const bookWithCategory = book as unknown as BookWithCategory;
               const categoryName =
                 bookWithCategory.category?.name || 'Koleksi Perpustakaan';
+              const isOutOfStock = book.available_stock <= 0;
 
               return (
                 <div
                   key={book.id}
-                  className="group relative flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-border bg-surface hover:border-indigo-300 dark:hover:border-indigo-800/60 shadow-xs transition-all duration-200"
+                  className={`group relative flex items-center gap-4 p-4 sm:p-5 rounded-2xl border shadow-xs transition-all duration-200 ${
+                    isOutOfStock
+                      ? 'border-rose-300 dark:border-rose-900/60 bg-rose-50/20 dark:bg-rose-950/10'
+                      : 'border-border bg-surface hover:border-indigo-300 dark:hover:border-indigo-800/60'
+                  }`}
                 >
                   {/* Sampul Buku Proporsi Fisik Realistis */}
                   <Link
@@ -180,10 +265,17 @@ export function NewRequestClient() {
                       <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-surface-secondary text-muted border border-border/70">
                         {categoryName}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                        Tersedia {book.available_stock} di rak
-                      </span>
+                      {isOutOfStock ? (
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-900/50">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                          Stok Habis di Rak (0)
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          Tersedia {book.available_stock} di rak
+                        </span>
+                      )}
                     </div>
 
                     {/* Judul Buku */}
@@ -345,8 +437,8 @@ export function NewRequestClient() {
               <button
                 type="button"
                 onClick={handleSubmitRequest}
-                disabled={isLoading}
-                className="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                disabled={isLoading || hasOutOfStock}
+                className="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isLoading ? (
                   <>
@@ -360,9 +452,15 @@ export function NewRequestClient() {
                   </>
                 )}
               </button>
-              <p className="text-center text-[11px] text-muted mt-2.5 leading-relaxed">
-                Pustakawan akan memverifikasi kesiapan fisik buku Anda dalam waktu 1x24 jam kerja.
-              </p>
+              {hasOutOfStock ? (
+                <p className="text-center text-[11px] text-rose-600 dark:text-rose-400 mt-2.5 font-semibold leading-relaxed">
+                  Harap hapus buku yang stoknya habis di rak untuk melanjutkan pengajuan.
+                </p>
+              ) : (
+                <p className="text-center text-[11px] text-muted mt-2.5 leading-relaxed">
+                  Pustakawan akan memverifikasi kesiapan fisik buku Anda dalam waktu 1x24 jam kerja.
+                </p>
+              )}
             </div>
           </div>
         </div>

@@ -10,7 +10,7 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PickupPass } from '@/components/requests/PickupPass';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
-import { formatDate, formatDateTime } from '@/lib/utils';
+import { formatDateTime } from '@/lib/utils';
 import { cancelLoanRequest } from '@/app/actions/requests';
 
 interface RequestDetailClientProps {
