@@ -21,10 +21,10 @@ export function PageHeader({
   action,
 }: PageHeaderProps) {
   return (
-    <div className="mb-6 pb-5 border-b border-[var(--border)]">
+    <div className="mb-6 pb-5 border-b border-border">
       {/* Breadcrumbs jika ada */}
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="flex items-center gap-1.5 text-xs text-[var(--foreground)] mb-2">
+        <nav className="flex items-center gap-1.5 text-xs text-foreground mb-2">
           {breadcrumbs.map((item, index) => {
             const isLast = index === breadcrumbs.length - 1;
             return (
@@ -32,12 +32,12 @@ export function PageHeader({
                 {item.href && !isLast ? (
                   <Link
                     href={item.href}
-                    className="hover:text-[var(--foreground)] transition-colors"
+                    className="hover:text-foreground transition-colors"
                   >
                     {item.name}
                   </Link>
                 ) : (
-                  <span className={isLast ? 'text-[var(--foreground)] font-medium' : ''}>
+                  <span className={isLast ? 'text-foreground font-medium' : ''}>
                     {item.name}
                   </span>
                 )}
@@ -51,11 +51,11 @@ export function PageHeader({
       {/* Title + Description + Action */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--foreground)] tracking-tight">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">
             {title}
           </h1>
           {description && (
-            <p className="text-sm text-[var(--foreground)] mt-1">{description}</p>
+            <p className="text-sm text-foreground mt-1">{description}</p>
           )}
         </div>
         {action && <div className="flex items-center gap-2">{action}</div>}

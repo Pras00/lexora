@@ -47,7 +47,7 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
     <div className="space-y-6">
       <Link
         href="/requests"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Daftar Pengajuan
@@ -74,10 +74,10 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
       )}
 
       {/* Ringkasan Status Request */}
-      <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] space-y-4">
-        <div className="flex items-center justify-between pb-4 border-b border-[var(--border)]">
+      <div className="p-6 rounded-2xl border border-border bg-surface space-y-4">
+        <div className="flex items-center justify-between pb-4 border-b border-border">
           <div>
-            <p className="text-xs text-[var(--foreground)]">Status Pengajuan:</p>
+            <p className="text-xs text-foreground">Status Pengajuan:</p>
             <div className="mt-1">
               <StatusBadge status={request.status} size="md" />
             </div>
@@ -85,11 +85,11 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
 
           {request.expires_at && request.status === 'pending' && (
             <div className="text-right">
-              <p className="text-xs text-[var(--foreground)] flex items-center gap-1">
+              <p className="text-xs text-foreground flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5 text-amber-500" />
                 Kedaluwarsa Otomatis:
               </p>
-              <p className="text-xs font-medium text-[var(--foreground)] mt-0.5">
+              <p className="text-xs font-medium text-foreground mt-0.5">
                 {formatDateTime(request.expires_at)}
               </p>
             </div>
@@ -97,7 +97,7 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
         </div>
 
         {/* Daftar Buku dalam Pengajuan */}
-        <h4 className="text-sm font-semibold text-[var(--foreground)] pt-2">
+        <h4 className="text-sm font-semibold text-foreground pt-2">
           Daftar Buku ({request.items?.length || 0} buku)
         </h4>
 
@@ -105,7 +105,7 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
           {request.items?.map((item) => (
             <div
               key={item.id}
-              className="flex items-center gap-4 p-4 rounded-xl border border-[var(--border)] bg-slate-50/50 dark:bg-slate-900/30"
+              className="flex items-center gap-4 p-4 rounded-xl border border-border bg-slate-50/50 dark:bg-slate-900/30"
             >
               <div className="relative w-12 h-16 bg-slate-200 dark:bg-slate-800 rounded-md overflow-hidden shrink-0">
                 {item.book?.cover_url ? (
@@ -124,10 +124,10 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
               </div>
 
               <div className="flex-1 min-w-0">
-                <h5 className="font-semibold text-xs md:text-sm text-[var(--foreground)] truncate">
+                <h5 className="font-semibold text-xs md:text-sm text-foreground truncate">
                   {item.book?.title}
                 </h5>
-                <p className="text-xs text-[var(--foreground)] mt-0.5">{item.book?.author}</p>
+                <p className="text-xs text-foreground mt-0.5">{item.book?.author}</p>
                 {item.rejection_reason && (
                   <p className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />

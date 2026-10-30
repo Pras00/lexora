@@ -29,7 +29,7 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
       />
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-xl bg-slate-100 dark:bg-slate-900/60 border border-[var(--border)] w-fit text-xs font-medium">
+      <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-xl bg-slate-100 dark:bg-slate-900/60 border border-border w-fit text-xs font-medium">
         {[
           { id: 'all', label: 'Semua' },
           { id: 'pending', label: 'Menunggu' },
@@ -43,8 +43,8 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
             onClick={() => setSelectedStatus(tab.id)}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
               selectedStatus === tab.id
-                ? 'bg-white dark:bg-slate-800 text-[var(--foreground)] font-semibold shadow-xs'
-                : 'text-[var(--foreground)] hover:text-[var(--foreground)]'
+                ? 'bg-white dark:bg-slate-800 text-foreground font-semibold shadow-xs'
+                : 'text-foreground hover:text-foreground'
             }`}
           >
             {tab.label}
@@ -54,10 +54,10 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
 
       {/* Tabel Pengajuan */}
       {filteredRequests.length > 0 ? (
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden shadow-xs">
+        <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-border text-foreground uppercase font-semibold">
                 <tr>
                   <th className="px-5 py-3.5">No. Pengajuan</th>
                   <th className="px-5 py-3.5">Peminjam</th>
@@ -68,7 +68,7 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
                   <th className="px-5 py-3.5 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/60 text-[var(--foreground)]">
+              <tbody className="divide-y divide-border/60 text-foreground">
                 {filteredRequests.map((req) => (
                   <tr key={req.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                     <td className="px-5 py-4 font-mono font-bold">
@@ -76,17 +76,17 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
                     </td>
                     <td className="px-5 py-4">
                       <div className="font-semibold text-sm">{req.user?.full_name}</div>
-                      <div className="text-[11px] font-mono text-[var(--foreground)]">
+                      <div className="text-[11px] font-mono text-foreground">
                         {req.user?.member_number}
                       </div>
                     </td>
                     <td className="px-5 py-4 font-medium">
                       {req.items?.length || 0} buku
                     </td>
-                    <td className="px-5 py-4 text-[var(--foreground)]">
+                    <td className="px-5 py-4 text-foreground">
                       {formatDate(req.requested_at)}
                     </td>
-                    <td className="px-5 py-4 text-[var(--foreground)]">
+                    <td className="px-5 py-4 text-foreground">
                       {req.pickup_deadline ? formatDate(req.pickup_deadline) : '-'}
                     </td>
                     <td className="px-5 py-4">

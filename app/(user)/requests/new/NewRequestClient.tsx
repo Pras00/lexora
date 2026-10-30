@@ -170,7 +170,7 @@ export function NewRequestClient() {
                       </div>
                     )}
                     {/* Spine Shadow Realistis */}
-                    <div className="absolute inset-y-0 left-0 w-3 bg-gradient-to-r from-black/35 via-white/10 to-transparent pointer-events-none z-10" />
+                    <div className="absolute inset-y-0 left-0 w-3 bg-linear-to-r from-black/35 via-white/10 to-transparent pointer-events-none z-10" />
                   </Link>
 
                   {/* Informasi Detail Buku */}

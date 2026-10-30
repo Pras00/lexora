@@ -68,12 +68,12 @@ export function AdminLoansClient({ activeLoans }: AdminLoansClientProps) {
       />
 
       {/* Panel Scan / Input Kode Pickup di Meja Sirkulasi */}
-      <div className="p-6 rounded-2xl border-2 border-indigo-500/30 bg-[var(--surface)] shadow-xs">
-        <h3 className="text-sm font-bold text-[var(--foreground)] flex items-center gap-2 mb-2">
+      <div className="p-6 rounded-2xl border-2 border-indigo-500/30 bg-surface shadow-xs">
+        <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-2">
           <QrCode className="w-5 h-5 text-indigo-600" />
           <span>Loket Sirkulasi: Konfirmasi Pengambilan Buku (Pickup Pass)</span>
         </h3>
-        <p className="text-xs text-[var(--foreground)] mb-4">
+        <p className="text-xs text-foreground mb-4">
           Masukkan 6 digit kode pickup (contoh: <code>LIB-7F42A9</code>) yang ditunjukkan oleh anggota peminjam.
         </p>
 
@@ -84,7 +84,7 @@ export function AdminLoansClient({ activeLoans }: AdminLoansClientProps) {
             value={pickupCodeInput}
             onChange={(e) => setPickupCodeInput(e.target.value)}
             placeholder="Ketik kode LIB-XXXXXX..."
-            className="flex-1 px-4 py-2.5 text-sm font-mono uppercase tracking-wider rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+            className="flex-1 px-4 py-2.5 text-sm font-mono uppercase tracking-wider rounded-xl border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
           />
           <button
             type="submit"
@@ -126,15 +126,15 @@ export function AdminLoansClient({ activeLoans }: AdminLoansClientProps) {
 
       {/* Tabel Pinjaman Aktif yang Belum Dikembalikan */}
       <div className="space-y-4">
-        <h3 className="text-base font-semibold text-[var(--foreground)]">
+        <h3 className="text-base font-semibold text-foreground">
           Daftar Peminjaman Fisik Sedang Berjalan ({activeLoans.length})
         </h3>
 
         {activeLoans.length > 0 ? (
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden shadow-xs">
+          <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
+                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-border text-foreground uppercase font-semibold">
                   <tr>
                     <th className="px-5 py-3.5">Nama Peminjam</th>
                     <th className="px-5 py-3.5">No. Anggota</th>
@@ -144,19 +144,19 @@ export function AdminLoansClient({ activeLoans }: AdminLoansClientProps) {
                     <th className="px-5 py-3.5 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/60 text-[var(--foreground)]">
+                <tbody className="divide-y divide-border/60 text-foreground">
                   {activeLoans.map((loan) => (
                     <tr key={loan.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                       <td className="px-5 py-4 font-semibold text-sm">
                         {loan.user?.full_name}
                       </td>
-                      <td className="px-5 py-4 font-mono text-[var(--foreground)]">
+                      <td className="px-5 py-4 font-mono text-foreground">
                         {loan.user?.member_number}
                       </td>
                       <td className="px-5 py-4 font-medium">
                         {loan.items?.length || 0} buku
                       </td>
-                      <td className="px-5 py-4 text-[var(--foreground)]">
+                      <td className="px-5 py-4 text-foreground">
                         {formatDate(loan.pickup_confirmed_at)}
                       </td>
                       <td className="px-5 py-4">

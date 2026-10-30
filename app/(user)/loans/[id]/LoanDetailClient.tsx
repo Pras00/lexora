@@ -52,7 +52,7 @@ export function LoanDetailClient({ loan }: LoanDetailClientProps) {
     <div className="space-y-6">
       <Link
         href="/loans"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Daftar Pinjaman Aktif
@@ -89,20 +89,20 @@ export function LoanDetailClient({ loan }: LoanDetailClientProps) {
           return (
             <div
               key={item.id}
-              className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6"
+              className="p-6 rounded-2xl border border-border bg-surface shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6"
             >
               <div className="space-y-2">
                 <div className="flex items-center gap-2.5">
-                  <h4 className="font-semibold text-base text-[var(--foreground)]">
+                  <h4 className="font-semibold text-base text-foreground">
                     {item.book?.title}
                   </h4>
                   <StatusBadge status={isOverdue ? 'overdue' : item.status} />
                 </div>
-                <p className="text-xs text-[var(--foreground)]">Pengarang: {item.book?.author}</p>
-                <div className="flex flex-wrap items-center gap-4 text-xs mt-3 text-[var(--foreground)]">
+                <p className="text-xs text-foreground">Pengarang: {item.book?.author}</p>
+                <div className="flex flex-wrap items-center gap-4 text-xs mt-3 text-foreground">
                   <span className="flex items-center gap-1.5">
                     <Clock className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                    Batas Kembali: <strong className="text-[var(--foreground)]">{formatDate(item.due_date)}</strong>
+                    Batas Kembali: <strong className="text-foreground">{formatDate(item.due_date)}</strong>
                   </span>
                   <span>
                     Status Perpanjangan:{' '}

@@ -64,7 +64,7 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
     <div className="space-y-6">
       <Link
         href="/admin/loans"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Daftar Peminjaman
@@ -103,14 +103,14 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
           return (
             <div
               key={item.id}
-              className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xs space-y-4"
+              className="p-6 rounded-2xl border border-border bg-surface shadow-xs space-y-4"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[var(--border)] gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-border gap-2">
                 <div>
-                  <h4 className="font-semibold text-base text-[var(--foreground)]">
+                  <h4 className="font-semibold text-base text-foreground">
                     {item.book?.title}
                   </h4>
-                  <p className="text-xs text-[var(--foreground)]">{item.book?.author} • Nilai buku: {formatCurrency(item.book?.price)}</p>
+                  <p className="text-xs text-foreground">{item.book?.author} • Nilai buku: {formatCurrency(item.book?.price)}</p>
                 </div>
                 <StatusBadge status={item.status} />
               </div>
@@ -118,7 +118,7 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
               {isBorrowed ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                   <div>
-                    <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+                    <label className="block text-xs font-medium text-foreground mb-1">
                       Kondisi Fisik Buku Kembali:
                     </label>
                     <select
@@ -129,7 +129,7 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
                           [item.id]: e.target.value as DamageLevel,
                         }))
                       }
-                      className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600 font-medium"
+                      className="w-full px-3 py-2 text-xs rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600 font-medium"
                     >
                       <option value="none">Kondisi Baik / Utuh</option>
                       <option value="minor">Rusak Ringan (Ganti Rugi 0.5x)</option>
@@ -138,9 +138,9 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
                     </select>
                   </div>
 
-                  <div className="text-xs text-[var(--foreground)] space-y-1">
+                  <div className="text-xs text-foreground space-y-1">
                     <p>
-                      Jatuh tempo: <strong className="text-[var(--foreground)]">{formatDate(item.due_date)}</strong>
+                      Jatuh tempo: <strong className="text-foreground">{formatDate(item.due_date)}</strong>
                     </p>
                     {daysOverdue > 0 ? (
                       <p className="text-red-600 font-semibold">
@@ -167,7 +167,7 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
                   </div>
                 </div>
               ) : (
-                <div className="text-xs text-[var(--foreground)]">
+                <div className="text-xs text-foreground">
                   Buku ini telah dikembalikan pada {formatDate(item.returned_at)} (Kondisi: {item.damage_level}).
                 </div>
               )}

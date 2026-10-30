@@ -42,7 +42,7 @@ export function BookCard({ book }: BookCardProps) {
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="flex flex-col items-center justify-center h-full p-4 text-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+          <div className="flex flex-col items-center justify-center h-full p-4 text-center bg-linear-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
             <BookOpen className="w-10 h-10 stroke-1 mb-2 text-indigo-500 opacity-60" />
             <span className="text-xs font-medium text-foreground line-clamp-2">
               {book.title}

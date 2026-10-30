@@ -75,7 +75,7 @@ export function BookForm({ categories, initialData, isEditing = false }: BookFor
     <div className="space-y-6 max-w-3xl">
       <Link
         href="/admin/books"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Daftar Buku
@@ -83,7 +83,7 @@ export function BookForm({ categories, initialData, isEditing = false }: BookFor
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="p-6 sm:p-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xs space-y-5"
+        className="p-6 sm:p-8 rounded-2xl border border-border bg-surface shadow-xs space-y-5"
       >
         {errorMsg && (
           <div className="p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 flex items-start gap-3 text-xs text-red-600 dark:text-red-400">
@@ -94,51 +94,51 @@ export function BookForm({ categories, initialData, isEditing = false }: BookFor
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Judul Buku *
             </label>
             <input
               type="text"
               {...register('title')}
               placeholder="Contoh: Clean Architecture"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
             {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title.message}</p>}
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Pengarang / Penulis *
             </label>
             <input
               type="text"
               {...register('author')}
               placeholder="Contoh: Robert C. Martin"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
             {errors.author && <p className="text-xs text-red-500 mt-1">{errors.author.message}</p>}
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Nomor ISBN *
             </label>
             <input
               type="text"
               {...register('isbn')}
               placeholder="Contoh: 978-0134494166"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] font-mono focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
             {errors.isbn && <p className="text-xs text-red-500 mt-1">{errors.isbn.message}</p>}
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Kategori Koleksi *
             </label>
             <select
               {...register('categoryId')}
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             >
               <option value="">Pilih Kategori</option>
               {categories.map((c) => (
@@ -151,62 +151,62 @@ export function BookForm({ categories, initialData, isEditing = false }: BookFor
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Penerbit
             </label>
             <input
               type="text"
               {...register('publisher')}
               placeholder="Contoh: Prentice Hall"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Tahun Terbit
             </label>
             <input
               type="number"
               {...register('publishedYear')}
               placeholder="Contoh: 2018"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Harga Buku (Nilai Ganti Rugi) *
             </label>
             <input
               type="number"
               {...register('price')}
               placeholder="150000"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] font-mono focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
             {errors.price && <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>}
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Total Stok Buku Fisik *
             </label>
             <input
               type="number"
               {...register('totalStock')}
               placeholder="5"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
             {errors.totalStock && <p className="text-xs text-red-500 mt-1">{errors.totalStock.message}</p>}
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Status Katalog
             </label>
             <select
               {...register('status')}
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             >
               <option value="active">Aktif (Tampil di Katalog)</option>
               <option value="inactive">Nonaktif</option>
@@ -214,35 +214,35 @@ export function BookForm({ categories, initialData, isEditing = false }: BookFor
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               URL Gambar Sampul (Cover URL)
             </label>
             <input
               type="url"
               {...register('coverUrl')}
               placeholder="https://images.unsplash.com/..."
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
             {errors.coverUrl && <p className="text-xs text-red-500 mt-1">{errors.coverUrl.message}</p>}
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Sinopsis / Deskripsi Buku
             </label>
             <textarea
               rows={4}
               {...register('description')}
               placeholder="Tuliskan ringkasan isi buku..."
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
           </div>
         </div>
 
-        <div className="pt-4 border-t border-[var(--border)] flex items-center justify-end gap-3">
+        <div className="pt-4 border-t border-border flex items-center justify-end gap-3">
           <Link
             href="/admin/books"
-            className="px-4 py-2 text-xs font-semibold rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="px-4 py-2 text-xs font-semibold rounded-lg border border-border hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             Batal
           </Link>

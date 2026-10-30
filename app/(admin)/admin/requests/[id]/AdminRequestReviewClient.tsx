@@ -78,7 +78,7 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
     <div className="space-y-6">
       <Link
         href="/admin/requests"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:text-[var(--foreground)] transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Kembali ke Semua Pengajuan
@@ -104,9 +104,9 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
       )}
 
       {/* Tabel Item yang Ditinjau */}
-      <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] space-y-5">
-        <div className="flex items-center justify-between pb-4 border-b border-[var(--border)]">
-          <h3 className="font-semibold text-sm text-[var(--foreground)]">
+      <div className="p-6 rounded-2xl border border-border bg-surface space-y-5">
+        <div className="flex items-center justify-between pb-4 border-b border-border">
+          <h3 className="font-semibold text-sm text-foreground">
             Daftar Buku yang Diminta ({request.items?.length || 0} buku)
           </h3>
           <StatusBadge status={request.status} />
@@ -120,7 +120,7 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
             return (
               <div
                 key={item.id}
-                className="p-5 rounded-2xl border border-[var(--border)] bg-slate-50/50 dark:bg-slate-900/30 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="p-5 rounded-2xl border border-border bg-slate-50/50 dark:bg-slate-900/30 flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                   <div className="relative w-14 h-18 bg-slate-200 dark:bg-slate-800 rounded-lg overflow-hidden shrink-0">
@@ -140,15 +140,15 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
                   </div>
 
                   <div className="min-w-0">
-                    <h4 className="font-semibold text-sm text-[var(--foreground)] truncate">
+                    <h4 className="font-semibold text-sm text-foreground truncate">
                       {item.book?.title}
                     </h4>
-                    <p className="text-xs text-[var(--foreground)] mt-0.5">{item.book?.author}</p>
+                    <p className="text-xs text-foreground mt-0.5">{item.book?.author}</p>
                     <div className="flex items-center gap-3 text-xs mt-1.5">
                       <span className={item.book?.available_stock > 0 ? 'text-emerald-600 font-medium' : 'text-red-500 font-medium'}>
                         Stok Tersedia: {item.book?.available_stock}
                       </span>
-                      <span className="text-[var(--foreground)] font-mono">ISBN: {item.book?.isbn}</span>
+                      <span className="text-foreground font-mono">ISBN: {item.book?.isbn}</span>
                     </div>
                   </div>
                 </div>
@@ -166,7 +166,7 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
                             ? 'bg-emerald-600 text-white'
                             : isOutOfStock
                             ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
-                            : 'border border-[var(--border)] hover:bg-emerald-50 text-[var(--foreground)]'
+                            : 'border border-border hover:bg-emerald-50 text-foreground'
                         }`}
                       >
                         <Check className="w-3.5 h-3.5" />
@@ -179,7 +179,7 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
                         className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
                           !decision.approved
                             ? 'bg-red-600 text-white'
-                            : 'border border-[var(--border)] hover:bg-red-50 text-[var(--foreground)]'
+                            : 'border border-border hover:bg-red-50 text-foreground'
                         }`}
                       >
                         <X className="w-3.5 h-3.5" />
@@ -193,7 +193,7 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
                         placeholder="Alasan penolakan..."
                         value={decision.reason}
                         onChange={(e) => handleReasonChange(item.book_id, e.target.value)}
-                        className="w-full px-2.5 py-1 text-xs rounded border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]"
+                        className="w-full px-2.5 py-1 text-xs rounded border border-border bg-surface text-foreground"
                       />
                     )}
                   </div>
@@ -209,7 +209,7 @@ export function AdminRequestReviewClient({ request }: AdminRequestReviewClientPr
 
         {/* Submit Keputusan Petugas */}
         {isPending && (
-          <div className="pt-4 border-t border-[var(--border)] flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-border flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={handleSubmitDecision}

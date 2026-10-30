@@ -230,12 +230,12 @@ export function HeroBookShowcase() {
                       />
 
                       {/* Spine Crease & Reflection */}
-                      <div className="absolute inset-y-0 left-0 w-8 pointer-events-none z-10 bg-gradient-to-r from-black/55 via-white/18 to-transparent" />
+                      <div className="absolute inset-y-0 left-0 w-8 pointer-events-none z-10 bg-linear-to-r from-black/55 via-white/18 to-transparent" />
                       <div className="absolute inset-y-0 left-[6px] w-[1px] bg-black/40 pointer-events-none z-10" />
                       <div className="absolute inset-y-0 left-[7.5px] w-[1px] bg-white/10 pointer-events-none z-10" />
 
                       {/* Satin Sheen */}
-                      <div className="absolute inset-0 pointer-events-none z-10 bg-gradient-to-tr from-transparent via-white/12 to-white/5 opacity-70" />
+                      <div className="absolute inset-0 pointer-events-none z-10 bg-linear-to-tr from-transparent via-white/12 to-white/5 opacity-70" />
 
                       {/* Front Card Active Subtle Ring */}
                       {isFront && (

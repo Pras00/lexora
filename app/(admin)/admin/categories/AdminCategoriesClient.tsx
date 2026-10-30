@@ -87,15 +87,15 @@ export function AdminCategoriesClient({ categories }: AdminCategoriesClientProps
         {/* Form Tambah Kategori */}
         <form
           onSubmit={handleAddCategory}
-          className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] space-y-4 shadow-xs h-fit"
+          className="p-6 rounded-2xl border border-border bg-surface space-y-4 shadow-xs h-fit"
         >
-          <h3 className="text-sm font-semibold text-[var(--foreground)] flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
             <Plus className="w-4 h-4 text-indigo-600" />
             <span>Tambah Kategori Baru</span>
           </h3>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Nama Kategori *
             </label>
             <input
@@ -104,12 +104,12 @@ export function AdminCategoriesClient({ categories }: AdminCategoriesClientProps
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Contoh: Sejarah & Biografi"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Deskripsi Singkat (Opsional)
             </label>
             <textarea
@@ -117,7 +117,7 @@ export function AdminCategoriesClient({ categories }: AdminCategoriesClientProps
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Koleksi buku mengenai..."
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
           </div>
 

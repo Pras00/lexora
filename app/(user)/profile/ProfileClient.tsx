@@ -112,15 +112,15 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
       )}
 
       {/* Kartu Anggota Info Box */}
-      <div className="p-6 rounded-2xl border border-indigo-200 dark:border-indigo-900/50 bg-gradient-to-br from-indigo-50/50 to-slate-50 dark:from-indigo-950/30 dark:to-slate-900/50">
+      <div className="p-6 rounded-2xl border border-indigo-200 dark:border-indigo-900/50 bg-linear-to-br from-indigo-50/50 to-slate-50 dark:from-indigo-950/30 dark:to-slate-900/50">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
               {fullName.charAt(0) || 'L'}
             </div>
             <div>
-              <h3 className="font-bold text-base text-[var(--foreground)]">{fullName || 'Anggota'}</h3>
-              <p className="text-xs text-[var(--foreground)]">{userEmail}</p>
+              <h3 className="font-bold text-base text-foreground">{fullName || 'Anggota'}</h3>
+              <p className="text-xs text-muted">{userEmail}</p>
               <p className="text-xs font-mono text-indigo-600 dark:text-indigo-400 font-semibold mt-1">
                 No. Anggota: {initialProfile?.member_number || 'LX-0001'}
               </p>
@@ -129,12 +129,12 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
 
           <div className="flex items-center gap-3">
             <div>
-              <p className="text-[10px] text-[var(--foreground)] uppercase font-semibold">Status Akun</p>
+              <p className="text-[10px] text-muted uppercase font-semibold">Status Akun</p>
               <StatusBadge status={initialProfile?.status || 'active'} />
             </div>
-            <div className="pl-3 border-l border-[var(--border)]">
-              <p className="text-[10px] text-[var(--foreground)] uppercase font-semibold">No-Show</p>
-              <p className="text-xs font-bold text-[var(--foreground)] mt-0.5">
+            <div className="pl-3 border-l border-border">
+              <p className="text-[10px] text-muted uppercase font-semibold">No-Show</p>
+              <p className="text-xs font-bold text-foreground mt-0.5">
                 {initialProfile?.no_show_count || 0} / 3 kali
               </p>
             </div>
@@ -146,27 +146,27 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
         {/* Form Biodata */}
         <form
           onSubmit={handleUpdateProfile}
-          className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] space-y-4 shadow-xs"
+          className="p-6 rounded-2xl border border-border bg-surface space-y-4 shadow-xs"
         >
-          <h4 className="font-semibold text-sm text-[var(--foreground)] flex items-center gap-2">
+          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
             <User className="w-4 h-4 text-indigo-600" />
             <span>Informasi Identitas</span>
           </h4>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Nama Lengkap
             </label>
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Nomor Telepon
             </label>
             <input
@@ -174,19 +174,19 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="081234567890"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Alamat Email (Akun)
             </label>
             <input
               type="email"
               disabled
               value={userEmail}
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-slate-100 dark:bg-slate-800/50 text-[var(--foreground)] cursor-not-allowed"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-slate-100 dark:bg-slate-800/50 text-muted cursor-not-allowed"
             />
           </div>
 
@@ -202,15 +202,15 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
         {/* Form Ganti Password */}
         <form
           onSubmit={handleUpdatePassword}
-          className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] space-y-4 shadow-xs"
+          className="p-6 rounded-2xl border border-border bg-surface space-y-4 shadow-xs"
         >
-          <h4 className="font-semibold text-sm text-[var(--foreground)] flex items-center gap-2">
+          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
             <KeyRound className="w-4 h-4 text-indigo-600" />
             <span>Ubah Kata Sandi</span>
           </h4>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Kata Sandi Baru
             </label>
             <input
@@ -218,12 +218,12 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Minimal 6 karakter"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[var(--foreground)] mb-1">
+            <label className="block text-xs font-medium text-foreground mb-1">
               Konfirmasi Kata Sandi Baru
             </label>
             <input
@@ -231,14 +231,14 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Ulangi kata sandi baru"
-              className="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
             />
           </div>
 
           <button
             type="submit"
             disabled={isLoadingPassword || !newPassword}
-            className="w-full mt-2 py-2.5 px-4 rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--foreground)] text-xs font-semibold transition-colors disabled:opacity-50"
+            className="w-full mt-2 py-2.5 px-4 rounded-lg border border-border hover:bg-slate-100 dark:hover:bg-slate-800 text-foreground text-xs font-semibold transition-colors disabled:opacity-50"
           >
             {isLoadingPassword ? 'Memproses...' : 'Perbarui Kata Sandi'}
           </button>

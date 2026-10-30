@@ -57,7 +57,7 @@ export function AdminMembersClient({ initialMembers }: AdminMembersClientProps) 
       />
 
       {/* Filter & Search */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border border-border bg-surface">
         <div className="w-full sm:w-80">
           <SearchInput
             value={search}
@@ -70,7 +70,7 @@ export function AdminMembersClient({ initialMembers }: AdminMembersClientProps) 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full sm:w-auto px-3 py-2 text-xs font-medium rounded-lg border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-600"
+            className="w-full sm:w-auto px-3 py-2 text-xs font-medium rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-600"
           >
             <option value="all">Semua Status</option>
             <option value="active">Aktif</option>
@@ -82,10 +82,10 @@ export function AdminMembersClient({ initialMembers }: AdminMembersClientProps) 
 
       {/* Tabel Anggota */}
       {filteredMembers.length > 0 ? (
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden shadow-xs">
+        <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-border text-foreground uppercase font-semibold">
                 <tr>
                   <th className="px-5 py-3.5">Nama & No. Anggota</th>
                   <th className="px-5 py-3.5">Telepon</th>
@@ -95,7 +95,7 @@ export function AdminMembersClient({ initialMembers }: AdminMembersClientProps) 
                   <th className="px-5 py-3.5 text-right">Ubah Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/60 text-[var(--foreground)]">
+              <tbody className="divide-y divide-border/60 text-foreground">
                 {filteredMembers.map((m) => (
                   <tr key={m.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                     <td className="px-5 py-4 font-semibold">
@@ -104,10 +104,10 @@ export function AdminMembersClient({ initialMembers }: AdminMembersClientProps) 
                         {m.member_number}
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-[var(--foreground)]">
+                    <td className="px-5 py-4 text-foreground">
                       {m.phone || '-'}
                     </td>
-                    <td className="px-5 py-4 text-[var(--foreground)]">
+                    <td className="px-5 py-4 text-foreground">
                       {formatDate(m.created_at)}
                     </td>
                     <td className="px-5 py-4 font-medium">

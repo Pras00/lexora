@@ -84,21 +84,21 @@ export default async function AdminReportsPage() {
       </div>
 
       {/* Ringkasan Performa Layanan */}
-      <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] space-y-4">
-        <h3 className="font-semibold text-sm text-[var(--foreground)]">
+      <div className="p-6 rounded-2xl border border-border bg-surface space-y-4">
+        <h3 className="font-semibold text-sm text-foreground">
           Pedoman & Standar Kepatuhan Sirkulasi Lexora
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-[var(--foreground)] leading-relaxed">
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border)]">
-            <h4 className="font-bold text-[var(--foreground)] mb-1">Durasi Peminjaman</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-foreground leading-relaxed">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-border">
+            <h4 className="font-bold text-foreground mb-1">Durasi Peminjaman</h4>
             <p>14 hari kalender dengan batas perpanjangan otomatis maksimal 1 kali (+7 hari) jika tidak ada daftar antrean.</p>
           </div>
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border)]">
-            <h4 className="font-bold text-[var(--foreground)] mb-1">Ketepatan Ambil (Pickup)</h4>
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-border">
+            <h4 className="font-bold text-foreground mb-1">Ketepatan Ambil (Pickup)</h4>
             <p>2 hari kerja setelah status disetujui. Kegagalan ambil 3 kali berturut-turut memicu suspensi akun 7 hari.</p>
           </div>
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-[var(--border)]">
-            <h4 className="font-bold text-[var(--foreground)] mb-1">Tarif Denda Harian</h4>
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-border">
+            <h4 className="font-bold text-foreground mb-1">Tarif Denda Harian</h4>
             <p>Rp 1.000 / buku / hari dihitung H+1 setelah tanggal jatuh tempo berakhir.</p>
           </div>
         </div>

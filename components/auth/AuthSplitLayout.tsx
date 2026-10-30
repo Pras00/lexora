@@ -131,7 +131,7 @@ export function AuthSplitLayout({
                       className="object-cover"
                     />
                     {/* Spine shadow realistis */}
-                    <div className="absolute inset-y-0 left-0 w-2 bg-gradient-to-r from-black/40 via-white/10 to-transparent pointer-events-none" />
+                    <div className="absolute inset-y-0 left-0 w-2 bg-linear-to-r from-black/40 via-white/10 to-transparent pointer-events-none" />
                   </div>
                   <span className="text-[10px] font-bold text-foreground text-center truncate w-full mt-1.5 block">
                     {b.title}
