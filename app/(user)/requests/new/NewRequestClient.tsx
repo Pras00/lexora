@@ -26,7 +26,11 @@ import { getLatestBooksStock } from '@/app/actions/books';
 import { formatCurrency } from '@/lib/utils';
 import { BookWithCategory } from '@/types';
 
-export function NewRequestClient() {
+interface NewRequestClientProps {
+  existingHeldBooks?: number;
+}
+
+export function NewRequestClient({ existingHeldBooks = 0 }: NewRequestClientProps) {
   const router = useRouter();
   const { items, removeItem, clearCart, syncBooks } = useCartStore();
   const [mounted, setMounted] = useState(false);
@@ -97,9 +101,13 @@ export function NewRequestClient() {
     );
   }
 
-  const totalSelected = items.length;
   const maxQuota = 5;
-  const remainingQuota = maxQuota - totalSelected;
+  const totalSelected = items.length;
+  const remainingQuotaBeforeThis = Math.max(0, maxQuota - existingHeldBooks);
+  const totalCommittedQuota = existingHeldBooks + totalSelected;
+  const remainingQuotaForMore = Math.max(0, remainingQuotaBeforeThis - totalSelected);
+  const isOverQuota = totalCommittedQuota > maxQuota;
+  const isFullQuota = existingHeldBooks >= maxQuota;
   const outOfStockItems = items.filter((i) => i.book.available_stock <= 0);
   const hasOutOfStock = outOfStockItems.length > 0;
   const totalValue = items.reduce(
@@ -111,6 +119,13 @@ export function NewRequestClient() {
     if (hasOutOfStock) {
       setErrorMsg(
         'Terdapat buku yang stok fisiknya telah habis di rak. Harap hapus terlebih dahulu sebelum mengirim pengajuan.'
+      );
+      return;
+    }
+
+    if (isOverQuota || isFullQuota) {
+      setErrorMsg(
+        `Pengajuan melebihi kuota peminjaman (${maxQuota} buku). Anda saat ini memiliki ${existingHeldBooks} buku yang sedang aktif/diajukan.`
       );
       return;
     }
@@ -156,6 +171,32 @@ export function NewRequestClient() {
         </div>
       )}
 
+      {/* Peringatan Jika Kuota Penuh */}
+      {isFullQuota && (
+        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3 text-xs md:text-sm text-amber-800 dark:text-amber-300">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+          <div className="space-y-1">
+            <p className="font-bold">Kuota Peminjaman Anda Sedang Penuh (5 / 5 Buku)</p>
+            <p className="text-xs">
+              Anda saat ini memiliki <strong>{existingHeldBooks} buku</strong> yang sedang aktif dipinjam atau menunggu di loket sirkulasi. Selesaikan pengembalian buku fisik Anda terlebih dahulu sebelum dapat mengajukan buku baru.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Peringatan Jika Kelebihan Kuota */}
+      {!isFullQuota && isOverQuota && (
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 flex items-start gap-3 text-xs md:text-sm text-rose-700 dark:text-rose-300">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+          <div className="space-y-1">
+            <p className="font-bold">Pengajuan Melebihi Batas Kuota Peminjaman</p>
+            <p className="text-xs">
+              Anda memiliki <strong>{existingHeldBooks} buku</strong> yang sedang aktif/diajukan, sehingga sisa kuota yang tersedia untuk pengajuan baru ini adalah <strong>{remainingQuotaBeforeThis} buku</strong>. Harap kurangi <strong>{totalCommittedQuota - maxQuota} buku</strong> dari keranjang Anda.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Peringatan Otomatis Jika Ada Buku Yang Kehabisan Stok di Rak */}
       {hasOutOfStock && (
         <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 flex items-start gap-3 text-xs md:text-sm text-rose-700 dark:text-rose-300">
@@ -171,7 +212,7 @@ export function NewRequestClient() {
                 </li>
               ))}
             </ul>
-            <p className="text-[11px] text-rose-600 dark:text-rose-400 pt-0.5">
+            <p className="text-xs text-rose-600 dark:text-rose-400 pt-0.5">
               Harap hapus buku yang habis tersebut dari keranjang untuk dapat mengirim pengajuan peminjaman.
             </p>
           </div>
@@ -186,13 +227,13 @@ export function NewRequestClient() {
               <h3 className="text-sm font-bold text-foreground">
                 Koleksi yang Diajukan
               </h3>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
-                {totalSelected} dari {maxQuota} buku
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary">
+                {totalSelected} buku baru {existingHeldBooks > 0 ? `(${totalCommittedQuota}/${maxQuota} kuota)` : `(dari ${maxQuota} buku)`}
               </span>
 
               {/* Status Sinkronisasi Stok Live */}
               {isSyncing ? (
-                <span className="inline-flex items-center gap-1.5 text-[11px] text-muted">
+                <span className="inline-flex items-center gap-1.5 text-xs text-muted">
                   <RefreshCw className="w-3 h-3 text-primary animate-spin" />
                   <span>Menyinkronkan stok fisik...</span>
                 </span>
@@ -200,7 +241,7 @@ export function NewRequestClient() {
                 <button
                   type="button"
                   onClick={syncCartStock}
-                  className="inline-flex items-center gap-1 text-[11px] text-muted hover:text-foreground transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 text-xs text-muted hover:text-foreground transition-colors cursor-pointer"
                   title="Klik untuk menyinkronkan stok fisik terbaru dari rak"
                 >
                   <CheckCircle2 className="w-3 h-3 text-emerald-500" />
@@ -251,7 +292,7 @@ export function NewRequestClient() {
                     ) : (
                       <div className="flex flex-col items-center justify-center h-full text-slate-400 p-2 text-center bg-slate-100 dark:bg-slate-800">
                         <BookOpen className="w-6 h-6 mb-1 opacity-50" />
-                        <span className="text-[10px] line-clamp-1">{book.title}</span>
+                        <span className="text-xs line-clamp-1">{book.title}</span>
                       </div>
                     )}
                     {/* Spine Shadow Realistis */}
@@ -262,16 +303,16 @@ export function NewRequestClient() {
                   <div className="flex-1 min-w-0 pr-1">
                     {/* Kategori Badge & Status Stok */}
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-surface-secondary text-muted border border-border/70">
+                      <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-surface-secondary text-muted border border-border/70">
                         {categoryName}
                       </span>
                       {isOutOfStock ? (
-                        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-900/50">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-900/50">
                           <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
                           Stok Habis di Rak (0)
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                           Tersedia {book.available_stock} di rak
                         </span>
@@ -297,11 +338,11 @@ export function NewRequestClient() {
 
                     {/* Metadata Bottom Row: ISBN & Estimasi Nilai Tanggungan */}
                     <div className="flex flex-wrap items-center gap-3 text-xs mt-2.5">
-                      <span className="font-mono text-[11px] text-muted">
+                      <span className="font-mono text-xs text-muted">
                         ISBN: {book.isbn}
                       </span>
                       <span className="text-muted/40">•</span>
-                      <span className="inline-flex items-center gap-1 text-[11px] text-muted">
+                      <span className="inline-flex items-center gap-1 text-xs text-muted">
                         <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
                         Nilai Buku: {formatCurrency(book.price)}
                       </span>
@@ -324,7 +365,7 @@ export function NewRequestClient() {
           </div>
 
           {/* Slot Tambah Buku Lain (Jika Kuota Belum Penuh) */}
-          {remainingQuota > 0 && (
+          {remainingQuotaForMore > 0 ? (
             <Link
               href="/catalog"
               className="group flex flex-col sm:flex-row items-center justify-between p-4 sm:p-5 rounded-2xl border-2 border-dashed border-border hover:border-primary/50 bg-surface/40 hover:bg-surface-secondary/40 transition-all duration-200 gap-3"
@@ -338,7 +379,7 @@ export function NewRequestClient() {
                     Tambah Koleksi Buku Lainnya
                   </h5>
                   <p className="text-xs text-muted font-medium mt-0.5">
-                    Masih ada kuota untuk <strong>{remainingQuota} buku</strong> lagi dalam pengajuan ini.
+                    Masih ada kuota untuk <strong>{remainingQuotaForMore} buku</strong> lagi dalam pengajuan ini.
                   </p>
                 </div>
               </div>
@@ -347,6 +388,15 @@ export function NewRequestClient() {
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </span>
             </Link>
+          ) : (
+            <div className="flex items-center gap-3 p-4 rounded-2xl border border-dashed border-border bg-surface-secondary/30 text-xs text-muted">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+              <span>
+                {isOverQuota
+                  ? `Kuota maksimal peminjaman (${maxQuota} buku) terlampaui. Kurangi isi keranjang.`
+                  : `Batas kuota maksimal peminjaman (${maxQuota} buku) telah tercapai untuk pengajuan ini.`}
+              </span>
+            </div>
           )}
         </div>
 
@@ -361,24 +411,59 @@ export function NewRequestClient() {
                   Ikhtisar Peminjaman
                 </h3>
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
                 {totalSelected} Buku
               </span>
             </div>
 
             {/* Meteran Kuota Peminjaman */}
-            <div>
-              <div className="flex items-center justify-between text-xs font-semibold mb-2">
-                <span className="text-muted">Kuota Peminjaman</span>
-                <span className="text-foreground">
-                  {totalSelected} <span className="text-muted">/ {maxQuota} buku</span>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs font-semibold">
+                <span className="text-muted">Akumulasi Kuota Peminjaman</span>
+                <span className={isOverQuota ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-foreground'}>
+                  {totalCommittedQuota} <span className="text-muted font-normal">/ {maxQuota} buku</span>
                 </span>
               </div>
-              <div className="w-full h-2 rounded-full bg-surface-secondary overflow-hidden flex">
-                <div
-                  className="h-full bg-primary rounded-full transition-all duration-300"
-                  style={{ width: `${(totalSelected / maxQuota) * 100}%` }}
-                />
+
+              {/* Progress Bar Multi-Segmen */}
+              <div className="w-full h-2 rounded-full bg-surface-secondary overflow-hidden flex gap-0.5">
+                {/* Segmen 1: Buku Aktif / Diajukan Sebelumnya */}
+                {existingHeldBooks > 0 && (
+                  <div
+                    className="h-full bg-slate-400 dark:bg-slate-500 transition-all duration-300"
+                    style={{ width: `${(Math.min(maxQuota, existingHeldBooks) / maxQuota) * 100}%` }}
+                    title={`${existingHeldBooks} buku aktif/diajukan sebelumnya`}
+                  />
+                )}
+                {/* Segmen 2: Buku di Pengajuan Baru Ini */}
+                {totalSelected > 0 && (
+                  <div
+                    className={`h-full transition-all duration-300 ${
+                      isOverQuota ? 'bg-rose-500' : 'bg-primary'
+                    }`}
+                    style={{
+                      width: `${(Math.min(Math.max(0, maxQuota - existingHeldBooks), totalSelected) / maxQuota) * 100}%`,
+                    }}
+                    title={`${totalSelected} buku di pengajuan baru`}
+                  />
+                )}
+              </div>
+
+              {/* Keterangan Detail Pembagian Kuota */}
+              <div className="flex items-center justify-between text-xs text-muted pt-0.5">
+                {existingHeldBooks > 0 ? (
+                  <>
+                    <span>{existingHeldBooks} aktif + {totalSelected} baru</span>
+                    <span className={isOverQuota ? 'text-rose-600 dark:text-rose-400 font-semibold' : ''}>
+                      {isOverQuota ? 'Kelebihan kuota' : `Sisa ${remainingQuotaForMore} buku`}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span>{totalSelected} dipilih</span>
+                    <span>Sisa {remainingQuotaForMore} buku</span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -410,7 +495,7 @@ export function NewRequestClient() {
                   <span className="font-semibold text-foreground block">
                     Total Estimasi Nilai Buku
                   </span>
-                  <span className="text-[10px] text-muted">
+                  <span className="text-xs text-muted">
                     Acuan ganti rugi jika hilang/rusak
                   </span>
                 </div>
@@ -421,7 +506,7 @@ export function NewRequestClient() {
             </div>
 
             {/* Catatan Ketentuan Singkat */}
-            <div className="p-3.5 rounded-xl bg-surface-secondary/70 border border-border/80 text-[11px] text-muted space-y-2 leading-relaxed">
+            <div className="p-3.5 rounded-xl bg-surface-secondary/70 border border-border/80 text-xs text-muted space-y-2 leading-relaxed">
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                 <span>Tunjukkan <strong>QR Pickup Pass</strong> di loket fisik saat buku disetujui pustakawan.</span>
@@ -437,8 +522,8 @@ export function NewRequestClient() {
               <button
                 type="button"
                 onClick={handleSubmitRequest}
-                disabled={isLoading || hasOutOfStock}
-                className="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+                disabled={isLoading || hasOutOfStock || isOverQuota || isFullQuota}
+                className="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isLoading ? (
                   <>
@@ -453,11 +538,19 @@ export function NewRequestClient() {
                 )}
               </button>
               {hasOutOfStock ? (
-                <p className="text-center text-[11px] text-rose-600 dark:text-rose-400 mt-2.5 font-semibold leading-relaxed">
+                <p className="text-center text-xs text-rose-600 dark:text-rose-400 mt-2.5 font-semibold leading-relaxed">
                   Harap hapus buku yang stoknya habis di rak untuk melanjutkan pengajuan.
                 </p>
+              ) : isFullQuota ? (
+                <p className="text-center text-xs text-amber-600 dark:text-amber-400 mt-2.5 font-semibold leading-relaxed">
+                  Batas kuota maksimal ({maxQuota} buku) sudah penuh. Kembalikan buku aktif untuk meminjam lagi.
+                </p>
+              ) : isOverQuota ? (
+                <p className="text-center text-xs text-rose-600 dark:text-rose-400 mt-2.5 font-semibold leading-relaxed">
+                  Pengajuan melebihi kuota tersedia ({remainingQuotaBeforeThis} buku). Harap kurangi isi keranjang.
+                </p>
               ) : (
-                <p className="text-center text-[11px] text-muted mt-2.5 leading-relaxed">
+                <p className="text-center text-xs text-muted mt-2.5 leading-relaxed">
                   Pustakawan akan memverifikasi kesiapan fisik buku Anda dalam waktu 1x24 jam kerja.
                 </p>
               )}

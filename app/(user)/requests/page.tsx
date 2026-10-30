@@ -9,12 +9,14 @@ import { RequestsClient } from './RequestsClient';
 
 export default async function RequestsPage() {
   let requests: LoanRequestWithDetails[] = [];
+  let activeLoansCount = 0;
 
   try {
     const { user } = await getCurrentUser();
 
     if (user && process.env.DATABASE_URL) {
-      const data = await sql`
+      const [data, loansCountRes] = await Promise.all([
+        sql`
         SELECT lr.*,
           (
             SELECT json_agg(
@@ -55,10 +57,22 @@ export default async function RequestsPage() {
         FROM loan_requests lr
         WHERE lr.user_id = ${user.id}
         ORDER BY lr.created_at DESC
-      `;
+      `,
+        sql`
+          SELECT COALESCE(COUNT(li.id), 0) as count
+          FROM public.loans l
+          JOIN public.loan_items li ON li.loan_id = l.id
+          WHERE l.user_id = ${user.id}
+            AND l.status IN ('active', 'overdue')
+            AND li.status = 'borrowed'
+        `,
+      ]);
 
       if (data) {
         requests = data as unknown as LoanRequestWithDetails[];
+      }
+      if (loansCountRes && loansCountRes[0]) {
+        activeLoansCount = Number(loansCountRes[0].count || 0);
       }
     }
   } catch (err) {
@@ -82,7 +96,7 @@ export default async function RequestsPage() {
       />
 
       <Suspense fallback={<div className="h-40 flex items-center justify-center text-xs text-muted">Memuat pengajuan...</div>}>
-        <RequestsClient initialRequests={requests} />
+        <RequestsClient initialRequests={requests} activeLoansCount={activeLoansCount} />
       </Suspense>
     </div>
   );

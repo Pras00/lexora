@@ -6,6 +6,38 @@ import { calculatePickupDeadline } from '@/lib/working-days';
 import { generatePickupCode } from '@/lib/pickup-code';
 import { revalidatePath } from 'next/cache';
 
+export async function getUserActiveHeldBooksCount(userId: string): Promise<number> {
+  try {
+    const rows = await sql`
+      SELECT
+        (
+          SELECT COALESCE(COUNT(lri.id), 0)
+          FROM public.loan_requests lr
+          JOIN public.loan_request_items lri ON lri.request_id = lr.id
+          WHERE lr.user_id = ${userId}
+            AND lr.status IN ('pending', 'approved')
+            AND lri.status IN ('pending', 'approved')
+        ) AS active_request_books,
+        (
+          SELECT COALESCE(COUNT(li.id), 0)
+          FROM public.loans l
+          JOIN public.loan_items li ON li.loan_id = l.id
+          WHERE l.user_id = ${userId}
+            AND l.status IN ('active', 'overdue')
+            AND li.status = 'borrowed'
+        ) AS active_loan_books
+    `;
+
+    if (!rows || rows.length === 0) return 0;
+    const reqBooks = Number(rows[0].active_request_books || 0);
+    const loanBooks = Number(rows[0].active_loan_books || 0);
+    return reqBooks + loanBooks;
+  } catch (err) {
+    console.error('Error getting user active held books count:', err);
+    return 0;
+  }
+}
+
 export async function createLoanRequest(bookIds: string[]) {
   const { user, profile } = await getCurrentUser();
   if (!user || !profile) {
@@ -61,6 +93,17 @@ export async function createLoanRequest(bookIds: string[]) {
       };
     }
 
+    // 2.6 Cek kuota maksimal peminjaman (5 buku per anggota)
+    const existingHeld = await getUserActiveHeldBooksCount(user.id);
+    const maxQuota = 5;
+    if (existingHeld + bookIds.length > maxQuota) {
+      const remainingQuota = Math.max(0, maxQuota - existingHeld);
+      return {
+        success: false,
+        error: `Pengajuan melebihi kuota peminjaman (${maxQuota} buku). Anda saat ini memiliki ${existingHeld} buku yang sedang aktif/diajukan, sehingga sisa kuota yang dapat diajukan adalah ${remainingQuota} buku fisik.`,
+      };
+    }
+
     // 3. Simpan Loan Request
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24); // Auto-expire 24 jam
@@ -96,6 +139,7 @@ export async function createLoanRequest(bookIds: string[]) {
     }
 
     revalidatePath('/requests');
+    revalidatePath('/requests/new');
     revalidatePath('/dashboard');
     revalidatePath('/admin/requests');
 

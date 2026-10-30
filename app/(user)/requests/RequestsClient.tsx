@@ -4,9 +4,9 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronDown,
-  ChevronUp,
   Clock,
   AlertCircle,
   BookOpen,
@@ -30,11 +30,12 @@ import { cancelLoanRequest } from '@/app/actions/requests';
 
 interface RequestsClientProps {
   initialRequests: LoanRequestWithDetails[];
+  activeLoansCount?: number;
 }
 
 type FilterTab = 'all' | 'pending' | 'approved' | 'history';
 
-export function RequestsClient({ initialRequests }: RequestsClientProps) {
+export function RequestsClient({ initialRequests, activeLoansCount = 0 }: RequestsClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
@@ -81,11 +82,12 @@ export function RequestsClient({ initialRequests }: RequestsClientProps) {
   );
 
   const activeHeldBooks = useMemo(() => {
-    return [...pendingRequests, ...approvedRequests].reduce(
+    const fromRequests = [...pendingRequests, ...approvedRequests].reduce(
       (acc, r) => acc + (r.items?.length || 0),
       0
     );
-  }, [pendingRequests, approvedRequests]);
+    return fromRequests + activeLoansCount;
+  }, [pendingRequests, approvedRequests, activeLoansCount]);
 
   const maxQuota = 5;
   const remainingQuota = Math.max(0, maxQuota - activeHeldBooks);
@@ -301,11 +303,13 @@ export function RequestsClient({ initialRequests }: RequestsClientProps) {
                             }`}
                           >
                             <span>{isExpanded ? 'Tutup Rincian' : 'Lihat Rincian'}</span>
-                            {isExpanded ? (
-                              <ChevronUp className="w-3.5 h-3.5" />
-                            ) : (
+                            <motion.span
+                              animate={{ rotate: isExpanded ? 180 : 0 }}
+                              transition={{ duration: 0.25, ease: 'easeInOut' }}
+                              className="inline-flex shrink-0"
+                            >
                               <ChevronDown className="w-3.5 h-3.5" />
-                            )}
+                            </motion.span>
                           </span>
                         </div>
                       </div>
@@ -320,134 +324,158 @@ export function RequestsClient({ initialRequests }: RequestsClientProps) {
                     </div>
 
                     {/* ── Isi Rincian Dropdown (Accordion Body) ── */}
-                    {isExpanded && (
-                      <div className="border-t border-border bg-surface-secondary/20 p-5 sm:p-6 space-y-5 animate-in fade-in-50 duration-200">
-                        {/* Bilah Status & Batas Waktu */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80">
-                          <div className="space-y-1">
-                            <span className="text-[11px] font-semibold text-muted uppercase tracking-wider block">
-                              Status Sirkulasi Pengajuan
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <StatusBadge status={req.status} size="md" />
-                            </div>
-                          </div>
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          key={`accordion-content-${req.id}`}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{
+                            height: 'auto',
+                            opacity: 1,
+                            transition: {
+                              height: { duration: 0.28, ease: 'easeInOut' },
+                              opacity: { duration: 0.2, delay: 0.05 },
+                            },
+                          }}
+                          exit={{
+                            height: 0,
+                            opacity: 0,
+                            transition: {
+                              height: { duration: 0.22, ease: 'easeInOut' },
+                              opacity: { duration: 0.15 },
+                            },
+                          }}
+                          className="overflow-hidden border-t border-border bg-surface-secondary/20"
+                        >
+                          <div className="p-5 sm:p-6 space-y-5">
+                            {/* Bilah Status & Batas Waktu */}
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80">
+                              <div className="space-y-1">
+                                <span className="text-xs font-semibold text-muted uppercase tracking-wider block">
+                                  Status Sirkulasi Pengajuan
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  <StatusBadge status={req.status} size="md" />
+                                </div>
+                              </div>
 
-                          <div className="flex flex-wrap items-center gap-3">
-                            {req.expires_at && req.status === 'pending' && (
-                              <div className="text-left sm:text-right">
-                                <span className="text-[11px] text-muted flex items-center gap-1">
-                                  <Clock className="w-3.5 h-3.5 text-amber-500" />
-                                  Kedaluwarsa Otomatis:
-                                </span>
-                                <span className="text-xs font-bold text-foreground block mt-0.5">
-                                  {formatDateTime(req.expires_at)}
-                                </span>
+                              <div className="flex flex-wrap items-center gap-3">
+                                {req.expires_at && req.status === 'pending' && (
+                                  <div className="text-left sm:text-right">
+                                    <span className="text-xs text-muted flex items-center gap-1">
+                                      <Clock className="w-3.5 h-3.5 text-amber-500" />
+                                      Kedaluwarsa Otomatis:
+                                    </span>
+                                    <span className="text-xs font-bold text-foreground block mt-0.5">
+                                      {formatDateTime(req.expires_at)}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {canCancel && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setCancellingRequest(req);
+                                    }}
+                                    className="px-3.5 py-2 text-xs font-semibold rounded-xl border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all cursor-pointer"
+                                  >
+                                    Batalkan Pengajuan
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Tiket QR Pickup Pass (Jika Disetujui Pustakawan) */}
+                            {req.status === 'approved' && req.pass && (
+                              <div className="pt-1">
+                                <PickupPass pass={req.pass} requestNumber={req.request_number} />
                               </div>
                             )}
 
-                            {canCancel && (
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setCancellingRequest(req);
-                                }}
-                                className="px-3.5 py-2 text-xs font-semibold rounded-xl border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all cursor-pointer"
-                              >
-                                Batalkan Pengajuan
-                              </button>
-                            )}
-                          </div>
-                        </div>
+                            {/* Daftar Koleksi Buku Dalam Pengajuan */}
+                            <div className="space-y-3">
+                              <h4 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-1.5">
+                                <BookOpen className="w-4 h-4 text-primary" />
+                                <span>Koleksi Buku yang Diajukan ({totalBooks} buku)</span>
+                              </h4>
 
-                        {/* Tiket QR Pickup Pass (Jika Disetujui Pustakawan) */}
-                        {req.status === 'approved' && req.pass && (
-                          <div className="pt-1">
-                            <PickupPass pass={req.pass} requestNumber={req.request_number} />
-                          </div>
-                        )}
+                              <div className="space-y-3">
+                                {bookItems.map((item) => {
+                                  const bookWithCategory = item.book as unknown as BookWithCategory;
+                                  const categoryName =
+                                    bookWithCategory.category?.name || 'Koleksi Perpustakaan';
 
-                        {/* Daftar Koleksi Buku Dalam Pengajuan */}
-                        <div className="space-y-3">
-                          <h4 className="text-xs sm:text-sm font-bold text-foreground flex items-center gap-1.5">
-                            <BookOpen className="w-4 h-4 text-primary" />
-                            <span>Koleksi Buku yang Diajukan ({totalBooks} buku)</span>
-                          </h4>
-
-                          <div className="space-y-3">
-                            {bookItems.map((item) => {
-                              const bookWithCategory = item.book as unknown as BookWithCategory;
-                              const categoryName =
-                                bookWithCategory.category?.name || 'Koleksi Perpustakaan';
-
-                              return (
-                                <div
-                                  key={item.id}
-                                  className="flex items-center gap-4 p-4 rounded-2xl border border-border bg-surface shadow-2xs hover:border-border-strong transition-all"
-                                >
-                                  {/* Sampul Buku Proporsi Fisik */}
-                                  <div className="relative w-14 sm:w-16 h-20 sm:h-22 rounded-xl overflow-hidden bg-surface-secondary shadow-xs border border-border/80 shrink-0">
-                                    {item.book?.cover_url ? (
-                                      <Image
-                                        src={item.book.cover_url}
-                                        alt={item.book.title}
-                                        fill
-                                        sizes="64px"
-                                        className="object-cover"
-                                      />
-                                    ) : (
-                                      <div className="flex items-center justify-center h-full text-slate-400">
-                                        <BookOpen className="w-6 h-6 opacity-40" />
+                                  return (
+                                    <div
+                                      key={item.id}
+                                      className="flex items-center gap-4 p-4 rounded-2xl border border-border bg-surface shadow-2xs hover:border-border-strong transition-all"
+                                    >
+                                      {/* Sampul Buku Proporsi Fisik */}
+                                      <div className="relative w-14 sm:w-16 h-20 sm:h-22 rounded-xl overflow-hidden bg-surface-secondary shadow-xs border border-border/80 shrink-0">
+                                        {item.book?.cover_url ? (
+                                          <Image
+                                            src={item.book.cover_url}
+                                            alt={item.book.title}
+                                            fill
+                                            sizes="64px"
+                                            className="object-cover"
+                                          />
+                                        ) : (
+                                          <div className="flex items-center justify-center h-full text-slate-400">
+                                            <BookOpen className="w-6 h-6 opacity-40" />
+                                          </div>
+                                        )}
+                                        {/* Spine shadow realistis */}
+                                        <div className="absolute inset-y-0 left-0 w-2.5 bg-linear-to-r from-black/40 via-white/10 to-transparent pointer-events-none" />
                                       </div>
-                                    )}
-                                    {/* Spine shadow realistis */}
-                                    <div className="absolute inset-y-0 left-0 w-2.5 bg-linear-to-r from-black/40 via-white/10 to-transparent pointer-events-none" />
-                                  </div>
 
-                                  {/* Detail Metadata Buku */}
-                                  <div className="flex-1 min-w-0 pr-1">
-                                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-surface-secondary text-muted border border-border/70">
-                                        {categoryName}
-                                      </span>
+                                      {/* Detail Metadata Buku */}
+                                      <div className="flex-1 min-w-0 pr-1">
+                                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-surface-secondary text-muted border border-border/70">
+                                            {categoryName}
+                                          </span>
+                                        </div>
+
+                                        <h5 className="font-bold text-sm text-foreground truncate">
+                                          {item.book?.title}
+                                        </h5>
+
+                                        <p className="text-xs text-muted font-medium mt-0.5 truncate">
+                                          Karya <strong className="text-foreground">{item.book?.author}</strong>
+                                          {item.book?.publisher ? ` · ${item.book.publisher}` : ''}
+                                          {item.book?.published_year ? ` (${item.book.published_year})` : ''}
+                                        </p>
+
+                                        {item.book?.isbn && (
+                                          <p className="font-mono text-xs text-muted mt-1">
+                                            ISBN: {item.book.isbn}
+                                          </p>
+                                        )}
+
+                                        {item.rejection_reason && (
+                                          <p className="text-xs text-rose-600 dark:text-rose-400 mt-1.5 flex items-center gap-1 font-medium">
+                                            <XCircle className="w-3.5 h-3.5 shrink-0" />
+                                            <span>Alasan: {item.rejection_reason}</span>
+                                          </p>
+                                        )}
+                                      </div>
+
+                                      {/* Status Per Item Buku */}
+                                      <div className="shrink-0">
+                                        <StatusBadge status={item.status} />
+                                      </div>
                                     </div>
-
-                                    <h5 className="font-bold text-sm text-foreground truncate">
-                                      {item.book?.title}
-                                    </h5>
-
-                                    <p className="text-xs text-muted font-medium mt-0.5 truncate">
-                                      Karya <strong className="text-foreground">{item.book?.author}</strong>
-                                      {item.book?.publisher ? ` · ${item.book.publisher}` : ''}
-                                      {item.book?.published_year ? ` (${item.book.published_year})` : ''}
-                                    </p>
-
-                                    {item.book?.isbn && (
-                                      <p className="font-mono text-[11px] text-muted mt-1">
-                                        ISBN: {item.book.isbn}
-                                      </p>
-                                    )}
-
-                                    {item.rejection_reason && (
-                                      <p className="text-xs text-rose-600 dark:text-rose-400 mt-1.5 flex items-center gap-1 font-medium">
-                                        <XCircle className="w-3.5 h-3.5 shrink-0" />
-                                        <span>Alasan: {item.rejection_reason}</span>
-                                      </p>
-                                    )}
-                                  </div>
-
-                                  {/* Status Per Item Buku */}
-                                  <div className="shrink-0">
-                                    <StatusBadge status={item.status} />
-                                  </div>
-                                </div>
-                              );
-                            })}
+                                  );
+                                })}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })}
@@ -480,7 +508,7 @@ export function RequestsClient({ initialRequests }: RequestsClientProps) {
                   Kuota Peminjaman Anda
                 </h4>
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
                 {activeHeldBooks} / {maxQuota} Buku
               </span>
             </div>
@@ -499,7 +527,7 @@ export function RequestsClient({ initialRequests }: RequestsClientProps) {
               </div>
             </div>
 
-            <p className="text-[11px] text-muted leading-relaxed">
+            <p className="text-xs text-muted leading-relaxed">
               {remainingQuota > 0 ? (
                 <>Anda masih memiliki sisa kuota untuk meminjam <strong>{remainingQuota} buku fisik</strong> lagi.</>
               ) : (
@@ -530,14 +558,14 @@ export function RequestsClient({ initialRequests }: RequestsClientProps) {
             <div className="space-y-3.5 text-xs">
               {/* Step 1 */}
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                   1
                 </div>
                 <div>
                   <strong className="text-foreground font-semibold block">
                     Verifikasi Fisik di Rak
                   </strong>
-                  <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+                  <p className="text-xs text-muted mt-0.5 leading-relaxed">
                     Pustakawan memeriksa ketersediaan dan kondisi buku fisik dalam 1x24 jam kerja.
                   </p>
                 </div>
@@ -545,14 +573,14 @@ export function RequestsClient({ initialRequests }: RequestsClientProps) {
 
               {/* Step 2 */}
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                   2
                 </div>
                 <div>
                   <strong className="text-foreground font-semibold block">
                     Penerbitan QR Pickup Pass
                   </strong>
-                  <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+                  <p className="text-xs text-muted mt-0.5 leading-relaxed">
                     Buku yang disetujui akan menerbitkan tiket QR dengan batas ambil 2 hari kerja.
                   </p>
                 </div>
@@ -560,14 +588,14 @@ export function RequestsClient({ initialRequests }: RequestsClientProps) {
 
               {/* Step 3 */}
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[11px] shrink-0 mt-0.5">
+                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                   3
                 </div>
                 <div>
                   <strong className="text-foreground font-semibold block">
                     Ambil di Loket Sirkulasi
                   </strong>
-                  <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+                  <p className="text-xs text-muted mt-0.5 leading-relaxed">
                     Tunjukkan QR Pass ke petugas loket untuk menerima buku fisik (durasi 14 hari).
                   </p>
                 </div>
@@ -575,7 +603,7 @@ export function RequestsClient({ initialRequests }: RequestsClientProps) {
             </div>
 
             {/* Loket Info Box */}
-            <div className="pt-3 border-t border-border space-y-2 text-[11px] text-muted leading-relaxed">
+            <div className="pt-3 border-t border-border space-y-2 text-xs text-muted leading-relaxed">
               <div className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5" />
                 <span>
