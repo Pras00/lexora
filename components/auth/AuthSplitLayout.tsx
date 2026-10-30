@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   BookOpen,
   QrCode,
@@ -19,6 +20,34 @@ interface AuthSplitLayoutProps {
   footerLinkHref: string;
 }
 
+// 4 buku fisik populer pilihan yang ada di sistem
+const curatedBooks = [
+  {
+    title: 'Pulang - Pergi',
+    author: 'Tere Liye',
+    cover: '/covers/pulang-pergi.jpg',
+    shelf: 'Rak Sastra F-02',
+  },
+  {
+    title: 'Sapiens',
+    author: 'Yuval Noah Harari',
+    cover: '/covers/sapiens.jpg',
+    shelf: 'Rak Sejarah B-04',
+  },
+  {
+    title: 'Bumi Manusia',
+    author: 'Pramoedya Ananta Toer',
+    cover: '/covers/bumi-manusia.jpg',
+    shelf: 'Rak Klasik C-01',
+  },
+  {
+    title: 'Laut Bercerita',
+    author: 'Leila S. Chudori',
+    cover: '/covers/laut-bercerita.jpg',
+    shelf: 'Rak Fiksi D-08',
+  },
+];
+
 export function AuthSplitLayout({
   children,
   title,
@@ -28,24 +57,24 @@ export function AuthSplitLayout({
   footerLinkHref,
 }: AuthSplitLayoutProps) {
   return (
-    <div className="relative h-screen overflow-y-auto lg:overflow-hidden flex items-center justify-center p-3 sm:p-5 lg:p-6 bg-background text-foreground transition-colors">
-      {/* Ambient background atmosphere */}
+    <div className="relative min-h-screen lg:h-screen overflow-y-auto lg:overflow-hidden flex items-center justify-center p-3 sm:p-4 lg:py-3 lg:px-6 xl:px-8 bg-background text-foreground transition-colors">
+      {/* Latar Belakang Atmosferik Halus */}
       <AuthBackground />
 
-      {/* Top right theme toggle */}
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-30">
+      {/* Tombol Pengubah Tema (Kanan Atas) */}
+      <div className="absolute top-3 right-3 sm:top-5 sm:right-6 z-30">
         <ThemeToggle />
       </div>
 
-      <div className="w-full max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 xl:gap-12 items-center my-auto">
-        {/* ── Left Column: Value Prop Showcase (Desktop only ≥ 1024px) ── */}
-        <div className="hidden lg:flex lg:col-span-7 flex-col justify-between py-2">
-          <div>
-            {/* Brand Title Badge */}
+      <div className="w-full max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 xl:gap-12 items-center my-auto py-1">
+        {/* ── Sisi Kiri: Showcase Fisik Otentik Koleksi Buku (Desktop >= 1024px) ── */}
+        <div className="hidden lg:flex lg:col-span-7 flex-col justify-center space-y-3 xl:space-y-4 pr-2">
+          {/* Brand Logo & Editorial Badge */}
+          <div className="space-y-2">
             <Link
               href="/"
               title="Kembali ke Beranda"
-              className="inline-flex mb-4 group focus:outline-none"
+              className="inline-flex group focus:outline-none"
             >
               <LexoraLogo
                 size="md"
@@ -53,108 +82,106 @@ export function AuthSplitLayout({
               />
             </Link>
 
-            <div>
-              {/* Category Tag */}
-              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-surface-secondary text-muted text-xs font-semibold mb-3.5 border border-border">
-                <span>Layanan Perpustakaan & Sirkulasi Fisik</span>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-secondary text-muted text-[11px] font-semibold border border-border">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Sistem Sirkulasi & Preservasi Koleksi Fisik
+              </span>
+            </div>
+          </div>
+
+          {/* Headline Editorial yang Tenang & Bernas */}
+          <div className="space-y-1.5 max-w-xl">
+            <h1 className="text-2xl xl:text-3xl font-extrabold tracking-tight text-foreground leading-tight font-sans">
+              Sirkulasi buku fisik yang lebih mudah, tertata, dan tenang.
+            </h1>
+            <p className="text-xs sm:text-sm text-muted leading-relaxed line-clamp-2 sm:line-clamp-none">
+              Telusuri ketersediaan buku di rak secara realtime, lakukan reservasi mandiri,
+              dan ambil langsung di loket sirkulasi menggunakan kode QR instan tanpa formulir kertas.
+            </p>
+          </div>
+
+          {/* Preview Koleksi Buku Populer di Rak */}
+          <div className="p-3.5 sm:p-4 rounded-2xl border border-border bg-surface/80 shadow-2xs backdrop-blur-xs space-y-2.5 max-w-xl">
+            <div className="flex items-center justify-between pb-1.5 border-b border-border/70">
+              <div className="flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5 text-primary" />
+                <h4 className="text-xs font-bold text-foreground">
+                  Koleksi Populer Siap Pinjam di Rak
+                </h4>
               </div>
+              <span className="text-[10px] sm:text-[11px] font-semibold text-muted">
+                2.400+ Judul Tersedia
+              </span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="text-2xl sm:text-3xl xl:text-4xl font-extrabold tracking-tight text-foreground leading-tight font-sans">
-              Akses <span className="font-serif italic font-normal text-primary">Literatur</span> Tanpa Batas,
-              <br />
-              Peminjaman Tanpa Antre
-            </h1>
-
-            <p className="text-xs sm:text-sm text-muted max-w-lg leading-relaxed mt-2.5">
-              Platform sirkulasi buku fisik modern untuk pemustaka dan pustakawan.
-              Jelajahi koleksi secara realtime, lakukan reservasi mandiri, dan ambil
-              di loket menggunakan kode QR instan.
-            </p>
-
-            {/* 4 Feature Cards (2x2 Grid) */}
-            <div className="grid grid-cols-2 gap-3 mt-5 max-w-xl">
-              {/* Feature 1 */}
-              <div className="p-3 rounded-2xl bg-surface/80 border border-border backdrop-blur-xs shadow-2xs">
-                <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-primary flex items-center justify-center mb-2 border border-indigo-100 dark:border-indigo-900/40">
-                  <BookOpen className="w-3.5 h-3.5" />
+            {/* 4 Mini Cover Buku Fisik Realistis */}
+            <div className="grid grid-cols-4 gap-2.5">
+              {curatedBooks.map((b) => (
+                <div
+                  key={b.title}
+                  className="group/book relative flex flex-col items-center"
+                >
+                  <div className="relative w-full aspect-[1/1.42] max-w-24 rounded-lg overflow-hidden bg-surface-secondary shadow-xs border border-border/80 group-hover/book:scale-103 group-hover/book:shadow-md transition-all duration-200">
+                    <Image
+                      src={b.cover}
+                      alt={b.title}
+                      fill
+                      sizes="120px"
+                      className="object-cover"
+                    />
+                    {/* Spine shadow realistis */}
+                    <div className="absolute inset-y-0 left-0 w-2 bg-gradient-to-r from-black/40 via-white/10 to-transparent pointer-events-none" />
+                  </div>
+                  <span className="text-[10px] font-bold text-foreground text-center truncate w-full mt-1.5 block">
+                    {b.title}
+                  </span>
+                  <span className="text-[9px] text-muted text-center truncate w-full block">
+                    {b.shelf}
+                  </span>
                 </div>
-                <h4 className="text-xs font-bold text-foreground">
-                  Katalog Realtime
-                </h4>
-                <p className="text-xs text-muted mt-0.5 leading-relaxed">
-                  Cek stok buku di rak sebelum datang ke perpustakaan.
-                </p>
+              ))}
+            </div>
+
+            {/* Key Takeaways Row di Bawah Rak Buku */}
+            <div className="pt-2 border-t border-border/60 grid grid-cols-2 gap-2 text-[10px] text-muted">
+              <div className="flex items-center gap-1.5">
+                <QrCode className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Ambil di loket via <strong>QR Pickup Pass</strong></span>
               </div>
-
-              {/* Feature 2 */}
-              <div className="p-3 rounded-2xl bg-surface/80 border border-border backdrop-blur-xs shadow-2xs">
-                <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-primary flex items-center justify-center mb-2 border border-indigo-100 dark:border-indigo-900/40">
-                  <QrCode className="w-3.5 h-3.5" />
-                </div>
-                <h4 className="text-xs font-bold text-foreground">
-                  QR Pickup Pass
-                </h4>
-                <p className="text-xs text-muted mt-0.5 leading-relaxed">
-                  Ambil buku di loket dalam hitungan detik tanpa kertas.
-                </p>
-              </div>
-
-              {/* Feature 3 */}
-              <div className="p-3 rounded-2xl bg-surface/80 border border-border backdrop-blur-xs shadow-2xs">
-                <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-primary flex items-center justify-center mb-2 border border-indigo-100 dark:border-indigo-900/40">
-                  <Clock className="w-3.5 h-3.5" />
-                </div>
-                <h4 className="text-xs font-bold text-foreground">
-                  Pantauan Jatuh Tempo
-                </h4>
-                <p className="text-xs text-muted mt-0.5 leading-relaxed">
-                  Pengingat otomatis masa pinjam 14 hari bebas denda.
-                </p>
-              </div>
-
-              {/* Feature 4 */}
-              <div className="p-3 rounded-2xl bg-surface/80 border border-border backdrop-blur-xs shadow-2xs">
-                <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-primary flex items-center justify-center mb-2 border border-indigo-100 dark:border-indigo-900/40">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                </div>
-                <h4 className="text-xs font-bold text-foreground">
-                  Akun Terpadu
-                </h4>
-                <p className="text-xs text-muted mt-0.5 leading-relaxed">
-                  Riwayat peminjaman dan denda tersimpan dengan aman.
-                </p>
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span>Peminjaman resmi hingga <strong>14 hari</strong></span>
               </div>
             </div>
           </div>
 
-          {/* Subtext info */}
-          <div className="mt-5 pt-3.5 border-t border-border flex items-center justify-between text-xs text-muted">
-            <span>© 2026 Lexora Library System</span>
-            <span>Platform Sirkulasi Modern</span>
+          {/* Subtext info & Status Jam Loket */}
+          <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] text-muted max-w-xl">
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-3 h-3 text-primary" />
+              <span>Loket Sirkulasi: Senin–Jumat (08.00–16.30 WIB)</span>
+            </span>
+            <span>© 2026 Lexora Library</span>
           </div>
         </div>
 
-        {/* ── Right Column: Auth Form Card (Desktop: 5 cols, Mobile/Tablet: Centered) ── */}
-        <div className="w-full lg:col-span-5 max-w-lg mx-auto py-2">
-          <div className="relative rounded-3xl border border-border bg-surface p-5 sm:p-7 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
-            {/* Top subtle highlight gradient */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-indigo-500 via-primary to-amber-500" />
-
+        {/* ── Sisi Kanan: Formulir Autentikasi (Desktop: 5 cols, Mobile/Tablet: Centered) ── */}
+        <div className="w-full lg:col-span-5 max-w-md xl:max-w-lg mx-auto py-1">
+          <div className="relative rounded-3xl border border-border bg-surface p-4 sm:p-6 shadow-xl shadow-slate-200/40 dark:shadow-none overflow-hidden">
             {/* Mobile/Tablet brand logo badge */}
-            <div className="lg:hidden flex items-center justify-center mb-4">
+            <div className="lg:hidden flex items-center justify-center mb-3">
               <Link href="/" title="Kembali ke Beranda" className="group focus:outline-none">
                 <LexoraLogo size="md" />
               </Link>
             </div>
 
             {/* Form Header */}
-            <div className="text-center mb-4">
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground font-sans">
+            <div className="text-center mb-3.5">
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground font-sans">
                 {title}
               </h2>
-              <p className="text-xs text-muted mt-1 leading-relaxed">
+              <p className="text-xs text-muted mt-0.5 leading-normal max-w-sm mx-auto">
                 {subtitle}
               </p>
             </div>
@@ -163,11 +190,11 @@ export function AuthSplitLayout({
             {children}
 
             {/* Bottom Navigation */}
-            <div className="mt-4 pt-3.5 border-t border-border text-center text-xs text-muted">
+            <div className="mt-3 pt-3 border-t border-border text-center text-xs text-muted">
               {footerText}{' '}
               <Link
                 href={footerLinkHref}
-                className="font-bold text-primary hover:underline transition-colors"
+                className="font-bold text-primary hover:underline transition-colors ml-1"
               >
                 {footerLinkText}
               </Link>
@@ -175,12 +202,12 @@ export function AuthSplitLayout({
           </div>
 
           {/* Back to Home Link */}
-          <div className="mt-3.5 text-center text-xs text-muted">
+          <div className="mt-2 text-center text-xs text-muted">
             <Link
               href="/"
-              className="hover:text-foreground transition-colors font-medium"
+              className="hover:text-foreground transition-colors font-medium inline-flex items-center gap-1"
             >
-              ← Kembali ke Halaman Utama
+              <span>← Kembali ke Halaman Utama</span>
             </Link>
           </div>
         </div>

@@ -112,7 +112,7 @@ export function ProfileClient({ userEmail, initialProfile }: ProfileClientProps)
       )}
 
       {/* Kartu Anggota Info Box */}
-      <div className="p-6 rounded-2xl border border-indigo-200 dark:border-indigo-900/50 bg-gradient-to-br from-indigo-50/50 via-() to-slate-50 dark:from-indigo-950/30 dark:via-() dark:to-slate-900/50">
+      <div className="p-6 rounded-2xl border border-indigo-200 dark:border-indigo-900/50 bg-gradient-to-br from-indigo-50/50 to-slate-50 dark:from-indigo-950/30 dark:to-slate-900/50">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">

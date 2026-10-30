@@ -133,44 +133,46 @@ export function AdminCategoriesClient({ categories }: AdminCategoriesClientProps
         {/* Tabel Daftar Kategori */}
         <div className="lg:col-span-2">
           {categories.length > 0 ? (
-            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] overflow-hidden shadow-xs">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-[var(--border)] text-[var(--foreground)] uppercase font-semibold">
-                  <tr>
-                    <th className="px-5 py-3.5">Nama & Slug</th>
-                    <th className="px-5 py-3.5">Deskripsi</th>
-                    <th className="px-5 py-3.5">Jumlah Buku</th>
-                    <th className="px-5 py-3.5 text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60 text-[var(--foreground)]">
-                  {categories.map((c) => (
-                    <tr key={c.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
-                      <td className="px-5 py-4 font-semibold">
-                        <div>{c.name}</div>
-                        <div className="text-[11px] font-mono text-[var(--foreground)]">{c.slug}</div>
-                      </td>
-                      <td className="px-5 py-4 text-[var(--foreground)] max-w-xs truncate">
-                        {c.description || '-'}
-                      </td>
-                      <td className="px-5 py-4 font-medium">
-                        <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--foreground)] font-mono">
-                          {c.booksCount} buku
-                        </span>
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <button
-                          onClick={() => handleDelete(c.id, c.name)}
-                          className="p-1.5 rounded-lg border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 transition-colors"
-                          title="Hapus Kategori"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
+            <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 dark:bg-slate-900/60 border-b border-border text-foreground uppercase font-semibold">
+                    <tr>
+                      <th className="px-5 py-3.5">Nama & Slug</th>
+                      <th className="px-5 py-3.5">Deskripsi</th>
+                      <th className="px-5 py-3.5">Jumlah Buku</th>
+                      <th className="px-5 py-3.5 text-right">Aksi</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-border/60 text-foreground">
+                    {categories.map((c) => (
+                      <tr key={c.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
+                        <td className="px-5 py-4 font-semibold">
+                          <div>{c.name}</div>
+                          <div className="text-[11px] font-mono text-muted">{c.slug}</div>
+                        </td>
+                        <td className="px-5 py-4 text-muted max-w-xs truncate">
+                          {c.description || '-'}
+                        </td>
+                        <td className="px-5 py-4 font-medium">
+                          <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-foreground font-mono">
+                            {c.booksCount} buku
+                          </span>
+                        </td>
+                        <td className="px-5 py-4 text-right">
+                          <button
+                            onClick={() => handleDelete(c.id, c.name)}
+                            className="p-1.5 rounded-lg border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 transition-colors cursor-pointer"
+                            title="Hapus Kategori"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : (
             <EmptyState
