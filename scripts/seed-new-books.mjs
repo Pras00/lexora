@@ -37,7 +37,7 @@ const newBooks = [
     cover_url: '/covers/pulang-pergi.jpg',
     price: 98000,
     total_stock: 6,
-    available_stock: 4,
+    available_stock: 6,
   },
   {
     title: 'Harry Potter dan Batu Bertuah',
@@ -50,7 +50,7 @@ const newBooks = [
     cover_url: '/covers/harry-potter.jpg',
     price: 145000,
     total_stock: 5,
-    available_stock: 3,
+    available_stock: 5,
   },
   {
     title: 'Laut Bercerita',
@@ -63,7 +63,7 @@ const newBooks = [
     cover_url: '/covers/laut-bercerita.jpg',
     price: 115000,
     total_stock: 7,
-    available_stock: 5,
+    available_stock: 7,
   },
   {
     title: 'Cantik Itu Luka',
@@ -76,7 +76,7 @@ const newBooks = [
     cover_url: '/covers/cantik-itu-luka.jpg',
     price: 130000,
     total_stock: 4,
-    available_stock: 3,
+    available_stock: 4,
   },
   {
     title: 'Gadis Kretek',
@@ -89,7 +89,7 @@ const newBooks = [
     cover_url: '/covers/gadis-kretek.jpg',
     price: 95000,
     total_stock: 5,
-    available_stock: 4,
+    available_stock: 5,
   },
   {
     title: 'Atomic Habits: Perubahan Kecil yang Memberikan Hasil Luar Biasa',
@@ -102,7 +102,7 @@ const newBooks = [
     cover_url: '/covers/atomic-habits.jpg',
     price: 118000,
     total_stock: 8,
-    available_stock: 6,
+    available_stock: 8,
   },
   {
     title: 'Filosofi Teras: Panduan Stoikisme Khas Mental Tangguh',
@@ -115,7 +115,7 @@ const newBooks = [
     cover_url: '/covers/filosofi-teras.jpg',
     price: 108000,
     total_stock: 7,
-    available_stock: 4,
+    available_stock: 7,
   },
   {
     title: 'Sebuah Seni untuk Bersikap Bodo Amat',
@@ -128,7 +128,7 @@ const newBooks = [
     cover_url: '/covers/bodo-amat.jpg',
     price: 95000,
     total_stock: 6,
-    available_stock: 3,
+    available_stock: 6,
   },
   {
     title: 'The Psychology of Money: Uang, Kepalsuan & Kebahagiaan',
@@ -141,7 +141,7 @@ const newBooks = [
     cover_url: '/covers/psychology-of-money.jpg',
     price: 125000,
     total_stock: 6,
-    available_stock: 5,
+    available_stock: 6,
   },
   {
     title: 'Sapiens: Riwayat Singkat Umat Manusia',
@@ -154,7 +154,7 @@ const newBooks = [
     cover_url: '/covers/sapiens.jpg',
     price: 165000,
     total_stock: 5,
-    available_stock: 3,
+    available_stock: 5,
   },
   {
     title: 'Guns, Germs, and Steel: Bedil, Kuman, dan Baja',
@@ -167,7 +167,7 @@ const newBooks = [
     cover_url: '/covers/guns-germs-steel.jpg',
     price: 155000,
     total_stock: 4,
-    available_stock: 2,
+    available_stock: 4,
   },
   {
     title: 'Nusantara: Sejarah Indonesia',
@@ -180,7 +180,7 @@ const newBooks = [
     cover_url: '/covers/nusantara.jpg',
     price: 140000,
     total_stock: 4,
-    available_stock: 3,
+    available_stock: 4,
   },
   {
     title: 'Kosmos (Cosmos)',
@@ -193,7 +193,7 @@ const newBooks = [
     cover_url: '/covers/kosmos.jpg',
     price: 150000,
     total_stock: 5,
-    available_stock: 4,
+    available_stock: 5,
   },
   {
     title: 'Thinking, Fast and Slow: Berpikir Cepat dan Lambat',
@@ -206,7 +206,7 @@ const newBooks = [
     cover_url: '/covers/thinking-fast-slow.jpg',
     price: 175000,
     total_stock: 4,
-    available_stock: 2,
+    available_stock: 4,
   },
   {
     title: 'The Pragmatic Programmer: Your Journey to Mastery',
@@ -219,7 +219,7 @@ const newBooks = [
     cover_url: '/covers/pragmatic-programmer.jpg',
     price: 320000,
     total_stock: 5,
-    available_stock: 3,
+    available_stock: 5,
   },
   {
     title: 'Zero to One: Catatan tentang Startup & Membangun Masa Depan',
@@ -232,7 +232,7 @@ const newBooks = [
     cover_url: '/covers/zero-to-one.jpg',
     price: 110000,
     total_stock: 6,
-    available_stock: 4,
+    available_stock: 6,
   },
 ];
 
