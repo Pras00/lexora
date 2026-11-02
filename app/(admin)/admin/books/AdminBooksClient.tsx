@@ -11,6 +11,7 @@ import { SearchInput } from '@/components/shared/SearchInput';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Pagination } from '@/components/shared/Pagination';
+import { CategoryFilterDropdown } from '@/components/shared/CategoryFilterDropdown';
 import { formatCurrency } from '@/lib/utils';
 import { deleteBook } from '@/app/actions/books';
 
@@ -35,6 +36,17 @@ export function AdminBooksClient({ initialBooks, categories }: AdminBooksClientP
     setSelectedCat(cat);
     setCurrentPage(1);
   };
+
+  // Hitung jumlah buku per kategori secara dinamis dari initialBooks
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: initialBooks.length };
+    for (const book of initialBooks) {
+      if (book.category_id) {
+        counts[book.category_id] = (counts[book.category_id] || 0) + 1;
+      }
+    }
+    return counts;
+  }, [initialBooks]);
 
   // Filter daftar buku
   const filteredBooks = useMemo(() => {
@@ -122,18 +134,12 @@ export function AdminBooksClient({ initialBooks, categories }: AdminBooksClientP
             )}
           </div>
 
-          <select
-            value={selectedCat}
-            onChange={(e) => handleCategoryChange(e.target.value)}
-            className="px-3 py-2 text-xs font-medium rounded-xl border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
-          >
-            <option value="all">Semua Kategori</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+          <CategoryFilterDropdown
+            categories={categories}
+            selectedCategory={selectedCat}
+            onSelectCategory={handleCategoryChange}
+            categoryCounts={categoryCounts}
+          />
         </div>
       </div>
 
