@@ -582,64 +582,104 @@ export function AdminRequestReviewClient({
             </div>
 
             {/* Ketentuan Konsekuensi Sirkulasi / Status Context */}
-            <div className="p-3.5 rounded-xl bg-surface-secondary/70 border border-border text-xs text-muted space-y-2 leading-relaxed">
+            <div className="p-3.5 rounded-xl bg-surface-secondary/50 border border-border text-xs leading-relaxed">
               {isPending ? (
                 approvedCount > 0 ? (
-                  <div className="flex items-start gap-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 flex items-center justify-center shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <div className="text-muted leading-relaxed">
+                      <strong className="text-foreground font-semibold block mb-0.5">
+                        Siap Menerbitkan Tiket
+                      </strong>
                       Sistem akan menerbitkan <strong>QR Pickup Pass</strong> untuk koleksi yang disetujui (batas ambil 2 hari kerja).
-                    </span>
+                    </div>
                   </div>
                 ) : (
-                  <div className="flex items-start gap-2">
-                    <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
-                    <span>
+                  <div className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 flex items-center justify-center shrink-0 mt-0.5">
+                      <AlertCircle className="w-4 h-4" />
+                    </div>
+                    <div className="text-muted leading-relaxed">
+                      <strong className="text-foreground font-semibold block mb-0.5">
+                        Konfirmasi Penolakan
+                      </strong>
                       Seluruh buku ditolak. Pengajuan akan ditandai sebagai <strong>Ditolak</strong> dan tidak menerbitkan tiket pickup.
-                    </span>
+                    </div>
                   </div>
                 )
               ) : request.status === 'expired' ? (
-                <div className="flex items-start gap-2 text-amber-800 dark:text-amber-200">
-                  <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-                  <span>
-                    Pengajuan ini telah <strong>Kedaluwarsa Otomatis</strong> karena melewati batas verifikasi 2 hari kerja. Seluruh soft-hold buku telah dikembalikan ke rak.
-                  </span>
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50 flex items-center justify-center shrink-0 mt-0.5">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <div className="text-muted leading-relaxed">
+                    <strong className="text-foreground font-semibold block mb-0.5">
+                      Kedaluwarsa Otomatis
+                    </strong>
+                    Pengajuan melewati batas verifikasi 2 hari kerja. Seluruh soft-hold buku telah dikembalikan ke rak.
+                  </div>
                 </div>
               ) : request.status === 'rejected' ? (
-                <div className="flex items-start gap-2 text-rose-800 dark:text-rose-200">
-                  <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
-                  <span>
-                    Seluruh koleksi pada pengajuan ini telah <strong>Ditolak</strong> oleh pustakawan.
-                  </span>
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 flex items-center justify-center shrink-0 mt-0.5">
+                    <AlertCircle className="w-4 h-4" />
+                  </div>
+                  <div className="text-muted leading-relaxed">
+                    <strong className="text-foreground font-semibold block mb-0.5">
+                      Pengajuan Ditolak
+                    </strong>
+                    Seluruh koleksi pada pengajuan ini telah ditolak oleh pustakawan.
+                  </div>
                 </div>
               ) : request.status === 'cancelled' ? (
-                <div className="flex items-start gap-2 text-slate-700 dark:text-slate-300">
-                  <AlertCircle className="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5" />
-                  <span>
-                    Pengajuan telah <strong>Dibatalkan</strong> oleh pemustaka.
-                  </span>
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-border flex items-center justify-center shrink-0 mt-0.5">
+                    <AlertCircle className="w-4 h-4" />
+                  </div>
+                  <div className="text-muted leading-relaxed">
+                    <strong className="text-foreground font-semibold block mb-0.5">
+                      Pengajuan Dibatalkan
+                    </strong>
+                    Pengajuan telah dibatalkan oleh pemustaka.
+                  </div>
                 </div>
               ) : request.status === 'approved' ? (
-                <div className="flex items-start gap-2 text-emerald-800 dark:text-emerald-200">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>
-                    Pengajuan telah <strong>Disetujui</strong>. Tiket QR Pickup Pass aktif dan dapat diverifikasi di loket saat pemustaka datang.
-                  </span>
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div className="text-muted leading-relaxed">
+                    <strong className="text-foreground font-semibold block mb-0.5">
+                      Persetujuan Aktif
+                    </strong>
+                    Tiket QR Pickup Pass aktif dan dapat diverifikasi di loket saat pemustaka datang.
+                  </div>
                 </div>
               ) : request.status === 'not_picked_up' ? (
-                <div className="flex items-start gap-2 text-rose-800 dark:text-rose-200">
-                  <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
-                  <span>
-                    Buku <strong>Tidak Diambil</strong> di loket hingga batas pickup pass berakhir. Stok telah dikembalikan ke rak.
-                  </span>
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 flex items-center justify-center shrink-0 mt-0.5">
+                    <AlertCircle className="w-4 h-4" />
+                  </div>
+                  <div className="text-muted leading-relaxed">
+                    <strong className="text-foreground font-semibold block mb-0.5">
+                      Buku Tidak Diambil
+                    </strong>
+                    Buku tidak diambil di loket hingga batas pickup pass berakhir. Stok telah dikembalikan ke rak.
+                  </div>
                 </div>
               ) : (
-                <div className="flex items-start gap-2 text-emerald-800 dark:text-emerald-200">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                  <span>
-                    Pengambilan buku telah diverifikasi di loket dan sirkulasi peminjaman telah <strong>Selesai</strong>.
-                  </span>
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div className="text-muted leading-relaxed">
+                    <strong className="text-foreground font-semibold block mb-0.5">
+                      Sirkulasi Selesai
+                    </strong>
+                    Pengambilan buku telah diverifikasi di loket dan transaksi sirkulasi peminjaman telah selesai.
+                  </div>
                 </div>
               )}
             </div>

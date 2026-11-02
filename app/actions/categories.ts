@@ -38,6 +38,43 @@ export async function createCategory(name: string, description?: string) {
   }
 }
 
+export async function updateCategory(id: string, name: string, description?: string) {
+  const { profile } = await getCurrentUser();
+  if (!profile || profile.role !== 'admin') {
+    return { success: false, error: 'Hanya pustakawan/admin yang dapat mengubah kategori.' };
+  }
+
+  const trimmedName = name.trim();
+  if (!trimmedName) {
+    return { success: false, error: 'Nama kategori wajib diisi.' };
+  }
+
+  const slug = trimmedName
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  try {
+    await sql`
+      UPDATE public.categories
+      SET name = ${trimmedName},
+          slug = ${slug},
+          description = ${description?.trim() || null}
+      WHERE id = ${id}
+    `;
+
+    revalidatePath('/admin/categories');
+    revalidatePath('/admin/books');
+    revalidatePath('/catalog');
+    return { success: true };
+  } catch (err: unknown) {
+    console.error('Error updating category:', err);
+    const message = err instanceof Error ? err.message : 'Gagal memperbarui kategori.';
+    return { success: false, error: message };
+  }
+}
+
 export async function deleteCategory(id: string) {
   const { profile } = await getCurrentUser();
   if (!profile || profile.role !== 'admin') {
