@@ -51,15 +51,20 @@ export function AdminRequestReviewClient({
   userUnpaidFines = 0,
 }: AdminRequestReviewClientProps) {
   const router = useRouter();
+  const isPending = request.status === 'pending';
+  const totalBooks = request.items?.length || 0;
+
   const [decisions, setDecisions] = useState<Record<string, { approved: boolean; reason: string }>>(() => {
     const initial: Record<string, { approved: boolean; reason: string }> = {};
     request.items?.forEach((item) => {
       const bookId = item.book_id || item.book?.id;
       if (!bookId) return;
-      const isAvailable = (item.book?.available_stock ?? 0) > 0;
+      const isApproved = isPending
+        ? (item.book?.available_stock ?? 0) > 0
+        : item.status === 'approved';
       initial[bookId] = {
-        approved: isAvailable,
-        reason: isAvailable ? '' : 'Stok fisik buku saat ini habis di rak.',
+        approved: isApproved,
+        reason: item.rejection_reason || (isApproved ? '' : 'Stok fisik buku saat ini habis di rak.'),
       };
     });
     return initial;
@@ -68,9 +73,6 @@ export function AdminRequestReviewClient({
   const [isLoading, setIsLoading] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  const isPending = request.status === 'pending';
-  const totalBooks = request.items?.length || 0;
 
   const handleDecisionToggle = (bookId: string, approved: boolean) => {
     setDecisions((prev) => ({
@@ -120,12 +122,18 @@ export function AdminRequestReviewClient({
   };
 
   const approvedCount = useMemo(() => {
+    if (!isPending) {
+      return request.items?.filter((i) => i.status === 'approved').length || 0;
+    }
     return Object.values(decisions).filter((d) => d.approved).length;
-  }, [decisions]);
+  }, [isPending, request.items, decisions]);
 
   const rejectedCount = useMemo(() => {
+    if (!isPending) {
+      return request.items?.filter((i) => i.status === 'rejected').length || 0;
+    }
     return Object.values(decisions).filter((d) => !d.approved).length;
-  }, [decisions]);
+  }, [isPending, request.items, decisions]);
 
   const handleSubmitDecision = async () => {
     setIsLoading(true);
@@ -546,7 +554,7 @@ export function AdminRequestReviewClient({
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-primary" />
                 <h3 className="font-bold text-sm text-foreground tracking-tight">
-                  Ringkasan Keputusan
+                  {isPending ? 'Ringkasan Keputusan' : 'Status Akhir Pengajuan'}
                 </h3>
               </div>
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
@@ -575,20 +583,64 @@ export function AdminRequestReviewClient({
               </div>
             </div>
 
-            {/* Ketentuan Konsekuensi Sirkulasi */}
+            {/* Ketentuan Konsekuensi Sirkulasi / Status Context */}
             <div className="p-3.5 rounded-xl bg-surface-secondary/70 border border-border text-xs text-muted space-y-2 leading-relaxed">
-              {approvedCount > 0 ? (
-                <div className="flex items-start gap-2">
+              {isPending ? (
+                approvedCount > 0 ? (
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span>
+                      Sistem akan menerbitkan <strong>QR Pickup Pass</strong> untuk koleksi yang disetujui (batas ambil 2 hari kerja).
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
+                    <span>
+                      Seluruh buku ditolak. Pengajuan akan ditandai sebagai <strong>Ditolak</strong> dan tidak menerbitkan tiket pickup.
+                    </span>
+                  </div>
+                )
+              ) : request.status === 'expired' ? (
+                <div className="flex items-start gap-2 text-amber-800 dark:text-amber-200">
+                  <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                  <span>
+                    Pengajuan ini telah <strong>Kedaluwarsa Otomatis</strong> karena melewati batas verifikasi 2 hari kerja. Seluruh soft-hold buku telah dikembalikan ke rak.
+                  </span>
+                </div>
+              ) : request.status === 'rejected' ? (
+                <div className="flex items-start gap-2 text-rose-800 dark:text-rose-200">
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
+                  <span>
+                    Seluruh koleksi pada pengajuan ini telah <strong>Ditolak</strong> oleh pustakawan.
+                  </span>
+                </div>
+              ) : request.status === 'cancelled' ? (
+                <div className="flex items-start gap-2 text-slate-700 dark:text-slate-300">
+                  <AlertCircle className="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5" />
+                  <span>
+                    Pengajuan telah <strong>Dibatalkan</strong> oleh pemustaka.
+                  </span>
+                </div>
+              ) : request.status === 'approved' ? (
+                <div className="flex items-start gap-2 text-emerald-800 dark:text-emerald-200">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                   <span>
-                    Sistem akan menerbitkan <strong>QR Pickup Pass</strong> untuk koleksi yang disetujui (batas ambil 2 hari kerja).
+                    Pengajuan telah <strong>Disetujui</strong>. Tiket QR Pickup Pass aktif dan dapat diverifikasi di loket saat pemustaka datang.
+                  </span>
+                </div>
+              ) : request.status === 'not_picked_up' ? (
+                <div className="flex items-start gap-2 text-rose-800 dark:text-rose-200">
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
+                  <span>
+                    Buku <strong>Tidak Diambil</strong> di loket hingga batas pickup pass berakhir. Stok telah dikembalikan ke rak.
                   </span>
                 </div>
               ) : (
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 text-emerald-800 dark:text-emerald-200">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
                   <span>
-                    Seluruh buku ditolak. Pengajuan akan ditandai sebagai <strong>Ditolak</strong> dan tidak menerbitkan tiket pickup.
+                    Pengambilan buku telah diverifikasi di loket dan sirkulasi peminjaman telah <strong>Selesai</strong>.
                   </span>
                 </div>
               )}
