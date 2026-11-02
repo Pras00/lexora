@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { sql } from '@/lib/db/neon';
+import { processExpiredRequests } from '@/lib/services/request-expiry';
 import { AdminRequestReviewClient } from './AdminRequestReviewClient';
 import { LoanRequestWithDetails } from '@/types';
 
@@ -15,6 +16,9 @@ export default async function AdminRequestDetailPage({ params }: AdminRequestDet
   let userUnpaidFines = 0;
 
   try {
+    // 1. Jalankan On-Demand Auto-Expire
+    await processExpiredRequests();
+
     const rows = await sql`
       SELECT lr.*,
         json_build_object(

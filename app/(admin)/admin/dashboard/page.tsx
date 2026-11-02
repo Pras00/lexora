@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { sql } from '@/lib/db/neon';
+import { processExpiredRequests } from '@/lib/services/request-expiry';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -43,6 +44,9 @@ export default async function AdminDashboardPage() {
 
   try {
     if (process.env.DATABASE_URL) {
+      // 1. Jalankan On-Demand Auto-Expire
+      await processExpiredRequests();
+
       const [booksData, requestsCount, loansCount, finesCount, recentReq] =
         await Promise.all([
           sql`SELECT COALESCE(SUM(total_stock), 0) as total, COALESCE(SUM(available_stock), 0) as available FROM books`,

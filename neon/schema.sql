@@ -269,7 +269,7 @@ CREATE TRIGGER trg_set_request_number
     BEFORE INSERT ON public.loan_requests
     FOR EACH ROW EXECUTE FUNCTION public.set_request_number();
 
--- Stored Procedure: Atomic Approve Loan Request
+-- Stored Procedure: Atomic Approve Loan Request (Model 2: Soft-Hold Architecture)
 CREATE OR REPLACE FUNCTION public.approve_loan_request(
     p_request_id UUID,
     p_admin_id UUID,
@@ -281,7 +281,6 @@ RETURNS BOOLEAN AS $$
 DECLARE
     b_id UUID;
     req_status request_status;
-    curr_stock INT;
 BEGIN
     -- Validasi status request saat ini
     SELECT status INTO req_status FROM public.loan_requests WHERE id = p_request_id FOR UPDATE;
@@ -289,23 +288,23 @@ BEGIN
         RAISE EXCEPTION 'Pengajuan ini sudah tidak berstatus pending.';
     END IF;
 
-    -- Validasi dan kurangi stok tiap buku secara atomik
+    -- Tandai item buku yang disetujui (stok fisik telah di-soft hold saat pengajuan dibuat)
     FOREACH b_id IN ARRAY p_approved_book_ids
     LOOP
-        SELECT available_stock INTO curr_stock FROM public.books WHERE id = b_id FOR UPDATE;
-        IF curr_stock <= 0 THEN
-            RAISE EXCEPTION 'Stok buku % sudah habis.', b_id;
-        END IF;
-
-        UPDATE public.books
-        SET available_stock = available_stock - 1,
-            updated_at = now()
-        WHERE id = b_id;
-
         UPDATE public.loan_request_items
         SET status = 'approved'
         WHERE request_id = p_request_id AND book_id = b_id;
     END LOOP;
+
+    -- Kembalikan stok untuk buku-buku yang tidak disetujui dalam pengajuan ini (soft-hold release)
+    UPDATE public.books b
+    SET available_stock = LEAST(b.total_stock, b.available_stock + 1),
+        updated_at = now()
+    FROM public.loan_request_items lri
+    WHERE lri.request_id = p_request_id
+      AND NOT (lri.book_id = ANY(p_approved_book_ids))
+      AND lri.status = 'pending'
+      AND b.id = lri.book_id;
 
     -- Tandai buku yang tidak disetujui sebagai rejected
     UPDATE public.loan_request_items

@@ -73,6 +73,21 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
         <PickupPass pass={request.pass} requestNumber={request.request_number} />
       )}
 
+      {/* Jika Status Expired, tampilkan Banner Penjelasan Kalem & Informatif */}
+      {request.status === 'expired' && (
+        <div className="p-4 rounded-2xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/20 flex items-start gap-3 text-xs text-amber-800 dark:text-amber-200 shadow-2xs">
+          <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <strong className="font-semibold block text-amber-900 dark:text-amber-100">
+              Pengajuan Telah Kedaluwarsa Otomatis
+            </strong>
+            <p className="leading-relaxed text-amber-800/90 dark:text-amber-300/90">
+              Pengajuan ini telah melewati batas waktu verifikasi pustakawan (2 hari kerja). Sisa kuota peminjaman Anda telah dikembalikan secara utuh dan Anda dapat mengajukan kembali koleksi buku yang diinginkan kapan saja.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Ringkasan Status Request */}
       <div className="p-6 rounded-2xl border border-border bg-surface space-y-4">
         <div className="flex items-center justify-between pb-4 border-b border-border">

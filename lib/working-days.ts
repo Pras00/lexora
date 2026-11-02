@@ -27,3 +27,15 @@ export function calculatePickupDeadline(
   result.setHours(17, 0, 0, 0);
   return result;
 }
+
+/**
+ * Menghitung batas waktu verifikasi pustakawan berdasarkan hari kerja operasional perpustakaan.
+ * Standar: 2 Hari Kerja (Senin - Jumat, berakhir pukul 17:00 WIB).
+ */
+export function calculateVerificationDeadline(
+  startDate: Date = new Date(),
+  workingDaysCount: number = 2
+): Date {
+  return calculatePickupDeadline(startDate, workingDaysCount);
+}
+

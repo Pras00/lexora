@@ -1,4 +1,5 @@
 import { sql } from '@/lib/db/neon';
+import { processExpiredRequests } from '@/lib/services/request-expiry';
 import { AdminRequestsClient } from './AdminRequestsClient';
 import { LoanRequestWithDetails } from '@/types';
 
@@ -6,6 +7,9 @@ export default async function AdminRequestsPage() {
   let requests: LoanRequestWithDetails[] = [];
 
   try {
+    // 1. Jalankan On-Demand Auto-Expire agar pengajuan yang lewat tenggat langsung kedaluwarsa secara realtime
+    await processExpiredRequests();
+
     const rows = await sql`
       SELECT lr.*,
         json_build_object(

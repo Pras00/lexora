@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { getCurrentUser } from '@/lib/auth';
 import { sql } from '@/lib/db/neon';
+import { processExpiredRequests } from '@/lib/services/request-expiry';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { BookOpen } from 'lucide-react';
 import { LoanRequestWithDetails } from '@/types';
@@ -15,6 +16,9 @@ export default async function RequestsPage() {
     const { user } = await getCurrentUser();
 
     if (user && process.env.DATABASE_URL) {
+      // 1. Jalankan On-Demand Auto-Expire
+      await processExpiredRequests();
+
       const [data, loansCountRes] = await Promise.all([
         sql`
         SELECT lr.*,

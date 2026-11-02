@@ -104,9 +104,8 @@ export async function createLoanRequest(bookIds: string[]) {
       };
     }
 
-    // 3. Simpan Loan Request
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 24); // Auto-expire 24 jam
+    // 3. Simpan Loan Request dengan batas verifikasi 2 hari kerja
+    const expiresAt = calculatePickupDeadline(new Date(), 2);
 
     const reqRows = await sql`
       INSERT INTO public.loan_requests (
@@ -123,7 +122,7 @@ export async function createLoanRequest(bookIds: string[]) {
 
     const request = reqRows[0];
 
-    // 4. Masukkan item-item buku
+    // 4. Masukkan item-item buku & kunci stok (Immediate Soft-Hold)
     for (const bookId of bookIds) {
       await sql`
         INSERT INTO public.loan_request_items (
@@ -136,12 +135,23 @@ export async function createLoanRequest(bookIds: string[]) {
           'pending'
         )
       `;
+
+      // Soft-hold stok fisik di rak seketika saat diajukan
+      await sql`
+        UPDATE public.books
+        SET available_stock = GREATEST(0, available_stock - 1),
+            updated_at = NOW()
+        WHERE id = ${bookId}
+      `;
     }
 
     revalidatePath('/requests');
     revalidatePath('/requests/new');
     revalidatePath('/dashboard');
+    revalidatePath('/catalog');
     revalidatePath('/admin/requests');
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/admin/books');
 
     return { success: true, requestId: request.id };
   } catch (err: any) {
@@ -181,12 +191,23 @@ export async function reviewLoanRequest(
               rejection_reason = ${d.reason || 'Ditolak oleh petugas perpustakaan.'}
           WHERE request_id = ${requestId} AND book_id = ${bookId}
         `;
+
+        // Kembalikan soft-hold stok ke rak
+        await sql`
+          UPDATE public.books
+          SET available_stock = LEAST(total_stock, available_stock + 1),
+              updated_at = NOW()
+          WHERE id = ${bookId}
+        `;
       }
 
       revalidatePath(`/admin/requests/${requestId}`);
       revalidatePath('/admin/requests');
+      revalidatePath('/admin/dashboard');
+      revalidatePath('/admin/books');
       revalidatePath(`/requests/${requestId}`);
       revalidatePath('/requests');
+      revalidatePath('/catalog');
       return { success: true };
     }
 
@@ -218,6 +239,8 @@ export async function reviewLoanRequest(
 
     revalidatePath(`/admin/requests/${requestId}`);
     revalidatePath('/admin/requests');
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/admin/books');
     revalidatePath(`/requests/${requestId}`);
     revalidatePath('/requests');
     revalidatePath('/catalog');
@@ -250,6 +273,29 @@ export async function cancelLoanRequest(requestId: string) {
       return { success: false, error: 'Anda tidak memiliki hak akses membatalkan pengajuan ini.' };
     }
 
+    // Jika masih pending, kembalikan stok buku yang di-soft hold
+    if (req.status === 'pending') {
+      const pendingItems = await sql`
+        SELECT book_id FROM public.loan_request_items
+        WHERE request_id = ${requestId} AND status = 'pending'
+      `;
+
+      for (const item of pendingItems as { book_id: string }[]) {
+        await sql`
+          UPDATE public.books
+          SET available_stock = LEAST(total_stock, available_stock + 1),
+              updated_at = NOW()
+          WHERE id = ${item.book_id}
+        `;
+      }
+
+      await sql`
+        UPDATE public.loan_request_items
+        SET status = 'cancelled'
+        WHERE request_id = ${requestId}
+      `;
+    }
+
     // Jika sebelumnya status approved, kembalikan stok buku yang di-hold
     if (req.status === 'approved') {
       const approvedItems = await sql`
@@ -260,7 +306,8 @@ export async function cancelLoanRequest(requestId: string) {
       for (const item of approvedItems as { book_id: string }[]) {
         await sql`
           UPDATE public.books
-          SET available_stock = available_stock + 1
+          SET available_stock = LEAST(total_stock, available_stock + 1),
+              updated_at = NOW()
           WHERE id = ${item.book_id}
         `;
       }
@@ -280,8 +327,11 @@ export async function cancelLoanRequest(requestId: string) {
 
     revalidatePath(`/requests/${requestId}`);
     revalidatePath('/requests');
+    revalidatePath('/catalog');
     revalidatePath('/admin/requests');
     revalidatePath(`/admin/requests/${requestId}`);
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/admin/books');
 
     return { success: true };
   } catch (err: any) {

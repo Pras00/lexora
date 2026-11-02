@@ -551,7 +551,7 @@ export function NewRequestClient({ existingHeldBooks = 0 }: NewRequestClientProp
                 </p>
               ) : (
                 <p className="text-center text-xs text-muted mt-2.5 leading-relaxed">
-                  Pustakawan akan memverifikasi kesiapan fisik buku Anda dalam waktu 1x24 jam kerja.
+                  Buku langsung di-hold aman untuk Anda. Pustakawan akan memverifikasi dalam waktu 2 hari kerja.
                 </p>
               )}
             </div>
