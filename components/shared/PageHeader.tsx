@@ -51,11 +51,11 @@ export function PageHeader({
       {/* Title + Description + Action */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             {title}
           </h1>
           {description && (
-            <p className="text-sm text-foreground mt-1">{description}</p>
+            <p className="text-sm text-muted mt-1 leading-relaxed">{description}</p>
           )}
         </div>
         {action && <div className="flex items-center gap-2">{action}</div>}

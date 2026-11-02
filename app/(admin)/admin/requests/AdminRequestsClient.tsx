@@ -94,10 +94,10 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
             <span className="text-xs font-medium text-muted block">
               Perlu Diverifikasi di Rak
             </span>
-            <span className="text-2xl font-extrabold text-foreground font-mono block">
+            <span className="text-2xl font-bold text-foreground block">
               {counts.pending}
             </span>
-            <span className="text-xs text-amber-600 dark:text-amber-400 font-semibold block">
+            <span className="text-xs text-amber-600 dark:text-amber-400 font-medium block">
               Antrean menunggu verifikasi
             </span>
           </div>
@@ -112,10 +112,10 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
             <span className="text-xs font-medium text-muted block">
               Siap Diambil di Loket
             </span>
-            <span className="text-2xl font-extrabold text-foreground font-mono block">
+            <span className="text-2xl font-bold text-foreground block">
               {counts.approved}
             </span>
-            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold block">
+            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium block">
               Tiket pickup pass aktif
             </span>
           </div>
@@ -130,7 +130,7 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
             <span className="text-xs font-medium text-muted block">
               Peminjaman Selesai
             </span>
-            <span className="text-2xl font-extrabold text-foreground font-mono block">
+            <span className="text-2xl font-bold text-foreground block">
               {counts.completed}
             </span>
             <span className="text-xs text-muted font-medium block">
@@ -231,21 +231,21 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
                       className="hover:bg-surface-secondary/40 transition-colors"
                     >
                       {/* No. Pengajuan */}
-                      <td className="px-5 py-3.5 text-left font-mono font-bold text-xs sm:text-sm text-foreground">
+                      <td className="px-5 py-3.5 text-left font-semibold text-xs sm:text-sm text-foreground tracking-wide">
                         {req.request_number}
                       </td>
 
                       {/* Identitas Peminjam */}
                       <td className="px-5 py-3.5 text-left">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-semibold text-xs shrink-0">
                             {req.user?.full_name?.charAt(0) || 'U'}
                           </div>
                           <div>
-                            <div className="font-bold text-foreground">
+                            <div className="font-medium text-foreground">
                               {req.user?.full_name}
                             </div>
-                            <div className="text-xs font-mono text-muted">
+                            <div className="text-xs text-muted">
                               {req.user?.member_number}
                             </div>
                           </div>
@@ -282,10 +282,10 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
                           </div>
 
                           <div className="text-left">
-                            <span className="font-bold text-foreground block">
+                            <span className="font-medium text-foreground block">
                               {bookItems.length} Buku
                             </span>
-                            <span className="text-xs text-muted truncate max-w-44 block">
+                            <span className="text-xs text-muted truncate max-w-44 block font-serif">
                               {bookItems[0]?.book?.title || 'Koleksi Perpustakaan'}
                               {bookItems.length > 1 ? ` (+${bookItems.length - 1})` : ''}
                             </span>

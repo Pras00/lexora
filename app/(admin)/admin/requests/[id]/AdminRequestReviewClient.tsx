@@ -199,23 +199,23 @@ export function AdminRequestReviewClient({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono font-extrabold text-base text-foreground tracking-tight">
+                  <span className="font-semibold text-base text-foreground tracking-wide">
                     {request.request_number}
                   </span>
                   <StatusBadge status={request.status} />
                 </div>
-                <p className="text-xs text-muted font-medium mt-1">
+                <p className="text-xs text-muted font-normal mt-1 leading-relaxed">
                   Diajukan pada {formatDateTime(request.requested_at)} • Total {totalBooks} koleksi buku
                 </p>
               </div>
 
               {request.expires_at && isPending && (
                 <div className="text-left sm:text-right">
-                  <span className="text-xs text-muted flex items-center gap-1 sm:justify-end">
+                  <span className="text-xs text-muted flex items-center gap-1.5 sm:justify-end">
                     <Clock className="w-3.5 h-3.5 text-amber-500" />
                     Batas Verifikasi Pustakawan:
                   </span>
-                  <span className="text-xs font-bold text-foreground block mt-0.5">
+                  <span className="text-xs font-semibold text-foreground block mt-0.5">
                     {formatDateTime(request.expires_at)}
                   </span>
                 </div>
@@ -322,21 +322,21 @@ export function AdminRequestReviewClient({
                           )}
                         </div>
 
-                        <h4 className="font-bold text-sm sm:text-base text-foreground line-clamp-1">
+                        <h4 className="font-serif font-semibold text-base sm:text-lg text-foreground line-clamp-1 leading-snug">
                           {item.book?.title}
                         </h4>
 
-                        <p className="text-xs text-muted font-medium mt-0.5 truncate">
-                          Karya <strong className="text-foreground">{item.book?.author}</strong>
+                        <p className="text-xs text-muted mt-1 leading-relaxed truncate">
+                          Karya <span className="font-medium text-foreground">{item.book?.author}</span>
                           {item.book?.publisher ? ` · ${item.book.publisher}` : ''}
                           {item.book?.published_year ? ` (${item.book.published_year})` : ''}
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-muted mt-2">
-                          <span className="font-mono">ISBN: {item.book?.isbn || '-'}</span>
+                        <div className="flex flex-wrap items-center gap-2.5 text-xs text-muted mt-2">
+                          <span>ISBN: {item.book?.isbn || '-'}</span>
                           {item.book?.price && (
                             <>
-                              <span>•</span>
+                              <span className="text-border-strong">•</span>
                               <span>Nilai Buku: {formatCurrency(item.book.price)}</span>
                             </>
                           )}
@@ -455,11 +455,12 @@ export function AdminRequestReviewClient({
 
                   {/* Catatan Alasan Penolakan untuk Request yang Sudah Diproses */}
                   {!isPending && item.status === 'rejected' && item.rejection_reason && (
-                    <div className="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2">
-                      <XCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
-                      <span>
-                        <strong>Alasan Penolakan:</strong> {item.rejection_reason}
-                      </span>
+                    <div className="p-3.5 rounded-xl bg-surface-secondary/70 border border-border text-xs text-foreground/80 flex items-start gap-2.5 leading-relaxed">
+                      <AlertCircle className="w-4 h-4 shrink-0 text-muted mt-0.5" />
+                      <div>
+                        <span className="font-semibold text-foreground mr-1.5">Catatan Status:</span>
+                        <span>{item.rejection_reason}</span>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -474,21 +475,21 @@ export function AdminRequestReviewClient({
           <div className="rounded-2xl border border-border bg-surface shadow-xs p-5 sm:p-6 space-y-4">
             <div className="flex items-center gap-2 pb-3 border-b border-border">
               <User className="w-4 h-4 text-primary" />
-              <h3 className="font-bold text-sm text-foreground tracking-tight">
+              <h3 className="font-semibold text-sm text-foreground">
                 Identitas Peminjam
               </h3>
             </div>
 
             {/* Nama & Nomor Anggota */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm shrink-0">
                 {request.user?.full_name?.charAt(0) || 'U'}
               </div>
               <div className="min-w-0">
-                <h4 className="font-bold text-sm text-foreground truncate">
+                <h4 className="font-semibold text-sm text-foreground truncate">
                   {request.user?.full_name}
                 </h4>
-                <p className="font-mono text-xs text-muted mt-0.5">
+                <p className="text-xs text-muted mt-0.5">
                   ID: {request.user?.member_number}
                 </p>
               </div>
@@ -504,7 +505,7 @@ export function AdminRequestReviewClient({
                   </span>
                   <a
                     href={`tel:${request.user.phone}`}
-                    className="font-medium text-foreground hover:text-primary transition-colors font-mono"
+                    className="font-medium text-foreground hover:text-primary transition-colors"
                   >
                     {request.user.phone}
                   </a>
@@ -553,11 +554,11 @@ export function AdminRequestReviewClient({
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-primary" />
-                <h3 className="font-bold text-sm text-foreground tracking-tight">
+                <h3 className="font-semibold text-sm text-foreground">
                   {isPending ? 'Ringkasan Keputusan' : 'Status Akhir Pengajuan'}
                 </h3>
               </div>
-              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
                 {totalBooks} Buku
               </span>
             </div>
@@ -568,7 +569,7 @@ export function AdminRequestReviewClient({
                 <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium block">
                   Disetujui
                 </span>
-                <span className="text-lg font-extrabold text-emerald-700 dark:text-emerald-300 font-mono mt-0.5 block">
+                <span className="text-base font-bold text-emerald-700 dark:text-emerald-300 mt-0.5 block">
                   {approvedCount}
                 </span>
               </div>
@@ -577,7 +578,7 @@ export function AdminRequestReviewClient({
                 <span className="text-xs text-rose-700 dark:text-rose-300 font-medium block">
                   Ditolak
                 </span>
-                <span className="text-lg font-extrabold text-rose-700 dark:text-rose-300 font-mono mt-0.5 block">
+                <span className="text-base font-bold text-rose-700 dark:text-rose-300 mt-0.5 block">
                   {rejectedCount}
                 </span>
               </div>

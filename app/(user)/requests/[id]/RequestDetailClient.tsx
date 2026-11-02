@@ -139,14 +139,14 @@ export function RequestDetailClient({ request }: RequestDetailClientProps) {
               </div>
 
               <div className="flex-1 min-w-0">
-                <h5 className="font-semibold text-xs md:text-sm text-foreground truncate">
+                <h5 className="font-serif font-semibold text-sm md:text-base text-foreground truncate">
                   {item.book?.title}
                 </h5>
-                <p className="text-xs text-foreground mt-0.5">{item.book?.author}</p>
+                <p className="text-xs text-muted mt-0.5">{item.book?.author}</p>
                 {item.rejection_reason && (
-                  <p className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1">
-                    <AlertCircle className="w-3 h-3" />
-                    Alasan: {item.rejection_reason}
+                  <p className="text-xs text-muted mt-1.5 flex items-start gap-1.5 leading-relaxed">
+                    <AlertCircle className="w-3.5 h-3.5 text-muted shrink-0 mt-0.5" />
+                    <span>Catatan: {item.rejection_reason}</span>
                   </p>
                 )}
               </div>
