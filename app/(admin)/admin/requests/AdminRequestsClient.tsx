@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -16,6 +16,7 @@ import {
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { Pagination } from '@/components/shared/Pagination';
 import { formatDate } from '@/lib/utils';
 import { LoanRequestWithDetails } from '@/types';
 
@@ -26,6 +27,31 @@ interface AdminRequestsClientProps {
 export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProps) {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Keyboard shortcut '/' untuk langsung fokus ke searchbar
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      if (e.key === '/') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Hitung metrik ringkas antrean sirkulasi
   const counts = useMemo(() => {
@@ -40,6 +66,16 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
       ).length,
     };
   }, [initialRequests]);
+
+  const handleStatusChange = (status: string) => {
+    setSelectedStatus(status);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
 
   // Filter daftar berdasarkan tab status dan kata kunci pencarian
   const filteredRequests = useMemo(() => {
@@ -74,6 +110,14 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
       return true;
     });
   }, [initialRequests, selectedStatus, searchQuery]);
+
+  const totalPages = Math.ceil(filteredRequests.length / pageSize) || 1;
+  const activePage = Math.min(currentPage, totalPages);
+
+  const paginatedRequests = useMemo(() => {
+    const start = (activePage - 1) * pageSize;
+    return filteredRequests.slice(start, start + pageSize);
+  }, [filteredRequests, activePage, pageSize]);
 
   return (
     <div className="space-y-6">
@@ -156,7 +200,7 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setSelectedStatus(tab.id)}
+                onClick={() => handleStatusChange(tab.id)}
                 className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 ${
                   isActive
                     ? 'bg-surface text-foreground font-bold shadow-2xs border border-border/80'
@@ -165,7 +209,7 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
               >
                 <span>{tab.label}</span>
                 <span
-                  className={`text-xs px-1.5 py-0.2 rounded-full font-bold ${
+                  className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
                     isActive
                       ? 'bg-primary/10 text-primary'
                       : 'bg-surface-secondary text-muted'
@@ -178,25 +222,47 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
           })}
         </div>
 
-        {/* Search Bar Real-Time */}
-        <div className="relative w-full md:w-72 shrink-0">
+        {/* Search Bar Real-Time dengan Shortcut */}
+        <div className="relative w-full md:w-80 shrink-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
           <input
+            ref={searchInputRef}
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari No. Pengajuan / Peminjam..."
-            className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-border bg-surface text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
+            onChange={(e) => handleSearchChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                handleSearchChange('');
+                searchInputRef.current?.blur();
+              }
+            }}
+            placeholder="Cari No. Pengajuan / Peminjam... (/)"
+            className="w-full pl-9 pr-14 py-2 text-xs rounded-xl border border-border bg-surface text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary shadow-2xs transition-colors duration-150"
           />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-muted hover:text-foreground cursor-pointer"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
+          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center">
+            {searchQuery ? (
+              <button
+                type="button"
+                onClick={() => {
+                  handleSearchChange('');
+                  searchInputRef.current?.focus();
+                }}
+                className="p-1 rounded-md text-muted hover:text-foreground hover:bg-surface-secondary transition-colors cursor-pointer"
+                title="Bersihkan pencarian (Esc)"
+                aria-label="Bersihkan pencarian"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <kbd
+                onClick={() => searchInputRef.current?.focus()}
+                className="hidden sm:inline-flex items-center justify-center px-1.5 py-0.5 text-xs text-muted font-mono bg-surface-secondary border border-border rounded-md cursor-pointer select-none"
+                title="Tekan tombol '/' untuk mencari cepat"
+              >
+                /
+              </kbd>
+            )}
+          </div>
         </div>
       </div>
 
@@ -217,7 +283,7 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/70 text-foreground">
-                {filteredRequests.map((req) => {
+                {paginatedRequests.map((req) => {
                   const bookItems = req.items || [];
                   const isPending = req.status === 'pending';
 
@@ -350,6 +416,16 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
               </tbody>
             </table>
           </div>
+
+          {/* Baris Pagination */}
+          <Pagination
+            currentPage={activePage}
+            totalPages={totalPages}
+            totalItems={filteredRequests.length}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={setPageSize}
+          />
         </div>
       ) : (
         <EmptyState
@@ -364,7 +440,7 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
             searchQuery ? (
               <button
                 type="button"
-                onClick={() => setSearchQuery('')}
+                onClick={() => handleSearchChange('')}
                 className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-surface-secondary hover:bg-surface-secondary/80 text-foreground border border-border transition-all cursor-pointer"
               >
                 <span>Hapus Kata Kunci Pencarian</span>
