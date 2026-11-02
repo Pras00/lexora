@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Book } from '@/types';
+import { Book, Category } from '@/types';
 
 export interface CartItem {
   book: Book;
@@ -20,7 +20,7 @@ interface CartStore {
       available_stock: number;
       total_stock?: number;
       price?: number;
-      category?: any;
+      category?: Category | { name: string; slug: string } | null;
     }[]
   ) => void;
 }

@@ -2,15 +2,16 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { CircleAlert, CheckCircle2, Search } from 'lucide-react';
+import { CircleAlert } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { confirmFinePayment } from '@/app/actions/fines';
+import { FineWithDetails } from '@/types';
 
 interface AdminFinesClientProps {
-  fines: any[];
+  fines: FineWithDetails[];
 }
 
 export function AdminFinesClient({ fines }: AdminFinesClientProps) {
@@ -34,8 +35,9 @@ export function AdminFinesClient({ fines }: AdminFinesClientProps) {
         return;
       }
       router.refresh();
-    } catch (err: any) {
-      alert('Gagal mengonfirmasi pelunasan: ' + err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Terjadi kesalahan';
+      alert('Gagal mengonfirmasi pelunasan: ' + message);
     } finally {
       setConfirmingId(null);
     }

@@ -111,9 +111,10 @@ export async function verifyPickupAndCreateLoan(pickupCode: string) {
       text: `Pengambilan ${pass.request_number} atas nama ${pass.user_full_name} berhasil dikonfirmasi! Peminjaman aktif telah dibuat.`,
       loanId: newLoan.id,
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error verifying pickup pass:', err);
-    return { success: false, error: err.message || 'Gagal memproses verifikasi kode pickup.' };
+    const message = err instanceof Error ? err.message : 'Gagal memproses verifikasi kode pickup.';
+    return { success: false, error: message };
   }
 }
 
@@ -270,9 +271,10 @@ export async function returnLoanItem(
     revalidatePath('/catalog');
 
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error returning loan item:', err);
-    return { success: false, error: err.message || 'Gagal memproses pengembalian buku.' };
+    const message = err instanceof Error ? err.message : 'Gagal memproses pengembalian buku.';
+    return { success: false, error: message };
   }
 }
 
@@ -371,9 +373,10 @@ export async function extendLoanItem(itemId: string) {
       success: true,
       newDueDate: newDue.toISOString(),
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error extending loan item:', err);
-    return { success: false, error: err.message || 'Gagal memproses perpanjangan buku.' };
+    const message = err instanceof Error ? err.message : 'Gagal memproses perpanjangan buku.';
+    return { success: false, error: message };
   }
 }
 

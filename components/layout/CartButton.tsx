@@ -3,15 +3,11 @@
 import Link from 'next/link';
 import { BookmarkCheck } from 'lucide-react';
 import { useCartStore } from '@/stores/cart.store';
-import { useEffect, useState } from 'react';
+import { useMounted } from '@/lib/hooks/use-mounted';
 
 export function CartButton() {
   const items = useCartStore((state) => state.items);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   const count = mounted ? items.length : 0;
 

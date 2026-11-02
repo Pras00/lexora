@@ -85,7 +85,7 @@ export async function createLoanRequest(bookIds: string[]) {
       WHERE id = ANY(${bookIds}::uuid[])
     `;
 
-    const outOfStock = booksInDb.filter((b: any) => b.available_stock <= 0);
+    const outOfStock = (booksInDb as { id: string; title: string; available_stock: number }[]).filter((b) => b.available_stock <= 0);
     if (outOfStock.length > 0) {
       return {
         success: false,
@@ -154,9 +154,10 @@ export async function createLoanRequest(bookIds: string[]) {
     revalidatePath('/admin/books');
 
     return { success: true, requestId: request.id };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error creating loan request:', err);
-    return { success: false, error: err.message || 'Gagal membuat pengajuan peminjaman.' };
+    const message = err instanceof Error ? err.message : 'Gagal membuat pengajuan peminjaman.';
+    return { success: false, error: message };
   }
 }
 
@@ -171,7 +172,7 @@ export async function reviewLoanRequest(
 
   try {
     const approvedBookIds = Object.entries(decisions)
-      .filter(([_, d]) => d.approved)
+      .filter(([, d]) => d.approved)
       .map(([bookId]) => bookId);
 
     // Skenario A: Semua Ditolak
@@ -246,9 +247,10 @@ export async function reviewLoanRequest(
     revalidatePath('/catalog');
 
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error reviewing loan request:', err);
-    return { success: false, error: err.message || 'Gagal memproses persetujuan pengajuan.' };
+    const message = err instanceof Error ? err.message : 'Gagal memproses persetujuan pengajuan.';
+    return { success: false, error: message };
   }
 }
 
@@ -334,9 +336,10 @@ export async function cancelLoanRequest(requestId: string) {
     revalidatePath('/admin/books');
 
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error cancelling loan request:', err);
-    return { success: false, error: err.message || 'Gagal membatalkan pengajuan.' };
+    const message = err instanceof Error ? err.message : 'Gagal membatalkan pengajuan.';
+    return { success: false, error: message };
   }
 }
 

@@ -23,9 +23,10 @@ export async function confirmFinePayment(fineId: string) {
     revalidatePath('/admin/reports');
     revalidatePath('/fines');
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error confirming fine payment:', err);
-    return { success: false, error: err.message || 'Gagal mengonfirmasi pelunasan denda.' };
+    const message = err instanceof Error ? err.message : 'Gagal mengonfirmasi pelunasan denda.';
+    return { success: false, error: message };
   }
 }
 

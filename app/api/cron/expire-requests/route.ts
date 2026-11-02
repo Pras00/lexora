@@ -15,8 +15,9 @@ export async function GET(request: NextRequest) {
       processed_at: new Date().toISOString(),
       ...result,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error in expire-requests cron route:', err);
-    return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

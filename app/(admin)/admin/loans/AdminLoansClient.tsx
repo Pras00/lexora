@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { QrCode, ArrowRightLeft, ArrowRight, Search, CheckCircle2, AlertCircle } from 'lucide-react';
+import { QrCode, ArrowRightLeft, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { formatDate } from '@/lib/utils';
 import { verifyPickupAndCreateLoan } from '@/app/actions/loans';
+import { LoanWithDetails } from '@/types';
 
 interface AdminLoansClientProps {
-  activeLoans: any[];
+  activeLoans: LoanWithDetails[];
 }
 
 export function AdminLoansClient({ activeLoans }: AdminLoansClientProps) {
@@ -50,10 +51,11 @@ export function AdminLoansClient({ activeLoans }: AdminLoansClientProps) {
 
       setPickupCodeInput('');
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal memproses kode pickup.';
       setVerifyResult({
         type: 'error',
-        text: err.message || 'Gagal memproses kode pickup.',
+        text: message,
       });
     } finally {
       setIsVerifying(false);

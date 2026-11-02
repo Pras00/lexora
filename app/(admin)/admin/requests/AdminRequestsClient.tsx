@@ -7,20 +7,16 @@ import {
   Inbox,
   ArrowRight,
   Clock,
-  User,
-  Calendar,
   Search,
   BookOpen,
   QrCode,
   BookmarkCheck,
-  Filter,
   X,
-  AlertCircle,
 } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { formatDate, formatDateTime } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 import { LoanRequestWithDetails } from '@/types';
 
 interface AdminRequestsClientProps {

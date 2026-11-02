@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Users, Search, ArrowRight, ShieldCheck, AlertTriangle, Ban } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { SearchInput } from '@/components/shared/SearchInput';

@@ -56,16 +56,19 @@ export function UserSidebar() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition-all',
+                  'relative flex items-center gap-3 px-3.5 py-2 text-xs font-medium rounded-xl border border-transparent transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 group',
                   isActive
-                    ? 'bg-primary/10 text-primary font-bold'
-                    : 'text-muted font-medium hover:text-foreground hover:bg-surface-secondary'
+                    ? 'bg-primary/10 text-primary font-semibold'
+                    : 'text-muted hover:text-foreground hover:bg-surface-secondary/70'
                 )}
               >
+                {isActive && (
+                  <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-primary rounded-r" />
+                )}
                 <Icon
                   className={cn(
-                    'w-4 h-4 shrink-0',
-                    isActive ? 'text-primary' : 'text-muted'
+                    'w-4 h-4 shrink-0 transition-colors',
+                    isActive ? 'text-primary' : 'text-muted group-hover:text-foreground'
                   )}
                 />
                 <span>{item.name}</span>

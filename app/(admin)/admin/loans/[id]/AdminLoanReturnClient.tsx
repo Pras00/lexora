@@ -3,23 +3,23 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, AlertCircle, Clock, BookOpen } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { formatDate, formatCurrency } from '@/lib/utils';
 import { calculateOverdueFine, calculateDamageReplacementCost } from '@/lib/fine-calculator';
-import { DamageLevel } from '@/types';
+import { DamageLevel, LoanWithDetails, LoanItemWithBook } from '@/types';
 import { returnLoanItem } from '@/app/actions/loans';
 
 interface AdminLoanReturnClientProps {
-  loan: any;
+  loan: LoanWithDetails;
 }
 
 export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
   const router = useRouter();
   const [selectedConditions, setSelectedConditions] = useState<Record<string, DamageLevel>>(() => {
     const init: Record<string, DamageLevel> = {};
-    loan.items?.forEach((item: any) => {
+    loan.items?.forEach((item: LoanItemWithBook) => {
       init[item.id] = 'none';
     });
     return init;
@@ -28,7 +28,7 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
   const [processingItemId, setProcessingItemId] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const handleReturnItem = async (item: any) => {
+  const handleReturnItem = async (item: LoanItemWithBook) => {
     setProcessingItemId(item.id);
     setMsg(null);
 
@@ -50,10 +50,11 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
       });
 
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal memproses pengembalian buku.';
       setMsg({
         type: 'error',
-        text: err.message || 'Gagal memproses pengembalian buku.',
+        text: message,
       });
     } finally {
       setProcessingItemId(null);
@@ -94,7 +95,7 @@ export function AdminLoanReturnClient({ loan }: AdminLoanReturnClientProps) {
 
       {/* Daftar Item Buku yang Perlu Dikembalikan */}
       <div className="space-y-4">
-        {loan.items?.map((item: any) => {
+        {loan.items?.map((item: LoanItemWithBook) => {
           const isBorrowed = item.status === 'borrowed' || item.status === 'overdue';
           const condition = selectedConditions[item.id] || 'none';
           const { daysOverdue, fineAmount } = calculateOverdueFine(item.due_date);

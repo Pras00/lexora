@@ -47,8 +47,9 @@ export function AdminBooksClient({ initialBooks, categories }: AdminBooksClientP
         return;
       }
       router.refresh();
-    } catch (err: any) {
-      alert('Gagal menghapus buku: ' + (err.message || 'Buku mungkin sedang terkait riwayat pinjaman.'));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Buku mungkin sedang terkait riwayat pinjaman.';
+      alert('Gagal menghapus buku: ' + message);
     }
   };
 

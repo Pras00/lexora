@@ -27,9 +27,10 @@ export async function updateProfile(fullName: string, phone: string | null) {
     revalidatePath('/profile');
     revalidatePath('/admin/profile');
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error updating profile:', err);
-    return { success: false, error: err.message || 'Gagal memperbarui profil.' };
+    const message = err instanceof Error ? err.message : 'Gagal memperbarui profil.';
+    return { success: false, error: message };
   }
 }
 
@@ -52,9 +53,10 @@ export async function updatePassword(password: string) {
     `;
 
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error updating password:', err);
-    return { success: false, error: err.message || 'Gagal memperbarui kata sandi.' };
+    const message = err instanceof Error ? err.message : 'Gagal memperbarui kata sandi.';
+    return { success: false, error: message };
   }
 }
 

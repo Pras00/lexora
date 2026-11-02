@@ -48,9 +48,10 @@ export async function updateMemberStatus(
 
     revalidatePath('/admin/members');
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error updating member status:', err);
-    return { success: false, error: err.message || 'Gagal memperbarui status anggota.' };
+    const message = err instanceof Error ? err.message : 'Gagal memperbarui status anggota.';
+    return { success: false, error: message };
   }
 }
 

@@ -15,21 +15,18 @@ import {
   ShieldCheck,
   User,
   Phone,
-  Calendar,
   CheckCircle2,
   XCircle,
-  HelpCircle,
   CheckCheck,
   Ban,
   ArrowRight,
-  ShieldAlert,
 } from 'lucide-react';
 import { LoanRequestWithDetails, BookWithCategory } from '@/types';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PickupPass } from '@/components/requests/PickupPass';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
-import { formatDate, formatDateTime, formatCurrency } from '@/lib/utils';
+import { formatDateTime, formatCurrency } from '@/lib/utils';
 import { reviewLoanRequest } from '@/app/actions/requests';
 
 interface AdminRequestReviewClientProps {
@@ -204,7 +201,7 @@ export function AdminRequestReviewClient({
                   </span>
                   <StatusBadge status={request.status} />
                 </div>
-                <p className="text-xs text-muted font-normal mt-1 leading-relaxed">
+                <p className="text-xs text-muted mt-1 leading-relaxed tracking-wide">
                   Diajukan pada {formatDateTime(request.requested_at)} • Total {totalBooks} koleksi buku
                 </p>
               </div>

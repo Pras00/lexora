@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { sql } from '@/lib/db/neon';
 import { AdminLoanReturnClient } from './AdminLoanReturnClient';
+import { LoanWithDetails } from '@/types';
 
 interface AdminLoanDetailPageProps {
   params: Promise<{ id: string }>;
@@ -9,8 +10,7 @@ interface AdminLoanDetailPageProps {
 export default async function AdminLoanDetailPage({ params }: AdminLoanDetailPageProps) {
   const { id } = await params;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let loan: any = null;
+  let loan: LoanWithDetails | null = null;
 
   try {
     const rows = await sql`
@@ -35,7 +35,7 @@ export default async function AdminLoanDetailPage({ params }: AdminLoanDetailPag
       LIMIT 1
     `;
 
-    if (rows && rows.length > 0) loan = rows[0];
+    if (rows && rows.length > 0) loan = rows[0] as unknown as LoanWithDetails;
   } catch (err) {
     console.warn('Error fetching loan return detail from NeonDB:', err);
   }

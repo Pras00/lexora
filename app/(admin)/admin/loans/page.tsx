@@ -1,9 +1,9 @@
 import { sql } from '@/lib/db/neon';
 import { AdminLoansClient } from './AdminLoansClient';
+import { LoanWithDetails } from '@/types';
 
 export default async function AdminLoansPage() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let activeLoans: any[] = [];
+  let activeLoans: LoanWithDetails[] = [];
 
   try {
     const rows = await sql`
@@ -28,7 +28,7 @@ export default async function AdminLoansPage() {
       ORDER BY l.created_at DESC
     `;
 
-    if (rows) activeLoans = rows;
+    if (rows) activeLoans = rows as unknown as LoanWithDetails[];
   } catch (err) {
     console.warn('Error fetching active loans from NeonDB:', err);
   }

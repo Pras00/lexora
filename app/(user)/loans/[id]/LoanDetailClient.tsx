@@ -8,9 +8,10 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { formatDate } from '@/lib/utils';
 import { extendLoanItem } from '@/app/actions/loans';
+import { LoanWithDetails, LoanItemWithBook } from '@/types';
 
 interface LoanDetailClientProps {
-  loan: any;
+  loan: LoanWithDetails;
 }
 
 export function LoanDetailClient({ loan }: LoanDetailClientProps) {
@@ -18,7 +19,7 @@ export function LoanDetailClient({ loan }: LoanDetailClientProps) {
   const [extendingItemId, setExtendingItemId] = useState<string | null>(null);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const handleExtendItem = async (item: any) => {
+  const handleExtendItem = async (item: LoanItemWithBook) => {
     setExtendingItemId(item.id);
     setStatusMsg(null);
 
@@ -38,10 +39,11 @@ export function LoanDetailClient({ loan }: LoanDetailClientProps) {
       });
 
       router.refresh();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal memproses perpanjangan buku.';
       setStatusMsg({
         type: 'error',
-        text: err.message || 'Gagal memproses perpanjangan buku.',
+        text: message,
       });
     } finally {
       setExtendingItemId(null);
@@ -82,7 +84,7 @@ export function LoanDetailClient({ loan }: LoanDetailClientProps) {
 
       {/* Daftar Item Buku */}
       <div className="space-y-4">
-        {loan.items?.map((item: any) => {
+        {loan.items?.map((item: LoanItemWithBook) => {
           const isOverdue = new Date(item.due_date) < new Date() && item.status === 'borrowed';
           const canExtend = item.extension_count === 0 && !isOverdue && item.status === 'borrowed';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -15,7 +15,6 @@ import {
   ShieldAlert,
   MapPin,
   Calendar,
-  Sparkles,
   RefreshCw,
 } from 'lucide-react';
 import { useCartStore } from '@/stores/cart.store';
@@ -25,6 +24,7 @@ import { createLoanRequest } from '@/app/actions/requests';
 import { getLatestBooksStock } from '@/app/actions/books';
 import { formatCurrency } from '@/lib/utils';
 import { BookWithCategory } from '@/types';
+import { useMounted } from '@/lib/hooks/use-mounted';
 
 interface NewRequestClientProps {
   existingHeldBooks?: number;
@@ -33,14 +33,14 @@ interface NewRequestClientProps {
 export function NewRequestClient({ existingHeldBooks = 0 }: NewRequestClientProps) {
   const router = useRouter();
   const { items, removeItem, clearCart, syncBooks } = useCartStore();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Sinkronisasi live ketersediaan stok fisik di rak saat membuka halaman
-  const syncCartStock = async () => {
+  const syncCartStock = useCallback(async () => {
     if (items.length === 0) return;
     setIsSyncing(true);
     try {
@@ -55,17 +55,15 @@ export function NewRequestClient({ existingHeldBooks = 0 }: NewRequestClientProp
     } finally {
       setIsSyncing(false);
     }
-  };
+  }, [items, syncBooks]);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (mounted && items.length > 0) {
-      syncCartStock();
-    }
-  }, [mounted]);
+    if (!mounted || items.length === 0) return;
+    const timer = setTimeout(() => {
+      void syncCartStock();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [mounted, syncCartStock, items.length]);
 
   if (!mounted) {
     return (

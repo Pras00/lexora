@@ -31,7 +31,7 @@ export async function processExpiredRequests(): Promise<ProcessExpiredResult> {
     let expiredPendingCount = 0;
 
     if (expiredPendingRows && expiredPendingRows.length > 0) {
-      const expiredIds = expiredPendingRows.map((r: any) => r.id);
+      const expiredIds = (expiredPendingRows as { id: string }[]).map((r) => r.id);
 
       // Cari buku-buku pada pengajuan yang berstatus pending untuk dilepas soft-hold-nya
       const itemsToRefund = await sql`

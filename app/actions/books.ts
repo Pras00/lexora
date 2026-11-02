@@ -58,9 +58,10 @@ export async function createBook(input: BookInput) {
     revalidatePath('/catalog');
     revalidatePath('/');
     return { success: true, id: rows[0]?.id };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error creating book:', err);
-    return { success: false, error: err.message || 'Gagal menambahkan buku.' };
+    const message = err instanceof Error ? err.message : 'Gagal menambahkan buku.';
+    return { success: false, error: message };
   }
 }
 
@@ -116,9 +117,10 @@ export async function updateBook(id: string, input: BookInput) {
     revalidatePath(`/catalog/${id}`);
     revalidatePath('/');
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error updating book:', err);
-    return { success: false, error: err.message || 'Gagal memperbarui data buku.' };
+    const message = err instanceof Error ? err.message : 'Gagal memperbarui data buku.';
+    return { success: false, error: message };
   }
 }
 
@@ -138,9 +140,10 @@ export async function deleteBook(id: string) {
     revalidatePath('/catalog');
     revalidatePath('/');
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error deleting book:', err);
-    return { success: false, error: err.message || 'Buku sedang dipinjam atau terkait riwayat sirkulasi.' };
+    const message = err instanceof Error ? err.message : 'Buku sedang dipinjam atau terkait riwayat sirkulasi.';
+    return { success: false, error: message };
   }
 }
 
@@ -180,9 +183,10 @@ export async function getLatestBooksStock(bookIds: string[]) {
         category: { id: string; name: string; slug: string } | null;
       }[],
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error fetching latest books stock:', err);
-    return { success: false, error: err.message || 'Gagal memverifikasi stok buku terbaru.' };
+    const message = err instanceof Error ? err.message : 'Gagal memverifikasi stok buku terbaru.';
+    return { success: false, error: message };
   }
 }
 

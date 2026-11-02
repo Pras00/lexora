@@ -64,8 +64,9 @@ export function BookForm({ categories, initialData, isEditing = false }: BookFor
 
       router.push('/admin/books');
       router.refresh();
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Gagal menyimpan data buku.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal menyimpan data buku.';
+      setErrorMsg(message);
     } finally {
       setIsLoading(false);
     }

@@ -37,8 +37,9 @@ export function AdminCategoriesClient({ categories }: AdminCategoriesClientProps
       setName('');
       setDescription('');
       router.refresh();
-    } catch (err: any) {
-      setMsg({ type: 'error', text: err.message || 'Gagal menambahkan kategori.' });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Gagal menambahkan kategori.';
+      setMsg({ type: 'error', text: message });
     } finally {
       setIsLoading(false);
     }
@@ -54,8 +55,9 @@ export function AdminCategoriesClient({ categories }: AdminCategoriesClientProps
         return;
       }
       router.refresh();
-    } catch (err: any) {
-      alert('Gagal menghapus kategori: ' + (err.message || 'Kategori ini sedang memiliki buku terkait.'));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Kategori ini sedang memiliki buku terkait.';
+      alert('Gagal menghapus kategori: ' + message);
     }
   };
 

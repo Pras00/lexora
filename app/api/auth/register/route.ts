@@ -65,10 +65,11 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Pendaftaran berhasil! Akun Anda telah aktif.',
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Registration error:', err);
+    const message = err instanceof Error ? err.message : 'Terjadi kesalahan sistem saat mendaftar.';
     return NextResponse.json(
-      { success: false, error: err.message || 'Terjadi kesalahan sistem saat mendaftar.' },
+      { success: false, error: message },
       { status: 500 }
     );
   }

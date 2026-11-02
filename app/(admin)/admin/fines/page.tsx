@@ -1,10 +1,11 @@
 import { sql } from '@/lib/db/neon';
 import { AdminFinesClient } from './AdminFinesClient';
+import { FineWithDetails } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminFinesPage() {
-  let fines: any[] = [];
+  let fines: FineWithDetails[] = [];
 
   try {
     const rows = await sql`
@@ -34,7 +35,7 @@ export default async function AdminFinesPage() {
       ORDER BY f.created_at DESC
     `;
 
-    if (rows) fines = rows as any[];
+    if (rows) fines = rows as unknown as FineWithDetails[];
   } catch (err) {
     console.warn('Error fetching fines from NeonDB:', err);
   }

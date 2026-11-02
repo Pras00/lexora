@@ -1,5 +1,4 @@
 import sharp from 'sharp';
-import fs from 'fs';
 import path from 'path';
 
 const outDir = path.resolve(process.cwd(), 'public/covers');

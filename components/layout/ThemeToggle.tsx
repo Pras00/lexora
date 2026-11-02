@@ -2,16 +2,12 @@
 
 import { useTheme } from 'next-themes';
 import { Sun, Moon } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useMounted } from '@/lib/hooks/use-mounted';
 
 export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   if (!mounted) {
     return (

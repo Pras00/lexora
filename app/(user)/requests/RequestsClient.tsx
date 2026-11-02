@@ -14,11 +14,8 @@ import {
   CheckCircle2,
   XCircle,
   MapPin,
-  Calendar,
   ShieldCheck,
   Plus,
-  ArrowRight,
-  Sparkles,
 } from 'lucide-react';
 import { LoanRequestWithDetails, BookWithCategory } from '@/types';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -38,19 +35,31 @@ type FilterTab = 'all' | 'pending' | 'approved' | 'history';
 export function RequestsClient({ initialRequests, activeLoansCount = 0 }: RequestsClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const openId = searchParams.get('openId') || searchParams.get('id');
+
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
+    return openId && initialRequests.some((r) => r.id === openId) ? new Set([openId]) : new Set();
+  });
   const [cancellingRequest, setCancellingRequest] = useState<LoanRequestWithDetails | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Auto-expand request jika diarahkan dengan query ?openId=... (misal sesaat setelah submit pengajuan baru)
   useEffect(() => {
-    const openId = searchParams.get('openId') || searchParams.get('id');
-    if (openId && initialRequests.some((r) => r.id === openId)) {
-      setExpandedIds(new Set([openId]));
-    }
-  }, [searchParams, initialRequests]);
+    if (!openId) return;
+    const timer = setTimeout(() => {
+      if (initialRequests.some((r) => r.id === openId)) {
+        setExpandedIds((prev) => {
+          if (prev.has(openId)) return prev;
+          const next = new Set(prev);
+          next.add(openId);
+          return next;
+        });
+      }
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [openId, initialRequests]);
 
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => {

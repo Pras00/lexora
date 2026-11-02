@@ -31,9 +31,10 @@ export async function createCategory(name: string, description?: string) {
     revalidatePath('/admin/books');
     revalidatePath('/catalog');
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error creating category:', err);
-    return { success: false, error: err.message || 'Gagal menambahkan kategori.' };
+    const message = err instanceof Error ? err.message : 'Gagal menambahkan kategori.';
+    return { success: false, error: message };
   }
 }
 
@@ -53,7 +54,7 @@ export async function deleteCategory(id: string) {
     revalidatePath('/admin/books');
     revalidatePath('/catalog');
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Error deleting category:', err);
     return {
       success: false,

@@ -63,12 +63,12 @@ export interface User {
   user_metadata?: {
     full_name?: string;
     role?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
-  app_metadata?: Record<string, any>;
+  app_metadata?: Record<string, unknown>;
   aud?: string;
   role?: string;
   created_at?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
