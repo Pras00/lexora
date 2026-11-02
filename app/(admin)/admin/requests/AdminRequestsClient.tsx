@@ -293,7 +293,7 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
                       className="hover:bg-surface-secondary/40 transition-colors"
                     >
                       {/* No. Pengajuan */}
-                      <td className="px-5 py-3.5 text-left font-semibold text-xs sm:text-sm text-foreground tracking-wide">
+                      <td className="px-5 py-3.5 text-left font-semibold text-xs text-foreground whitespace-nowrap">
                         {req.request_number}
                       </td>
 
@@ -380,6 +380,13 @@ export function AdminRequestsClient({ initialRequests }: AdminRequestsClientProp
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40 whitespace-nowrap">
                               <Clock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                               <span>Batas: {formatDate(req.pickup_deadline)}</span>
+                            </span>
+                          ) : ['expired', 'not_picked_up'].includes(req.status) ? (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40 whitespace-nowrap">
+                              <Clock className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                              <span>
+                                Lewat: {formatDate(req.pickup_deadline || req.expires_at || req.requested_at)}
+                              </span>
                             </span>
                           ) : (
                             <span className="text-muted text-xs">-</span>

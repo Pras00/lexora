@@ -15,6 +15,7 @@ import {
   ArrowRight,
   Plus,
   QrCode,
+  Clock,
 } from 'lucide-react';
 
 interface LoanRequestBook {
@@ -37,6 +38,8 @@ interface RecentLoanRequest {
   id: string;
   request_number: string;
   requested_at: string;
+  expires_at?: string | null;
+  pickup_deadline?: string | null;
   status: string;
   user: UserProfile | null;
   items: LoanRequestItemWithBook[] | null;
@@ -62,7 +65,7 @@ export default async function AdminDashboardPage() {
           sql`SELECT count(*) as count FROM loans WHERE status = 'active'`,
           sql`SELECT count(*) as count FROM fines WHERE status = 'unpaid'`,
           sql`
-            SELECT lr.id, lr.request_number, lr.requested_at, lr.status,
+            SELECT lr.id, lr.request_number, lr.requested_at, lr.expires_at, lr.pickup_deadline, lr.status,
               json_build_object('full_name', p.full_name, 'member_number', p.member_number) as user,
               (
                 SELECT json_agg(
@@ -184,21 +187,21 @@ export default async function AdminDashboardPage() {
         {recentRequests.length > 0 ? (
           <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-secondary/70 border-b border-border text-muted font-semibold text-xs">
+              <table className="w-full text-xs">
+                <thead className="bg-surface-secondary/70 border-b border-border text-muted text-xs font-semibold">
                   <tr>
-                    <th className="px-5 py-3.5">No. Pengajuan</th>
-                    <th className="px-5 py-3.5">Nama Anggota</th>
-                    <th className="px-5 py-3.5">Koleksi Diminta</th>
-                    <th className="px-5 py-3.5">Waktu Reservasi</th>
-                    <th className="px-5 py-3.5">Status</th>
-                    <th className="px-5 py-3.5 text-right">Aksi</th>
+                    <th className="px-5 py-3 text-left">No. Pengajuan</th>
+                    <th className="px-5 py-3 text-left">Peminjam</th>
+                    <th className="px-5 py-3 text-left">Koleksi Diminta</th>
+                    <th className="px-5 py-3 text-center">Waktu Pengajuan</th>
+                    <th className="px-5 py-3 text-center">Batas Waktu</th>
+                    <th className="px-5 py-3 text-center">Status</th>
+                    <th className="px-5 py-3 text-center">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/60 text-foreground">
+                <tbody className="divide-y divide-border/70 text-foreground">
                   {recentRequests.map((req) => {
                     const bookItems = req.items || [];
-                    const totalBooksCount = bookItems.length;
                     const isPending = req.status === 'pending';
 
                     return (
@@ -207,79 +210,74 @@ export default async function AdminDashboardPage() {
                         className="hover:bg-surface-secondary/40 transition-colors"
                       >
                         {/* No. Pengajuan */}
-                        <td className="px-5 py-3.5 whitespace-nowrap">
-                          <span className="font-semibold text-foreground text-xs block">
-                            {req.request_number}
-                          </span>
-                          <span className="text-xs text-muted block mt-0.5">
-                            ID Peminjaman
-                          </span>
+                        <td className="px-5 py-3.5 text-left font-semibold text-xs text-foreground whitespace-nowrap">
+                          {req.request_number}
                         </td>
 
-                        {/* Nama Anggota */}
-                        <td className="px-5 py-3.5">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center shrink-0">
-                              {req.user?.full_name ? req.user.full_name.charAt(0).toUpperCase() : 'P'}
+                        {/* Identitas Peminjam */}
+                        <td className="px-5 py-3.5 text-left">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-semibold text-xs shrink-0">
+                              {req.user?.full_name?.charAt(0) || 'U'}
                             </div>
-                            <div className="min-w-0">
-                              <div className="font-semibold text-sm text-foreground truncate">
+                            <div>
+                              <div className="font-medium text-foreground">
                                 {req.user?.full_name || 'Anggota'}
                               </div>
-                              <div className="text-xs text-muted mt-0.5 truncate">
+                              <div className="text-xs text-muted">
                                 {req.user?.member_number || '-'}
                               </div>
                             </div>
                           </div>
                         </td>
 
-                        {/* Koleksi Diminta */}
-                        <td className="px-5 py-3.5">
+                        {/* Koleksi Buku Diminta + Mini Cover Stacks */}
+                        <td className="px-5 py-3.5 text-left">
                           <div className="flex items-center gap-2.5">
-                            {bookItems.length > 0 && (
-                              <div className="flex items-center -space-x-3 shrink-0">
-                                {bookItems.slice(0, 3).map((item, idx) => (
-                                  <div
-                                    key={item.id}
-                                    style={{ zIndex: 10 - idx }}
-                                    className="relative w-6 h-8 rounded-md overflow-hidden bg-surface-secondary border border-surface shadow-xs shrink-0"
-                                  >
-                                    {item.book?.cover_url ? (
-                                      <Image
-                                        src={item.book.cover_url}
-                                        alt={item.book.title}
-                                        fill
-                                        sizes="24px"
-                                        className="object-cover"
-                                      />
-                                    ) : (
-                                      <div className="flex items-center justify-center h-full text-slate-400">
-                                        <BookOpen className="w-3 h-3 opacity-40" />
-                                      </div>
-                                    )}
-                                    <div className="absolute inset-y-0 left-0 w-1 bg-linear-to-r from-black/40 via-white/10 to-transparent pointer-events-none" />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                            <div className="min-w-0">
-                              <span className="font-medium text-foreground text-xs block">
-                                {totalBooksCount} Buku
+                            {/* Mini Stacks Cover */}
+                            <div className="flex items-center -space-x-3 shrink-0">
+                              {bookItems.slice(0, 3).map((item, idx) => (
+                                <div
+                                  key={item.id}
+                                  style={{ zIndex: 10 - idx }}
+                                  className="relative w-6 h-8 rounded-md overflow-hidden bg-surface-secondary border border-surface shadow-xs shrink-0"
+                                >
+                                  {item.book?.cover_url ? (
+                                    <Image
+                                      src={item.book.cover_url}
+                                      alt={item.book.title}
+                                      fill
+                                      sizes="24px"
+                                      className="object-cover"
+                                    />
+                                  ) : (
+                                    <div className="flex items-center justify-center h-full text-slate-400">
+                                      <BookOpen className="w-3 h-3 opacity-40" />
+                                    </div>
+                                  )}
+                                  <div className="absolute inset-y-0 left-0 w-1 bg-linear-to-r from-black/40 via-white/10 to-transparent pointer-events-none" />
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="text-left">
+                              <span className="font-medium text-foreground block">
+                                {bookItems.length} Buku
                               </span>
                               <span className="text-xs text-muted truncate max-w-44 block font-serif">
                                 {bookItems[0]?.book?.title || 'Koleksi Perpustakaan'}
-                                {totalBooksCount > 1 ? ` (+${totalBooksCount - 1})` : ''}
+                                {bookItems.length > 1 ? ` (+${bookItems.length - 1})` : ''}
                               </span>
                             </div>
                           </div>
                         </td>
 
-                        {/* Waktu Reservasi */}
-                        <td className="px-5 py-3.5 whitespace-nowrap text-muted text-xs">
+                        {/* Waktu Pengajuan */}
+                        <td className="px-5 py-3.5 text-center text-muted">
                           <span className="font-medium text-foreground block">
                             {formatDate(req.requested_at)}
                           </span>
-                          <span className="text-xs text-muted block mt-0.5">
+                          <span className="text-xs text-muted block">
                             {new Date(req.requested_at).toLocaleTimeString('id-ID', {
                               hour: '2-digit',
                               minute: '2-digit',
@@ -287,30 +285,54 @@ export default async function AdminDashboardPage() {
                           </span>
                         </td>
 
-                        {/* Status */}
-                        <td className="px-5 py-3.5 whitespace-nowrap">
-                          <StatusBadge status={req.status} />
+                        {/* Batas Ambil / Batas Verifikasi */}
+                        <td className="px-5 py-3.5 text-center">
+                          <div className="flex justify-center">
+                            {isPending ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/40 whitespace-nowrap">
+                                <Clock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                                <span>Batas: {req.expires_at ? formatDate(req.expires_at) : '2 Hari Kerja'}</span>
+                              </span>
+                            ) : req.pickup_deadline && req.status === 'approved' ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/40 whitespace-nowrap">
+                                <Clock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                <span>Batas: {formatDate(req.pickup_deadline)}</span>
+                              </span>
+                            ) : ['expired', 'not_picked_up'].includes(req.status) ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40 whitespace-nowrap">
+                                <Clock className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                                <span>
+                                  Lewat: {formatDate(req.pickup_deadline || req.expires_at || req.requested_at)}
+                                </span>
+                              </span>
+                            ) : (
+                              <span className="text-muted text-xs">-</span>
+                            )}
+                          </div>
                         </td>
 
-                        {/* Aksi */}
-                        <td className="px-5 py-3.5 text-right whitespace-nowrap">
-                          {isPending ? (
+                        {/* Status */}
+                        <td className="px-5 py-3.5 text-center">
+                          <div className="flex justify-center">
+                            <StatusBadge status={req.status} />
+                          </div>
+                        </td>
+
+                        {/* Tombol Aksi */}
+                        <td className="px-5 py-3.5 text-center">
+                          <div className="flex justify-center">
                             <Link
                               href={`/admin/requests/${req.id}`}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-primary text-white hover:bg-primary-hover transition-colors shadow-2xs"
+                              className={`inline-flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl whitespace-nowrap shrink-0 transition-all cursor-pointer ${
+                                isPending
+                                  ? 'bg-primary text-white hover:bg-primary-hover shadow-2xs active:scale-95'
+                                  : 'border border-border bg-surface-secondary text-foreground hover:bg-surface-secondary/80'
+                              }`}
                             >
-                              <span>Verifikasi</span>
+                              <span>{isPending ? 'Verifikasi' : 'Rincian'}</span>
                               <ArrowRight className="w-3.5 h-3.5" />
                             </Link>
-                          ) : (
-                            <Link
-                              href={`/admin/requests/${req.id}`}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-border bg-surface hover:bg-surface-secondary text-foreground hover:text-primary transition-colors"
-                            >
-                              <span>Detail</span>
-                              <ArrowRight className="w-3.5 h-3.5 text-muted" />
-                            </Link>
-                          )}
+                          </div>
                         </td>
                       </tr>
                     );
